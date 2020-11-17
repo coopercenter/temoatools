@@ -15,6 +15,8 @@ debug = False
 # Format for local, names only
 localTables = ['plants_to_include', 'fuels_to_include', 'connections_to_include', 'include_baseload',
                'include_reserve_margin', 'include_ramping', 'include_growth_limit',
+               'include_RPS',
+               'include_emission_limit',
                'future_periods', 'active_future_periods', 'allTimePeriods', 'commodities', 'MaxLoan_yrs']
 
 # Format for outputs, format is name and number of associated entries - based on
@@ -61,7 +63,7 @@ def build(modelInputs, scenarioXLSX, scenarioName, outFilename, sensitivity={}, 
     if debug:
         print(sensitivity)
     if not len(
-            sensitivity) == 0:  # if dictionary is empty, it will evaluae to false, and no senstivity will be performed
+            sensitivity) == 0:  # if dictionary is empty, it will evaluate to false, and no senstivity will be performed
         inputs, local = applySensitivity(inputs, sensitivity, local)
 
     # Apply Monte Carlo to inputs
@@ -259,8 +261,11 @@ def processScenarios(scenarioXLSX, scenarioName, local, path):
     # Minimum initial growth
     local['MaxLoan_yrs'] = df.loc['MaxLoan_yrs', scenarioName]
 
-    # Minimum initial growth
+    # Minimum renewable portfolio standard (RPS)
     local['include_RPS'] = df.loc['include_RPS', scenarioName]
+
+    # Emission limit
+    local['include_emission_limit'] = df.loc['include_emission_limit', scenarioName]
 
     # Return to working directory
     os.chdir(workDir)
@@ -332,13 +337,16 @@ def processSystem(inputs, local, outputs):
         outputs['DiscountRate'].append((tech, vintage, tech_rate, str(tech_rate_notes)))
 
     # Emission Limit
-    for periods, emis_comm, emis_limit, emis_limit_units, emis_limit_notes in zip(inputs['Emission'].periods,
-                                                                                  inputs['Emission'].emis_comm,
-                                                                                  inputs['Emission'].emis_limit,
-                                                                                  inputs['Emission'].emis_limit_units,
-                                                                                  inputs['Emission'].emis_limit_notes):
-        outputs['EmissionLimit'].append(
-            (periods, str(emis_comm), emis_limit, str(emis_limit_units), str(emis_limit_notes)))
+    if local['include_emission_limit'] == 'Y':
+        for periods, emis_comm, emis_limit, emis_limit_units, emis_limit_notes in zip(inputs['Emission'].periods,
+                                                                                      inputs['Emission'].emis_comm,
+                                                                                      inputs['Emission'].emis_limit,
+                                                                                      inputs[
+                                                                                          'Emission'].emis_limit_units,
+                                                                                      inputs[
+                                                                                          'Emission'].emis_limit_notes):
+            outputs['EmissionLimit'].append(
+                (periods, str(emis_comm), emis_limit, str(emis_limit_units), str(emis_limit_notes)))
 
     # ReserveMargin
     if local['include_reserve_margin'] == 'Y':
@@ -733,11 +741,11 @@ def processTech(inputs, local, outputs, tech):
     if tech['sector'] == 'supply':
         outputs['technologies'].append((tech['name'], "r", tech['sector'], "fuels", " "))
 
-        # Connections
+    # Connections
     elif tech['sector'] == 'transport':
         outputs['technologies'].append((tech['name'], "p", tech['sector'], "connections", " "))
 
-        # PowerPlants
+    # PowerPlants
     elif tech['sector'] == 'electric':
         if local['include_baseload'] == "Y" and tech['baseload'] == "Y":
             outputs['tech_baseload'].append((tech['name'],))
