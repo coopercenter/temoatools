@@ -18,6 +18,7 @@ from .analyze_emissions import getEmissions
 from .fragility_curves import fragility
 from .stochastic_postprocessing import stoch_expand
 from .stochastic_postprocessing import stoch_resample
+from .combine_data_files import combine
 
 # storing where resources folder is
 resource_path = os.path.join(os.path.split(__file__)[0], "resources")

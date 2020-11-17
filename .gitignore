@@ -19,4 +19,8 @@
 /projects/virginia/databases/
 /projects/virginia/results/
 /projects/virginia/results_single/
+/projects/va_emerging_tech/configs/
+/projects/va_emerging_tech/data/*.db
+/projects/va_emerging_tech/databases/
+/projects/va_emerging_tech/results/
 .DS_Store
