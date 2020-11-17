@@ -31,4 +31,4 @@ if not onlySimple:
     switch = 'tech'
     capacityByTech = tt.getCapacity(folder, dbs, switch=switch, save_data=saveData, create_plots=createPlots)
     ActivityByYearTech = tt.getActivity(folder, dbs, switch=switch, save_data=saveData, create_plots=createPlots)
-    ActivityByTODTech = tt.getActivityTOD(folder, dbs, switch=switch, sectorName=sectorName, save_data=saveData, create_plots=createPlots)
+    ActivityByTODTech = tt.getActivityTOD(folder, dbs, switch=switch, sector_name=sectorName, save_data=saveData, create_plots=createPlots)
