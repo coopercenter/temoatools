@@ -23,4 +23,8 @@
 /projects/va_emerging_tech/data/*.db
 /projects/va_emerging_tech/databases/
 /projects/va_emerging_tech/results/
+/projects/test_emerging_tech/configs/
+/projects/test_emerging_tech/data/*.db
+/projects/test_emerging_tech/databases/
+/projects/test_emerging_tech/results/
 .DS_Store

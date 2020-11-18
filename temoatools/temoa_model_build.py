@@ -479,7 +479,7 @@ def processFuels(inputs, local, outputs):
 
         # Constraints
         tech['max_capacity'] = None
-        tech['max_activity'] = None
+        tech['max_activity'] = inputs['Fuels'].loc[techType, 'MaxActivity']
         tech['ramp_rate'] = None
         tech['Retirement'] = inputs['Fuels'].loc[techType, 'Retirement']
         tech['FirstBuild'] = inputs['Fuels'].loc[techType, 'FirstBuild']
@@ -532,7 +532,7 @@ def processConnections(inputs, local, outputs):
         # Performance
         tech['efficiency'] = 1.0 - inputs['Connections'].loc[techType, 'Loss'] / 100.0
         tech['lifetime'] = inputs['Connections'].loc[techType, 'Lifetime']
-        tech['emission_activity'] = None
+        tech['emission_activity'] = inputs['Connections'].loc[techType, 'EmissionActivity']
         tech['capacity_factor'] = None
 
         # Costs
