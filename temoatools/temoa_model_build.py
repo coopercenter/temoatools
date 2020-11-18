@@ -329,13 +329,6 @@ def processSystem(inputs, local, outputs):
     # Discount Rate Global
     outputs['GlobalDiscountRate'].append(str(inputs['DiscountRateGlobal'].DiscountRate[0]))
 
-    # Discount Rate Tech
-    for tech, vintage, tech_rate, tech_rate_notes in zip(inputs['DiscountRateTech'].tech,
-                                                         inputs['DiscountRateTech'].vintage,
-                                                         inputs['DiscountRateTech'].tech_rate,
-                                                         inputs['DiscountRateTech'].tech_rate_notes):
-        outputs['DiscountRate'].append((tech, vintage, tech_rate, str(tech_rate_notes)))
-
     # Emission Limit
     if local['include_emission_limit'] == 'Y':
         for periods, emis_comm, emis_limit, emis_limit_units, emis_limit_notes in zip(inputs['Emission'].periods,
@@ -411,6 +404,8 @@ def processPowerPlants(inputs, local, outputs):
         tech['CostInvestIncr'] = inputs['PowerPlantsCosts'].loc[techType, 'CostInvestIncr']
         tech['CostFixedIncr'] = inputs['PowerPlantsCosts'].loc[techType, 'CostFixedIncr']
         tech['CostVariableIncr'] = inputs['PowerPlantsCosts'].loc[techType, 'CostVariableIncr']
+        tech['DiscountRate'] = inputs['PowerPlantsCosts'].loc[techType, 'DiscountRate']
+        tech['Ref_DiscountRate'] = inputs['PowerPlantsCosts'].loc[techType, 'Ref_DiscountRate']
 
         # Constraints
         tech['max_capacity'] = inputs['PowerPlantsConstraints'].loc[
@@ -479,6 +474,8 @@ def processFuels(inputs, local, outputs):
         tech['CostInvestIncr'] = inputs['Fuels'].loc[techType, 'CostInvestIncr']
         tech['CostFixedIncr'] = None
         tech['CostVariableIncr'] = inputs['Fuels'].loc[techType, 'CostVariableIncr']
+        tech['DiscountRate'] = None
+        tech['Ref_DiscountRate'] = None
 
         # Constraints
         tech['max_capacity'] = None
@@ -546,6 +543,8 @@ def processConnections(inputs, local, outputs):
         tech['CostInvestIncr'] = inputs['Connections'].loc[techType, 'CostInvestIncr']
         tech['CostFixedIncr'] = None
         tech['CostVariableIncr'] = inputs['Connections'].loc[techType, 'CostVariableIncr']
+        tech['DiscountRate'] = None
+        tech['Ref_DiscountRate'] = None
 
         # Constraints
         tech['max_capacity'] = None
@@ -703,6 +702,14 @@ def processTech(inputs, local, outputs, tech):
                     else:
                         costVar = tech['cost_variable']
                     outputs['CostVariable'].append((str(period), tech['name'], str(vintage), costVar, "M USD/PJ", " "))
+
+    # Discount Rate Tech
+    if goodValue(tech['DiscountRate']):
+        note = ''
+        if goodValue(tech['Ref_DiscountRate']):
+            note = tech['Ref_DiscountRate']
+        for vintage in buildYears:
+            outputs['DiscountRate'].append((tech['name'], str(vintage), tech['DiscountRate'], note))
 
     # Efficiency
     if goodValue(tech['efficiency']):
