@@ -15,7 +15,7 @@
 /projects/uva/data/*.db
 /projects/uva/results/
 /projects/virginia/configs/
-/projects/virginia/data/
+/projects/virginia/data/*.db
 /projects/virginia/databases/
 /projects/virginia/results/
 /projects/virginia/results_single/
