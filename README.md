@@ -46,7 +46,7 @@ The example commands are shown in a Windows environment.
 
 4) download temoatools using git
     
-        git clone https://www.github.com/EnergyModels/temoatools
+        git clone https://www.github.com/coopercenter/temoatools
 
 5) navigate to temoatools directory
         
@@ -71,7 +71,7 @@ The example commands are shown in a Windows environment.
    ### To install:
           
         module load anaconda/2019.10-py3.7
-        git clone https:www.github.com/EnergyModels/temoatools
+        git clone https:www.github.com/coopercenter/temoatools
         cd temoa
         conda env create
         source activate temoa-py3
