@@ -50,7 +50,7 @@ The example commands are shown in a Windows environment.
 
 3) create temoa-py3 environment (modified from archvied version of Temoa)
     > conda env create
-    > conda activate temoa-py3
+    conda activate temoa-py3
     
 4) install temoatools
     > pip install .
