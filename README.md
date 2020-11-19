@@ -33,31 +33,38 @@ Temoatools currently uses the June 30, 2020 version of Temoa (commit 9d10c1d), d
 The instructions below are for a new installation of temoatools. 
 The example commands are shown in a Windows environment.
 
-1) prerequisites: git and Anaconda3
+1) prerequisites: install git and Anaconda3
     - https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
     - https://www.anaconda.com/distribution/#download-section
     
 2) launch anaconda3 prompt
+    - Windows: Start -> Anaconda3 -> Anaconda Prompt
 
 3) navigate to where you want to install and run temoatools
-    > cd harddrive/yourdirectory
+    
+        cd harddrive/yourdirectory
 
 4) download temoatools using git
-    > git clone https://www.github.com/EnergyModels/temoatools
+    
+        git clone https://www.github.com/EnergyModels/temoatools
 
 5) navigate to temoatools directory
-    > cd temoatools
+        
+        cd temoatools
 
 3) create temoa-py3 environment (modified from archvied version of Temoa)
-    > conda env create
-    conda activate temoa-py3
+        
+        conda env create
+        conda activate temoa-py3
     
 4) install temoatools
-    > pip install .
+
+        pip install .
                                                                                                                                                                                                                      
 5) to test:
-    > cd examples/baselines  
-    python baselines_run.py
+        
+        cd examples/baselines  
+        python baselines_run.py
 
         
 ## Running on Rivanna, UVA's high performance computing system*:
