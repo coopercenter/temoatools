@@ -26,7 +26,7 @@ if __name__ == '__main__':
     project_path = os.getcwd()
     modelInputs_XLSX_list = ['data_combined.xlsx']
     scenarioInputs = 'scenarios_test_tech.xlsx'
-    scenarioNames_list = [['bio', 'beccs', 'bio_beccs']]
+    scenarioNames_list = [['all', 'pv_res', 'sco2', 'ocaes', 'bio', 'beccs', 'bio_beccs']]
     ncpus = 1  # int(os.getenv('NUM_PROCS'))
     solver = ''  # 'gurobi'
 
