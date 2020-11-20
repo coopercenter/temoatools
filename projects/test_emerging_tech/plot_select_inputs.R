@@ -30,7 +30,7 @@ savename = 'Inputs_PowerPlants_InvestmentCosts.pdf'
 
 tech_list = c('E_SCO2','E_PV_DIST_RES','E_OCAES', 'E_BIO','E_BECCS')
 rename <- c('E_SCO2'="sCO[2]",
-            'E_PV_DIST_RES'="'Residential Solar PV'",
+            'E_PV_DIST_RES'="'Residential solar PV'",
             'E_OCAES'="'OCAES'",
             'E_BIO'="'Bioenergy'",
             'E_BECCS'="'BECCS'")
@@ -65,7 +65,7 @@ savename = 'Inputs_PowerPlants_VariableCosts.pdf'
 
 tech_list = c('E_SCO2','E_PV_DIST_RES','E_OCAES', 'E_BIO','E_BECCS')
 rename <- c('E_SCO2'="sCO[2]",
-            'E_PV_DIST_RES'="'Residential Solar PV'",
+            'E_PV_DIST_RES'="'Residential solar PV'",
             'E_OCAES'="'OCAES'",
             'E_BIO'="'Bioenergy'",
             'E_BECCS'="'BECCS'")
@@ -84,7 +84,7 @@ tbl$cost_variable <- tbl$cost_variable * conversion
 ggplot(data=tbl, aes_string(x='periods',y='cost_variable',color='tech'))+
   geom_line()+
   scale_colour_discrete(labels=parse_format())+
-  labs(x='Year (-)', y=expression(paste("Variable Cost (US$ kWh"^-1,")")),
+  labs(x='Year (-)', y=expression(paste("Variable cost (US$ kWh"^-1,")")),
        col='Technologies')+
   theme(panel.background = element_rect(fill = NA, colour ="black"),
         panel.border = element_rect(linetype="solid", fill=NA),
@@ -102,7 +102,7 @@ savename = 'Inputs_PowerPlants_FixedCosts.pdf'
 
 tech_list = c('E_SCO2','E_PV_DIST_RES','E_OCAES', 'E_BIO','E_BECCS')
 rename <- c('E_SCO2'="sCO[2]",
-            'E_PV_DIST_RES'="'Residential Solar PV'",
+            'E_PV_DIST_RES'="'Residential solar PV'",
             'E_OCAES'="'OCAES'",
             'E_BIO'="'Bioenergy'",
             'E_BECCS'="'BECCS'")
@@ -119,7 +119,7 @@ tbl <- transform(tbl, tech = rename[as.character(tech)])
 ggplot(data=tbl, aes_string(x='periods',y='cost_fixed',color='tech'))+
   geom_line()+
   scale_colour_discrete(labels=parse_format())+
-  labs(x='Year (-)', y=expression(paste("Fixed Costs (US$ KW"^-1,")")),
+  labs(x='Year (-)', y=expression(paste("Fixed costs (US$ KW"^-1,")")),
        col='Technologies')+
   theme(panel.background = element_rect(fill = NA, colour ="black"),
         panel.border = element_rect(linetype="solid", fill=NA),
@@ -135,26 +135,24 @@ ggsave(savename, device="pdf", width=7.48, height=5.5, units="in",dpi=300)
 table = 'CostVariable'
 savename = 'Inputs_Fuels_VariableCosts.pdf'
 
-tech_list = c('E_SCO2','E_PV_DIST_RES','E_OCAES', 'E_BIO','E_BECCS')
-rename <- c('E_SCO2'="sCO[2]",
-            'E_PV_DIST_RES'="'Residential Solar PV'",
-            'E_OCAES'="'OCAES'",
-            'E_BIO'="'Bioenergy'",
-            'E_BECCS'="'BECCS'")
+tech_list = c('IMPBIOMASS','IMPNATGAS')
+rename <- c('IMPBIOMASS'="'Biomass'",
+            'IMPNATGAS'="'Natural gas'")
 # -------------------------
 
 # read-in data
 tbl <- dbReadTable(con, table)
 
 # process data
-
+tbl <- tbl[tbl$tech %in% tech_list, ]
+tbl <- transform(tbl, tech = rename[as.character(tech)])
 
 # plot
-ggplot(data=tbl, aes_string(x='periods',y='cost_variable',color='vintage'))+
+ggplot(data=tbl, aes_string(x='periods',y='cost_variable',color='tech'))+
   geom_line()+
   scale_colour_discrete(labels=parse_format())+
-  labs(x='Year (-)', y=expression(paste("CAPEX (US$ KW"^-1,")")),
-       col='Technologies')+
+  labs(x='Year (-)', y=expression(paste("Fuel cost (US$ MJ"^-1,")")),
+       col='Fuel')+
   theme(panel.background = element_rect(fill = NA, colour ="black"),
         panel.border = element_rect(linetype="solid", fill=NA),
         legend.background=element_rect(fill = alpha("white", 0)),
@@ -163,6 +161,9 @@ ggplot(data=tbl, aes_string(x='periods',y='cost_variable',color='vintage'))+
 # save
 ggsave(savename, device="pdf", width=7.48, height=5.5, units="in",dpi=300)
 
+
+grid.newpage()
+grid.draw(rbind(ggplotGrob(plot1), ggplotGrob(plot2), size = "first"))
 
 
 # -------------------------
