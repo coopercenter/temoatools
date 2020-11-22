@@ -114,9 +114,12 @@ The example commands are shown in a Windows environment.
     9) Select OK and OK again
     10) It may take several minutes for PyCharm to update
     
-5) Verify installation was successful
-    1) Open examples/baselines/baselines_run.py from Project
+5) Verify installation was successful by running baselines example
+    1) Open examples\baselines\baselines_run.py from Project
     2) From main menu: "Run" -> "Run"
+    3) Open examples\baselines\baselines_analyze.py from Project
+    4) From main menu: "Run" -> "Run"
+    5) Navigate to examples/baselines/results to see plots
     
 Notes:
 - The main advantage of this method is tobe able to easily update to the latest version of the code using Git:

@@ -21,14 +21,12 @@ import os
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-from pathlib import Path
-from sensitivity_support import removeCamelHump, formatPlantName, formatFuelName, formatConnName
+from .sensitivity_support import removeCamelHump, formatPlantName, formatFuelName, formatConnName
 
 # ------------------------
 # Inputs
 # ------------------------
-project_path = Path(
-    'C:/Users/benne/PycharmProjects/temoatools/examples/sensitivity')  # Path('/home/jab6ft/temoa/project/sensitivity')
+project_path = os.getcwd()
 cases = ['SensitivityResults_A.csv']
 labels = ["A"]
 variables = ['LCOE', 'avgEmissions']

@@ -101,6 +101,8 @@ def getActivityTOD(folders, dbs, switch='fuel', sector_name='electric', save_dat
             else:
                 savename = 'yearlyActivityTOD_byTech' + tt.remove_ext(database) + '.pdf'
             plt.savefig(savename, dpi=resolution)
+            # close the figure
+            plt.close()
 
     # Return to original directory
     os.chdir(wrkdir)

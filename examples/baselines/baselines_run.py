@@ -51,7 +51,7 @@ if __name__ == '__main__':
     modelInputs_XLSX_list = ['data.xlsx']
     scenarioInputs = 'scenarios.xlsx'
     scenarioNames_list = [['A', 'B', 'C', 'D', 'E', 'F']]
-    ncpus = 6   # default, unless otherwise specified in sbatch script
+    ncpus = 2   # default, unless otherwise specified in sbatch script
     solver = ''  # leave blank to let temoa decide which solver to use of those installed
 
     # =======================================================
@@ -76,7 +76,7 @@ if __name__ == '__main__':
 
         # ====================================
         # Perform Simulations
-        option = 1  # 1 - Run single, 2 - Run all
+        option = 2  # 1 - Run single, 2 - Run all
         # ====================================
 
         if option == 1:
