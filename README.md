@@ -116,9 +116,9 @@ The example commands are shown in a Windows environment.
     
 5) Verify installation was successful by running baselines example
     1) Open examples\baselines\baselines_run.py from Project
-    2) From main menu: "Run" -> "Run"
+    2) From main menu: "Run" -> "Run" -> "baselines_run" -> "Run"
     3) Open examples\baselines\baselines_analyze.py from Project
-    4) From main menu: "Run" -> "Run"
+    4) From main menu: "Run" -> "Run" -> "baselines_analyze" -> "Run"
     5) Navigate to examples/baselines/results to see plots
     
 Notes:
