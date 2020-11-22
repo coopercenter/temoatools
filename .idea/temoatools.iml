@@ -8,6 +8,9 @@
       <excludeFolder url="file://$MODULE_DIR$/examples/puerto_rico/configs" />
       <excludeFolder url="file://$MODULE_DIR$/examples/puerto_rico/databases" />
       <excludeFolder url="file://$MODULE_DIR$/examples/puerto_rico/sensitivity" />
+      <excludeFolder url="file://$MODULE_DIR$/projects/test_emerging_tech/configs" />
+      <excludeFolder url="file://$MODULE_DIR$/projects/test_emerging_tech/databases" />
+      <excludeFolder url="file://$MODULE_DIR$/projects/test_emerging_tech/results" />
       <excludeFolder url="file://$MODULE_DIR$/projects/va_emerging_tech/configs" />
       <excludeFolder url="file://$MODULE_DIR$/projects/va_emerging_tech/databases" />
       <excludeFolder url="file://$MODULE_DIR$/projects/va_emerging_tech/results" />

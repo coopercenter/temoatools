@@ -27,4 +27,5 @@
 /projects/test_emerging_tech/data/*.db
 /projects/test_emerging_tech/databases/
 /projects/test_emerging_tech/results/
-.DS_Store
+*.DS_Store
+*.pcy

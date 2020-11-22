@@ -26,7 +26,7 @@ More details:
     - temoatools/temoa_stochastic - an archived version of Temoa in Python 2 that  is now kept within the temoatools repository. This is the most recent version that works with temoatools
     - temoatools/temoatools - temoatools source code
           
-## temoatools installation with Python 3
+## temoatools installation with command line (basic)
 Temoatools is meant to be an extension for Temoa. 
 Temoa is an on-going project, so in order to ensure compatibility, temoatools uses an archived version of Temoa.
 Temoatools currently uses the June 30, 2020 version of Temoa (commit 9d10c1d), downloadable at:  https://github.com/TemoaProject/temoa/tree/9d10c1da81dc6b4f2b34cadfac9db947251254e2
@@ -66,6 +66,78 @@ The example commands are shown in a Windows environment.
         cd examples/baselines  
         python baselines_run.py
 
+        
+## temoatools installation with PyCharm IDE (advanced)
+1) prerequisites: install Git, Anaconda3 and PyCharm Community Edition
+    1) https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
+    2) https://www.anaconda.com/distribution/#download-section
+    3) https://www.jetbrains.com/pycharm/download/
+    
+2) Create project in PyCharm
+    1)  Launch PyCharm
+        - Windows: Start -> JetBrains -> PyCharm Community Edition
+    2) New project:
+        - Select "Get from Version Control" option
+        - Settings
+            - URL (Must match below):
+            
+                        https://www.github.com/coopercenter/temoatools
+            - Directory (Your choice) - record this directory for later
+            
+                        C:\Users\YourName\PyCharmProjects\temoatools
+    3) Keep PyCharm open
+        
+3) Create Python environment
+    1) Launch Anaconda3
+        - Windows: Start -> Anaconda3 -> Anaconda Prompt
+    2) Navigate to PyCharm project path (Directory from Step 2ii)
+        
+            cd C:\Users\YourName\PyCharmProjects\temoatools
+            
+    - create environment
+    
+            conda env create
+            conda activate temoa-py3
+            
+4) Configure PyCharm project
+    1) Return to PyCharm
+    2) Open PyCharm settings
+        1) File -> Settings
+    3) Open Interpreter settings
+        1) Expand Project:temoatools (on left hand side)
+        2) Select Python Interpreter
+    4) Select the gear icon in the upper right
+    5) "Add"
+    6) Select "Conda Environment" on the left hand side
+    7) Select "Existing Environment"
+    8) From the Interpreter dropdown list select the option that contains temoa-py3
+    9) Select OK and OK again
+    10) It may take several minutes for PyCharm to update
+    
+5) Verify installation was successful
+    1) Open examples/baselines/baselines_run.py from Project
+    2) From main menu: "Run" -> "Run"
+    
+Notes:
+- The main advantage of this method is tobe able to easily update to the latest version of the code using Git:
+        - From upper task bar: "VCS" -> "Git" -> "Pull"
+        - When given the prompt to "Update Project", select "Merge incoming changes into the current branch"
+
+- If you will be updating to the latest version of the code then make sure that you put your own project in a unique folder.
+    - For example, copy a similar example or project folder to i.e. projects/yourproject
+    - This will prevent future code updates from overwriting your work.
+       
+
+
+    
+4) install temoatools
+
+        pip install .
+                                                                                                                                                                                                                     
+5) to test:
+        
+        cd examples/baselines  
+        python baselines_run.py
         
 ## Running on Rivanna, UVA's high performance computing system*:
    ### To install:
