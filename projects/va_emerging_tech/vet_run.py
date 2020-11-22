@@ -31,7 +31,8 @@ if __name__ == '__main__':
     solver = ''  # 'gurobi'
 
     # combine data files
-    tt.combine(project_path=project_path, primary='data_virginia.xlsx', secondary='data_emerging_tech.xlsx',
+    tt.combine(project_path=project_path, primary='data_virginia.xlsx',
+               data_files=['data_emerging_tech.xlsx', 'data_H2_VFB.xlsx'],
                output='data_combined.xlsx')
 
     for modelInputs_XLSX, scenarioNames in zip(modelInputs_XLSX_list, scenarioNames_list):
