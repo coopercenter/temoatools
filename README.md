@@ -67,7 +67,7 @@ The example commands are shown in a Windows environment.
         python baselines_run.py
 
         
-## temoatools installation with PyCharm IDE (advanced), last updated 11/23/2020
+## temoatools installation with PyCharm IDE (advance d), last updated 11/23/2020
 1) prerequisites: install Git, Anaconda3 and PyCharm Community Edition
     1) https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
     2) https://www.anaconda.com/distribution/#download-section
