@@ -207,8 +207,8 @@ ggarrange(plot_CostInvest, plot_CostFixed, plot_CostVariable, plot_Efficiency,
 #               ggplotGrob(plot_Efficiency), nrow=2, ncol=2)
 
 # save
-savename = 'Inputs_PowerPlants.pdf'
-ggsave(savename, device="pdf", width=7.48, height=5.5, units="in",dpi=300)
+savename = 'Inputs_PowerPlants.png'
+ggsave(savename, device="png", width=7.48, height=5.5, units="in",dpi=300)
 
 # ggsave(savename, device="pdf",
 #        width=7.4, height=6.0, units="in",dpi=1000,
@@ -324,11 +324,47 @@ ggplot(data=tbl3, aes_string(x='time_of_day_name',y='dds',color='year'))+
   theme(panel.background = element_rect(fill = NA, colour ="black"),
         panel.border = element_rect(linetype="solid", fill=NA),
         legend.background=element_rect(fill = alpha("white", 0)),
-        legend.key = element_rect(colour = "transparent", fill = "white"))
+        legend.key = element_rect(colour = "transparent", fill = "white"),
+        strip.background = element_rect(colour = NA, fill = NA))
 
 # save
 ggsave(savename, device="pdf", width=7.48, height=5.5, units="in",dpi=300)
 
+
+# -------------------------
+# Combine Demand and Capacity Factor TOD
+savename = 'Inputs_Demand_CapacityFactor.pdf'
+# -------------------------
+
+# Normalize demand
+tbl2$dds <- tbl2$dds / max(tbl2$dds)
+# Rename demand columns to match capacity factor table
+tbl2 <- tbl2 %>% rename(tech=demand_name, cf_tech=dds)
+# Rename entries in demand
+demand_rename = c('ELC_DMD'='Demand')
+tbl2 <- transform(tbl2, tech = demand_rename[as.character(tech)])
+# Remove note columns
+tbl = subset(tbl, select = -c(cf_tech_notes) )
+tbl2 = subset(tbl2, select = -c(dds_notes) )
+# Combine dataframes
+tbl_comb <- rbind(tbl,tbl2)
+
+
+# plot
+ggplot(data=tbl_comb, aes_string(x='time_of_day_name',y='cf_tech',color='tech'))+
+  geom_line()+
+  facet_wrap('season_name')+
+  scale_colour_discrete(labels=parse_format())+
+  labs(x='Hour (-)', y='Normalized capacity factor and demand (-)',
+       col='Technologies')+
+  theme(panel.background = element_rect(fill = NA, colour ="black"),
+        panel.border = element_rect(linetype="solid", fill=NA),
+        legend.background=element_rect(fill = alpha("white", 0)),
+        legend.key = element_rect(colour = "transparent", fill = "white"),
+        strip.background = element_rect(colour = NA, fill = NA))
+
+# save
+ggsave(savename, device="pdf", width=7.48, height=5.5, units="in",dpi=300)
 
 # -------------------------
 # finish program and tidy up
