@@ -9,23 +9,29 @@ library("ggpubr")
 db = 'all.sqlite' # database to analyze, assumed to be in results directory
 
 
-tech_list = c('E_SCO2','E_PV_DIST_RES','E_OCAES', 'E_BECCS')
-tech_rename <- c('E_SCO2'="sCO[2]",
-                 'E_PV_DIST_RES'="'Residential solar PV'",
+# This is order that items will be plotted, only items included will be plotted
+tech_rename <- c('E_BECCS'="'BECCS'",
                  'E_OCAES'="'OCAES'",
-                 'E_BECCS'="'BECCS'")
+                 'E_PV_DIST_RES'="'Residential solar PV'",
+                 'E_SCO2'="sCO[2]",
+                 'EC_WIND'="'Offshore wind'")
 
-fuel_list = c('IMPBIOMASS','IMPNATGAS')
+
+# tech_palette  <- c("#E69F00", "#000000", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7") # Set manually
+tech_palette <- brewer.pal(n=length(tech_rename),name="Set1") # Use a predefined a palette https://www.datanovia.com/en/blog/top-r-color-palettes-to-know-for-great-data-visualization/
+# display.brewer.pal(n=length(tech_rename),name="Set1")
+
 fuel_rename <- c('IMPBIOMASS'="'Biomass'",
                  'IMPNATGAS'="'Natural gas'")
+# fuel_palette  <- c("#000000", "#000000", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7") # Set manually
+fuel_palette <- brewer.pal(n=length(fuel_rename),name="Set1") # predefined palette # http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/
 
-season_rename <- c(
+season_rename <- c('fall'='Fall',
   'winter'='Winter',
   'winter2'='Winter 2',
   'spring'='Spring',
   'summer'='Summer',
-  'summer2'='Summer 2',
-  'fall'='Fall')
+  'summer2'='Summer 2')
 
 tod_rename <- c('hr01'=1,
                 'hr02'=2,
@@ -52,8 +58,8 @@ tod_rename <- c('hr01'=1,
                 'hr23'=23,
                 'hr24'=24)
 
-# The palette with black: http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/
-# cbPalette <- c("#E69F00", "#000000", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7") # Full palette
+
+cbPalette <- 
 # cbPalette <- c("#E69F00", "#000000",  "#009E73", "#0072B2", "#D55E00", "#CC79A7", "#56B4E9", "#F0E442") # Selected colors
 
 # Column width guidelines https://www.elsevier.com/authors/author-schemas/artwork-and-media-instructions/artwork-sizing
@@ -73,10 +79,40 @@ con <- dbConnect(SQLite(),db)
 setwd('../results')
 
 # Set color palette
-options(ggplot2.discrete.fill = cbPalette)
-options(ggplot2.discrete.color = cbPalette)
-options(ggplot2.continuous.color = cbPalette)
-options(ggplot2.continuous.color = cbPalette)
+options(ggplot2.discrete.fill = tech_palette)
+options(ggplot2.discrete.color = tech_palette)
+options(ggplot2.continuous.color = tech_palette)
+options(ggplot2.continuous.color = tech_palette)
+
+
+# -------------------------
+# process tech_rename, fuel_rename, and tod_rename
+# split each into a list of technologies (i.e. tech_list) and names to be used (i.e. tech_levels)
+# -------------------------
+temp <- as.list(tech_rename)
+tech_list <- c()
+tech_levels <- c()
+for (i in 1:length(tech_rename)) {
+  tech_list <- c(tech_list, names(temp[i]))
+  tech_levels <- c(tech_levels, temp[[i]])
+}
+
+temp <- as.list(fuel_rename)
+fuel_list <- c()
+fuel_levels <- c()
+for (i in 1:length(fuel_rename)) {
+  fuel_list <- c(fuel_list, names(temp[i]))
+  fuel_levels <- c(fuel_levels, temp[[i]])
+}
+
+temp <- as.list(season_rename)
+season_list <- c()
+season_levels <- c()
+for (i in 1:length(season_rename)) {
+  season_list <- c(season_list, names(temp[i]))
+  season_levels <- c(season_levels, temp[[i]])
+}
+
 # -------------------------
 # Power Plant Investment Costs
 table = 'CostInvest'
@@ -87,8 +123,9 @@ savename = 'Inputs_PowerPlants_InvestmentCosts.pdf'
 tbl <- dbReadTable(con, table)
 
 # process data
-tbl <- tbl[tbl$tech %in% tech_list, ]
-tbl <- transform(tbl, tech = tech_rename[as.character(tech)])
+tbl <- tbl[tbl$tech %in% tech_list, ] # only plot tech in list
+tbl <- transform(tbl, tech = tech_rename[as.character(tech)]) # rename tech
+tbl$tech <- factor(tbl$tech,levels = tech_levels) # Plot series in specified order
 
 # plot
 plot_CostInvest <- ggplot(data=tbl, aes_string(x='vintage',y='cost_invest',color='tech'))+
@@ -119,12 +156,13 @@ tbl <- dbReadTable(con, table)
 tbl <- tbl[tbl$tech %in% tech_list, ]
 tbl <- transform(tbl, tech = tech_rename[as.character(tech)])
 tbl$cost_variable <- tbl$cost_variable * conversion
+tbl$tech <- factor(tbl$tech,levels = tech_levels)
 
 # plot
 plot_CostVariable <- ggplot(data=tbl, aes_string(x='periods',y='cost_variable',color='tech'))+
   geom_line()+
   scale_colour_discrete(labels=parse_format())+
-  labs(x='Year (-)', y=expression(paste("Variable cost (US$ kWh"^-1,")")),
+  labs(x='Year (-)', y=expression(paste("Variable O&M (US$ kWh"^-1,")")),
        col='Technologies')+
   theme(panel.background = element_rect(fill = NA, colour ="black"),
         panel.border = element_rect(linetype="solid", fill=NA),
@@ -147,12 +185,13 @@ tbl <- dbReadTable(con, table)
 # process data
 tbl <- tbl[tbl$tech %in% tech_list, ]
 tbl <- transform(tbl, tech = tech_rename[as.character(tech)])
+tbl$tech <- factor(tbl$tech,levels = tech_levels)
 
 # plot
 plot_CostFixed <- ggplot(data=tbl, aes_string(x='periods',y='cost_fixed',color='tech'))+
   geom_line()+
   scale_colour_discrete(labels=parse_format())+
-  labs(x='Year (-)', y=expression(paste("Fixed costs (US$ KW"^-1,")")),
+  labs(x='Year (-)', y=expression(paste("Fixed O&M (US$ KW"^-1,")")),
        col='Technologies')+
   theme(panel.background = element_rect(fill = NA, colour ="black"),
         panel.border = element_rect(linetype="solid", fill=NA),
@@ -176,6 +215,7 @@ tbl <- dbReadTable(con, table)
 tbl <- tbl[tbl$tech %in% tech_list, ]
 tbl <- transform(tbl, tech = tech_rename[as.character(tech)])
 tbl$efficiency <- tbl$efficiency * conversion
+tbl$tech <- factor(tbl$tech,levels = tech_levels)
 
 # plot
 plot_Efficiency <-ggplot(data=tbl, aes_string(x='vintage',y='efficiency',color='tech'))+
@@ -215,33 +255,6 @@ ggsave(savename, device="png", width=7.48, height=5.5, units="in",dpi=300)
 #        plot = grid.arrange( ggplotGrob(plot_CostInvest), ggplotGrob(plot_CostFixed), ggplotGrob(plot_CostVariable), 
 #                             ggplotGrob(plot_Efficiency), nrow=2, ncol=2))
 
-# -------------------------
-# Fuel Costs
-table = 'CostVariable'
-savename = 'Inputs_Fuels_VariableCosts.png'
-# -------------------------
-
-# read-in data
-tbl <- dbReadTable(con, table)
-
-# process data
-tbl <- tbl[tbl$tech %in% fuel_list, ]
-tbl <- transform(tbl, tech = fuel_rename[as.character(tech)])
-
-# plot
-ggplot(data=tbl, aes_string(x='periods',y='cost_variable',color='tech'))+
-  geom_line()+
-  scale_colour_discrete(labels=parse_format())+
-  labs(x='Year (-)', y=expression(paste("Fuel cost (US$ MJ"^-1,")")),
-       col='Fuel')+
-  theme(panel.background = element_rect(fill = NA, colour ="black"),
-        panel.border = element_rect(linetype="solid", fill=NA),
-        legend.background=element_rect(fill = alpha("white", 0)),
-        legend.key = element_rect(colour = "transparent", fill = "white"))
-
-# save
-ggsave(savename, device="png", width=3.54, height=3.54, units="in",dpi=300)
-
 
 # -------------------------
 # Power Plant Capacity Factors
@@ -257,6 +270,8 @@ tbl <- tbl[tbl$tech %in% tech_list, ]
 tbl <- transform(tbl, tech = tech_rename[as.character(tech)])
 tbl <- transform(tbl, season_name = season_rename[as.character(season_name)])
 tbl <- transform(tbl, time_of_day_name = tod_rename[as.character(time_of_day_name)])
+tbl$tech <- factor(tbl$tech,levels = tech_levels)  # Plot in specified order
+tbl$season_name <- factor(tbl$season_name,levels = season_levels)
 
 # plot
 ggplot(data=tbl, aes_string(x='time_of_day_name',y='cf_tech',color='tech'))+
@@ -265,15 +280,16 @@ ggplot(data=tbl, aes_string(x='time_of_day_name',y='cf_tech',color='tech'))+
   scale_colour_discrete(labels=parse_format())+
   labs(x='Hour (-)', y='Capacity factor (-)',
        col='Technologies')+
-  theme(panel.background = element_rect(fill = NA, colour ="black"),
+  theme(axis.text.x = element_text(angle = 0,vjust=0., hjust = 0.5),
+        panel.background = element_rect(fill = NA, colour ="black"),
         panel.border = element_rect(linetype="solid", fill=NA),
         legend.background=element_rect(fill = alpha("white", 0)),
         legend.key = element_rect(colour = "transparent", fill = "white"),
-        strip.background = element_rect(colour = NA, fill = NA))
+        strip.background = element_rect(colour = NA, fill = NA),
+        panel.spacing = unit(1, "lines"))
 
 # save
 ggsave(savename, device="pdf", width=7.48, height=5.5, units="in",dpi=300)
-
 
 
 # -------------------------
@@ -292,6 +308,7 @@ tbl2 <- dbReadTable(con, table2)
 tbl1$demand <- tbl1$demand * conversion
 tbl2 <- transform(tbl2, season_name = season_rename[as.character(season_name)])
 tbl2 <- transform(tbl2, time_of_day_name = tod_rename[as.character(time_of_day_name)])
+
 
 # periods <- unique(tbl1$periods)
 # tbl2$year <- periods[1]
@@ -315,17 +332,29 @@ for (i in 1:length(tbl1$periods)){
   
 }
 
+# plot order
+tbl3$season_name <- factor(tbl3$season_name,levels = season_levels)
+
+# Set color palette
+demand_palette <- brewer.pal(n=length(tbl1$periods),name="Greys") # predefined palette # http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/
+options(ggplot2.discrete.fill = demand_palette)
+options(ggplot2.discrete.color = demand_palette)
+options(ggplot2.continuous.color = demand_palette)
+options(ggplot2.continuous.color = demand_palette)
+
 # plot
 ggplot(data=tbl3, aes_string(x='time_of_day_name',y='dds',color='year'))+
   geom_line() +
   labs(x='Hour (-)', y='Demand (GWh)',
        col='Year')+
   facet_wrap('season_name')+
-  theme(panel.background = element_rect(fill = NA, colour ="black"),
+  theme(axis.text.x = element_text(angle = 0,vjust=0., hjust = 0.5),
+        panel.background = element_rect(fill = NA, colour ="black"),
         panel.border = element_rect(linetype="solid", fill=NA),
         legend.background=element_rect(fill = alpha("white", 0)),
         legend.key = element_rect(colour = "transparent", fill = "white"),
-        strip.background = element_rect(colour = NA, fill = NA))
+        strip.background = element_rect(colour = NA, fill = NA),
+        panel.spacing = unit(1, "lines"))
 
 # save
 ggsave(savename, device="pdf", width=7.48, height=5.5, units="in",dpi=300)
@@ -333,8 +362,16 @@ ggsave(savename, device="pdf", width=7.48, height=5.5, units="in",dpi=300)
 
 # -------------------------
 # Combine Demand and Capacity Factor TOD
-savename = 'Inputs_Demand_CapacityFactor.pdf'
+savename = 'Inputs_Demand_CapacityFactor.png'
 # -------------------------
+
+custom_palette <- c('#000000', tech_palette)
+
+# Set color palette
+options(ggplot2.discrete.fill = custom_palette)
+options(ggplot2.discrete.color = custom_palette)
+options(ggplot2.continuous.color = custom_palette)
+options(ggplot2.continuous.color = custom_palette)
 
 # Normalize demand
 tbl2$dds <- tbl2$dds / max(tbl2$dds)
@@ -347,24 +384,76 @@ tbl2 <- transform(tbl2, tech = demand_rename[as.character(tech)])
 tbl = subset(tbl, select = -c(cf_tech_notes) )
 tbl2 = subset(tbl2, select = -c(dds_notes) )
 # Combine dataframes
-tbl_comb <- rbind(tbl,tbl2)
+tbl_comb <- rbind(tbl2,tbl)
 
+
+# set order for plotting
+levels <- c("Demand", tech_levels)
+tbl_comb$tech <- factor(tbl_comb$tech,levels = levels)
+tbl_comb$season_name <- factor(tbl_comb$season_name,levels = season_levels)
+
+
+
+# Set color palette - add black for Demand
+newPalette <- c('#000000',tech_palette)
+options(ggplot2.discrete.fill = newPalette)
+options(ggplot2.discrete.color = newPalette)
+options(ggplot2.continuous.color = newPalette)
+options(ggplot2.continuous.color = newPalette)
 
 # plot
 ggplot(data=tbl_comb, aes_string(x='time_of_day_name',y='cf_tech',color='tech'))+
   geom_line()+
   facet_wrap('season_name')+
   scale_colour_discrete(labels=parse_format())+
-  labs(x='Hour (-)', y='Normalized capacity factor and demand (-)',
+  labs(x='Hour (-)', y='Normalized demand and capacity factor (-)',
        col='Technologies')+
-  theme(panel.background = element_rect(fill = NA, colour ="black"),
+  theme(axis.text.x = element_text(angle = 0,vjust=0., hjust = 0.5),
+        panel.background = element_rect(fill = NA, colour ="black"),
         panel.border = element_rect(linetype="solid", fill=NA),
         legend.background=element_rect(fill = alpha("white", 0)),
         legend.key = element_rect(colour = "transparent", fill = "white"),
-        strip.background = element_rect(colour = NA, fill = NA))
+        strip.background = element_rect(colour = NA, fill = NA),
+        panel.spacing = unit(1, "lines"))
 
 # save
-ggsave(savename, device="pdf", width=7.48, height=5.5, units="in",dpi=300)
+ggsave(savename, device="png", width=7.48, height=5.5, units="in",dpi=300)
+
+
+
+# -------------------------
+# Fuel Costs
+table = 'CostVariable'
+savename = 'Inputs_Fuels_VariableCosts.png'
+# -------------------------
+
+# Set color palette
+options(ggplot2.discrete.fill = fuel_palette)
+options(ggplot2.discrete.color = fuel_palette)
+options(ggplot2.continuous.color = fuel_palette)
+options(ggplot2.continuous.color = fuel_palette)
+
+# read-in data
+tbl <- dbReadTable(con, table)
+
+# process data
+tbl <- tbl[tbl$tech %in% fuel_list, ]
+tbl <- transform(tbl, tech = fuel_rename[as.character(tech)])
+tbl$tech <- factor(tbl$tech,levels = fuel_levels)
+
+# plot
+ggplot(data=tbl, aes_string(x='periods',y='cost_variable',color='tech'))+
+  geom_line()+
+  scale_colour_discrete(labels=parse_format())+
+  labs(x='Year (-)', y=expression(paste("Fuel cost (US$ MJ"^-1,")")),
+       col='Fuel')+
+  theme(panel.background = element_rect(fill = NA, colour ="black"),
+        panel.border = element_rect(linetype="solid", fill=NA),
+        legend.background=element_rect(fill = alpha("white", 0)),
+        legend.key = element_rect(colour = "transparent", fill = "white"))
+
+# save
+ggsave(savename, device="png", width=3.54, height=3.54, units="in",dpi=300)
 
 # -------------------------
 # finish program and tidy up
