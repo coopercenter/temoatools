@@ -29,6 +29,7 @@ import os
 from joblib import Parallel, delayed, parallel_backend
 import pandas as pd
 import temoatools as tt
+from pathlib import Path
 import numpy as np
 
 
@@ -40,64 +41,68 @@ def evaluateMonteCarlo(modelInputs, scenarioXLSX, scenarioName, temoa_path, proj
     model_filename = scenarioName + '_MC_' + str(caseNum)
 
     # Prepare monte carlo inputs
-    cols = ['type', 'variable', 'tech', caseNum]
-    MCinputs = cases.loc[:, cols]
-    MCinputs = MCinputs.rename(columns={caseNum: 'value'})
+    # cols = ['type', 'variable', 'tech', caseNum]
+    # MCinputs = cases.loc[:, cols]
+    # MCinputs = MCinputs.rename(columns={caseNum: 'multiplier'})
+
+    MCinputs = pd.DataFrame()
+    MCinputs.loc[:, 'type'] = cases.loc[:, 'type']
+    MCinputs.loc[:, 'variable'] = cases.loc[:, 'variable']
+    MCinputs.loc[:, 'tech'] = cases.loc[:, 'tech']
+    MCinputs.loc[:, 'multiplier'] = cases.loc[:, str(caseNum)]
 
     # Build Model
-    tt.build(modelInputs, scenarioXLSX, scenarioName, model_filename, MCinputs=MCinputs, path=project_path, mc_type='values')
+    tt.build(modelInputs, scenarioXLSX, scenarioName, model_filename, MCinputs=MCinputs, path=project_path)
 
     # Run Model
-    error = tt.run(model_filename, saveEXCEL=False, temoa_path=temoa_path, debug=True, solver=solver)
+    # error = tt.run(model_filename, temoa_path=temoa_path, saveEXCEL=False, solver=solver)
+    tt.run(model_filename, saveEXCEL=False, temoa_path=temoa_path, debug=True, solver=solver)
 
-    # series to store results
-    folder = os.path.join(project_path, 'databases')
-    db = model_filename + '.sqlite'
-    output = pd.Series()
-    output['db'] = db
-    output['caseNum'] = caseNum
-
-    # Analyze Results
-    if not error:
-        yearlyCosts, LCOE = tt.getCosts(folder, db)
-        yearlyCosts = yearlyCosts.drop(columns=['database', 'scenario'])
-        yearlyEmissions, avgEmissions = tt.getEmissions(folder, db)
-        yearlyEmissions = yearlyEmissions.drop(columns=['database', 'scenario'])
-
-        # Capacity and Activity by Fuel By Year
-        switch = 'tech'
-        capacityByFuel = tt.getCapacity(folder, db, switch=switch)
-        capacityByFuel = capacityByFuel.drop(columns=['database', 'scenario'])
-        capacityByFuel = capacityByFuel.set_index('fuelOrTech')
-        ActivityByYearFuel = tt.getActivity(folder, db, switch=switch)
-        ActivityByYearFuel = ActivityByYearFuel.drop(columns=['database', 'scenario'])
-        ActivityByYearFuel = ActivityByYearFuel.set_index('fuelOrTech')
-
-        # Package Outputs
-        output['LCOE'] = LCOE.loc[0, 'LCOE']
-        output['avgEmissions'] = avgEmissions.loc[0, 'avgEmissions']
-        for col in yearlyCosts.columns:
-            label = 'cost-' + str(col)
-            output[label] = yearlyCosts.loc[0, col]
-        for col in yearlyEmissions.columns:
-            label = 'emis-' + str(col)
-            output[label] = yearlyEmissions.loc[0, col]
-        # CapacityByYearFuel
-        for ind in capacityByFuel.index:
-            for col in capacityByFuel.columns:
-                label = 'cap_' + str(col) + '-' + str(ind)
-                output[label] = capacityByFuel.loc[ind, col]
-        # ActivityByYearFuel
-        for ind in ActivityByYearFuel.index:
-            for col in ActivityByYearFuel.columns:
-                label = 'act_' + str(col) + '-' + str(ind)
-                output[label] = ActivityByYearFuel.loc[ind, col]
-
-    else: # if errors
-        output['LCOE'] = np.nan
-        output['avgEmissions'] = np.nan
-
-    return output
+    # # Analyze Results
+    # folder = os.path.join(project_path, 'databases')
+    # db = model_filename + '.sqlite'
+    # if not error:
+    #     yearlyCosts, LCOE = tt.getCosts(folder, db)
+    #     yearlyCosts = yearlyCosts.drop(columns=['database', 'scenario'])
+    #     yearlyEmissions, avgEmissions = tt.getEmissions(folder, db)
+    #     yearlyEmissions = yearlyEmissions.drop(columns=['database', 'scenario'])
+    #
+    #     # Capacity and Activity by Fuel By Year
+    #     switch = 'fuel'
+    #     capacityByFuel = tt.getCapacity(folder, db, switch=switch)
+    #     capacityByFuel = capacityByFuel.drop(columns=['database', 'scenario'])
+    #     capacityByFuel = capacityByFuel.set_index('fuelOrTech')
+    #     ActivityByYearFuel = tt.getActivity(folder, db, switch=switch)
+    #     ActivityByYearFuel = ActivityByYearFuel.drop(columns=['database', 'scenario'])
+    #     ActivityByYearFuel = ActivityByYearFuel.set_index('fuelOrTech')
+    #
+    # # Package Outputs
+    # output = pd.Series()
+    # output['db'] = db
+    # output['caseNum'] = caseNum
+    # if not error:
+    #     output['LCOE'] = LCOE.loc[0, 'LCOE']
+    #     output['avgEmissions'] = avgEmissions.loc[0, 'avgEmissions']
+    # else:
+    #     output['LCOE'] = np.nan
+    #     output['avgEmissions'] = np.nan
+    # for col in yearlyCosts.columns:
+    #     label = 'cost-' + str(col)
+    #     output[label] = yearlyCosts.loc[0, col]
+    # for col in yearlyEmissions.columns:
+    #     label = 'emis-' + str(col)
+    #     output[label] = yearlyEmissions.loc[0, col]
+    # # CapacityByYearFuel
+    # for ind in capacityByFuel.index:
+    #     for col in capacityByFuel.columns:
+    #         label = 'cap_' + str(col) + '-' + str(ind)
+    #         output[label] = capacityByFuel.loc[ind, col]
+    # # ActivityByYearFuel
+    # for ind in ActivityByYearFuel.index:
+    #     for col in ActivityByYearFuel.columns:
+    #         label = 'act_' + str(col) + '-' + str(ind)
+    #         output[label] = ActivityByYearFuel.loc[ind, col]
+    # return output
 
 
 if __name__ == '__main__':
@@ -110,11 +115,11 @@ if __name__ == '__main__':
     modelInputs_XLSX = 'data_combined.xlsx'
     scenarioInputs = 'scenarios_test_tech.xlsx'
     scenarioNames = ['all']
-    monte_carlo_inputs = 'monte_carlo_inputs.xlsx'
-    monte_carlo_case = 'case1'
+    sensitivityInputs = 'sensitivityVariables.xlsx'
+    sensitivityMultiplier = 10.0  # percent perturbation
     ncpus = 1  # default, unless otherwise specified in sbatch script
     solver = ''  # leave blank to let temoa decide which solver to use of those installed
-    iterations = 2
+    n_cases = 2
 
     # =======================================================
     # begin script
@@ -145,15 +150,17 @@ if __name__ == '__main__':
     # ====================================
 
     for scenarioName in scenarioNames:
-
         # Create monte carlo cases
-        os.chdir(os.path.join(project_path, 'data'))
-        cases = tt.createMonteCarloCases_distributions(monte_carlo_inputs, monte_carlo_case, iterations)
-        os.chdir(project_path)
 
-        # Save cases
+        # cases = tt.createMonteCarloCases(scenarioInputs, scenarioName, sensitivityInputs, sensitivityMultiplier,
+        #                                  n_cases=n_cases, path=project_path)
+        # # Save cases
+        # os.chdir(os.path.join(project_path, mc_dir))
+        # cases.to_csv('MonteCarloInputs_' + scenarioName + '.csv', index=False)
+        # os.chdir(project_path)
+
         os.chdir(os.path.join(project_path, mc_dir))
-        cases.to_csv('MonteCarloInputs_' + scenarioName + '.csv', index=False)
+        cases = pd.read_csv("MonteCarloInputs_custom.csv")
         os.chdir(project_path)
 
         # Perform simulations in parallel
@@ -162,10 +169,10 @@ if __name__ == '__main__':
                 delayed(evaluateMonteCarlo)(modelInputs, scenarioInputs, scenarioName, temoa_path, project_path, solver,
                                             cases,
                                             caseNum) for
-                caseNum in range(iterations))
+                caseNum in range(n_cases))
 
         # Save results to a csv
-        os.chdir(os.path.join(project_path, mc_dir))
-        df = pd.DataFrame(outputs, dtype='float64')
-        df.to_csv('MonteCarloResults_' + scenarioName + '.csv')
-        os.chdir(project_path)
+        # os.chdir(os.path.join(project_path, mc_dir))
+        # df = pd.DataFrame(outputs, dtype='float64')
+        # df.to_csv('MonteCarloResults_' + scenarioName + '.csv')
+        # os.chdir(project_path)
