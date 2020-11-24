@@ -29,5 +29,6 @@
 /projects/test_emerging_tech/results/
 *.DS_Store
 *.pcy
+*.Rhistory
 /projects/test_emerging_tech/monte_carlo/
 /examples/monte_carlo/monte_carlo/

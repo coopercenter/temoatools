@@ -25,8 +25,8 @@ if __name__ == '__main__':
     temoa_path = os.path.abspath('../../temoa-energysystem')
     project_path = os.getcwd()
     modelInputs_XLSX_list = ['data_combined.xlsx']
-    scenarioInputs = 'scenarios_multiple.xlsx'
-    scenarioNames_list = [['A']]
+    scenarioInputs = 'scenarios_emerging_tech.xlsx'
+    scenarioNames_list = [['emission_limit']]
     ncpus = 1  # int(os.getenv('NUM_PROCS'))
     solver = ''  # 'gurobi'
 

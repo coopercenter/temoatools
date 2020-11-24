@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH -N 1
-#SBATCH --cpus-per-task=6
-#SBATCH -t 1:00:00
+#SBATCH --cpus-per-task=20
+#SBATCH -t 6:00:00
 #SBATCH -p standard
 
 module purge
@@ -18,4 +18,7 @@ module load gurobi
 export NUM_PROCS=$SLURM_CPUS_PER_TASK
 
 # run
-python vet_run.py
+python get_data_files.py
+python vet_run_baselines.py
+python vet_run_monte_carlo.py
+# python vet_run_sensitivity.py
