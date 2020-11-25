@@ -35,6 +35,6 @@
 *.DS_Store
 *.pcy
 *.Rhistory
-*.idea
+*.idea/
 
 
