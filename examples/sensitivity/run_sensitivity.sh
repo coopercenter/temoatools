@@ -1,11 +1,11 @@
 #!/bin/bash
 #SBATCH -N 1
 #SBATCH --cpus-per-task=6
-#SBATCH -t 10:00:00
+#SBATCH -t 2:00:00
 #SBATCH -p standard
 
 module purge
-module load anaconda
+module load anaconda/2019.10-3.7
 
 # activate temoa environment
 source activate temoa-py3
