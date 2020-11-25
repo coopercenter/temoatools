@@ -889,7 +889,7 @@ def createSensitivityCases(scenarioXLSX, scenarioName, sensitivityInputs, multip
     count = 0
 
     # Baseline
-    df.loc[count] = ['Baseline', 'Baseline', 'Baseline', 1.0]  # no change
+    df.loc[count] = ['Baseline', 'Baseline', 'Baseline', 0.0]  # no change
     count = count + 1
 
     # Globals
@@ -1032,7 +1032,7 @@ def applySensitivity(inputs, sensitivity, local):
         multiplier = 1.0 + sensitivity['multiplier'] / 100.0
 
         if sensitivity['variable'] == 'DiscountRate':
-            entryName = 'DiscountRate'
+            entryName = 'DiscountRateGlobal'
             entry = inputs[entryName]
             if goodValue(entry.loc[0, 'DiscountRate']):
                 entry.at[0, 'DiscountRate'] = entry.loc[0, 'DiscountRate'] * multiplier
@@ -1052,7 +1052,6 @@ def applySensitivity(inputs, sensitivity, local):
         elif sensitivity['variable'] == 'MinGrowthSeed':
             if goodValue(local['MinGrowthSeed']):
                 local['MinGrowthSeed'] = local['MinGrowthSeed'] * multiplier
-
 
     elif sensitivity['type'] in ['PowerPlants', 'Fuels', 'Connections']:  # Baseline is excluded (no modifications made)
         # -------------------
