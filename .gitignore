@@ -6,6 +6,7 @@
 /examples/monte_carlo/data/*.db
 /examples/monte_carlo/databases/
 /examples/monte_carlo/results/
+/examples/monte_carlo/monte_carlo/
 /examples/sensitivity/configs/
 /examples/sensitivity/data/*.db
 /examples/sensitivity/databases/
@@ -23,12 +24,16 @@
 /projects/va_emerging_tech/data/*.db
 /projects/va_emerging_tech/databases/
 /projects/va_emerging_tech/results/
+/projects/va_emerging_tech/monte_carlo/
+/projects/va_emerging_tech/sensitivity/
 /projects/test_emerging_tech/configs/
 /projects/test_emerging_tech/data/*.db
 /projects/test_emerging_tech/databases/
 /projects/test_emerging_tech/results/
+/projects/test_emerging_tech/monte_carlo/
+/projects/test_emerging_tech/sensitivity/
 *.DS_Store
 *.pcy
 *.Rhistory
-/projects/test_emerging_tech/monte_carlo/
-/examples/monte_carlo/monte_carlo/
+
+
