@@ -7,7 +7,7 @@ import temoatools as tt
 
 onlySimple = False
 folder = os.getcwd() + '/databases'
-dbs = ["A.sqlite", "B.sqlite"]
+dbs = ["BAU.sqlite", "unconstrained.sqlite", "emission_limit.sqlite"]
 
 createPlots = 'Y'  # Create default plots
 saveData = 'Y'  # Save data as a csv or xls
@@ -25,10 +25,12 @@ if not onlySimple:
     switch = 'fuel'
     capacityByFuel = tt.getCapacity(folder, dbs, switch=switch, save_data=saveData, create_plots=createPlots)
     ActivityByYearFuel = tt.getActivity(folder, dbs, switch=switch, save_data=saveData, create_plots=createPlots)
-    ActivityByTODFuel = tt.getActivityTOD(folder, dbs, switch=switch, sector_name=sectorName, save_data=saveData, create_plots=createPlots)
+    ActivityByTODFuel = tt.getActivityTOD(folder, dbs, switch=switch, sector_name=sectorName, save_data=saveData,
+                                          create_plots=createPlots)
 
     # Analyze capacity and activity by technology types
     switch = 'tech'
     capacityByTech = tt.getCapacity(folder, dbs, switch=switch, save_data=saveData, create_plots=createPlots)
     ActivityByYearTech = tt.getActivity(folder, dbs, switch=switch, save_data=saveData, create_plots=createPlots)
-    ActivityByTODTech = tt.getActivityTOD(folder, dbs, switch=switch, sector_name=sectorName, save_data=saveData, create_plots=createPlots)
+    ActivityByTODTech = tt.getActivityTOD(folder, dbs, switch=switch, sector_name=sectorName, save_data=saveData,
+                                          create_plots=createPlots)
