@@ -31,11 +31,12 @@ def move_data_to_db(XLSX, path=os.path.normcase('.')):
     outputdB = tt.remove_ext(XLSX) + ".db"
 
     # Keep track of sheet_names and corresponding number of columns to read-in
-    sheets = [("representativeDays", 3), ("timesOfDay", 3), ("Connections", 18), ("ConnectionsExisting", 4),
-              ("Demand", 4), ("DiscountRateGlobal", 2), ("Emission", 5), ("Fuels", 17),
+    sheets = [("representativeDays", 3), ("timesOfDay", 2), ("Connections", 18), ("ConnectionsExisting", 4),
+              ("Demand", 4), ("DemandTOD", 3), ("DiscountRateGlobal", 2), ("Emission", 5), ("Fuels", 17),
               ("FuelsExisting", 4), ("PowerPlants", 10),
               ("PowerPlantsPerformance", 9), ("PowerPlantsCosts", 12), ("PowerPlantsConstraints", 10),
-              ("PowerPlantsExisting", 4), ("ReserveMargin", 2), ("capacityFactorTOD", 5), ("ref", 6)]
+              ("PowerPlantsExisting", 4), ("MinCapacity", 4), ("ReserveMargin", 2), ("capacityFactorTOD", 5),
+              ("ref", 6)]
 
     # ----------
     # sqlite file prep

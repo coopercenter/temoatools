@@ -1,10 +1,6 @@
 import temoatools as tt
 from joblib import Parallel, delayed, parallel_backend
-from pathlib import Path
 import os
-import shutil
-import calendar
-import time
 
 
 # =======================================================
@@ -31,10 +27,9 @@ if __name__ == '__main__':
     modelInputs_XLSX_list = ['data_virginia.xlsx']
     scenarioInputs = 'scenarios_multiple.xlsx'
     scenarioNames_list = [['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']]
-    ncpus = 8  # int(os.getenv('NUM_PROCS'))
+    ncpus = 2  # int(os.getenv('NUM_PROCS'))
     solver = ''  # 'gurobi'
 
-    #shutil.copy2('/Users/rogerzhu/Documents/temoa/temoa-va/virginia/data/data_virginia.xlsx', '/Users/rogerzhu/Documents/temoa/temoa-va/virginia/data/data_virginia_'+str(calendar.timegm(time.gmtime()))+'.xlsx');
     for modelInputs_XLSX, scenarioNames in zip(modelInputs_XLSX_list, scenarioNames_list):
 
         # =======================================================

@@ -17,6 +17,7 @@ localTables = ['plants_to_include', 'fuels_to_include', 'connections_to_include'
                'include_reserve_margin', 'include_ramping', 'include_growth_limit',
                'include_RPS',
                'include_emission_limit',
+               'include_min_capacity_limit',
                'future_periods', 'active_future_periods', 'allTimePeriods', 'commodities', 'MaxLoan_yrs']
 
 # Format for outputs, format is name and number of associated entries - based on
@@ -27,7 +28,7 @@ temoaTables = [('commodities', 3), ('technologies', 5), ('tech_baseload', 1),
                ('CostVariable', 6), ('Demand', 5), ('DemandSpecificDistribution', 5), ('DiscountRate', 4),
                ('Efficiency', 6), ('EmissionActivity', 8), ("EmissionLimit", 5),
                ('ExistingCapacity', 5), ('LifetimeLoanTech', 3), ('LifetimeTech', 3),
-               ('MaxCapacity', 5), ('MaxActivity', 5),
+               ('MaxCapacity', 5), ('MaxActivity', 5), ('MinCapacity', 5),
                ('GlobalDiscountRate', 1), ('GrowthRateMax', 3), ('GrowthRateSeed', 4),
                ('RampUp', 2), ('RampDown', 2), ('ReserveMargin', 2), ('SegFrac', 4),
                ('StorageDuration', 3),
@@ -118,9 +119,9 @@ def inputs2Dict(modelInputs, path):
 
     # tables to read-in from SQL
     tables = ["representativeDays", "timesOfDay", "Connections", "ConnectionsExisting",
-              "Demand", "DiscountRateGlobal", "DiscountRateTech", "Emission", "Fuels", "FuelsExisting", "PowerPlants",
-              "PowerPlantsPerformance", "PowerPlantsCosts", "PowerPlantsConstraints",
-              "PowerPlantsExisting", "ReserveMargin", "capacityFactorTOD", "ref"]
+              "Demand", "DemandTOD", "DiscountRateGlobal", "DiscountRateTech", "Emission", "Fuels", "FuelsExisting",
+              "PowerPlants", "PowerPlantsPerformance", "PowerPlantsCosts", "PowerPlantsConstraints",
+              "PowerPlantsExisting", "MinCapacity", "ReserveMargin", "capacityFactorTOD", "ref"]
 
     # Connect and store tables in dictionary inputs
     inputs = {}
@@ -278,6 +279,9 @@ def processScenarios(scenarioXLSX, scenarioName, local, path):
     # Emission limit
     local['include_emission_limit'] = df.loc['include_emission_limit', scenarioName]
 
+    # Minimum Capacity limit
+    local['include_min_capacity_limit'] = df.loc['include_min_capacity_limit', scenarioName]
+
     # Return to working directory
     os.chdir(workDir)
 
@@ -318,9 +322,11 @@ def processSystem(inputs, local, outputs):
         outputs['Demand'].append((str(period), demand_commodity, demand, "PJ", " "))
 
     # DemandSpecificDistribution
+    df = inputs['DemandTOD']
     for season, season_frac in zip(inputs['representativeDays'].representativeDay,
                                    inputs['representativeDays'].dmdFrac):
-        for timeOfDay, timeOfDay_frac in zip(inputs['timesOfDay'].timeOfDay, inputs['timesOfDay'].dmdFrac):
+        dfx = df[df.loc[:, 'representativeDay'] == season]
+        for timeOfDay, timeOfDay_frac in zip(dfx.timeOfDay, dfx.dmdFrac):
             value = season_frac * timeOfDay_frac
             outputs['DemandSpecificDistribution'].append([season, timeOfDay, demand_commodity, value, " "])
 
@@ -673,8 +679,18 @@ def processTech(inputs, local, outputs, tech):
         else:
             for index, row in inputs['capacityFactorTOD'].iterrows():
                 if row['fuel'] == tech['fuel']:
+                    value = row['capacityFactor'] * tech['capacity_factor']
+                    # enforce that value is between 0 and 1
+                    if value < 0.0:
+                        value = 0.0
+                        print('Warning: Capacity factor less than 0.0, set to 0.0: ' + tech['name'] + ' '
+                              + row['representativeDay'] + ' ' + row['timeOfDay'])
+                    elif value > 1.0:
+                        value = 1.0
+                        print('Warning: Capacity factor greater than 1.0, set to 1.0: ' + tech['name'] + ' '
+                              + row['representativeDay'] + ' ' + row['timeOfDay'])
                     outputs['CapacityFactorTech'].append((row['representativeDay'], row['timeOfDay'], tech['name'],
-                                                          row['capacityFactor'] * tech['capacity_factor'], " "))
+                                                          value, " "))
 
     # CostFixed
     if goodValue(tech['cost_fixed']):
@@ -712,7 +728,8 @@ def processTech(inputs, local, outputs, tech):
                         costVar = tech['cost_variable'] * (1.0 + tech['CostVariableIncr'] / 100.0) ** N
                     else:
                         costVar = tech['cost_variable']
-                    outputs['CostVariable'].append((str(period), tech['name'], str(vintage), costVar, "M USD/PJ", " "))
+                    outputs['CostVariable'].append(
+                        (str(period), tech['name'], str(vintage), costVar, "M USD/PJ", " "))
 
     # Discount Rate Tech
     if goodValue(tech['DiscountRate']):
@@ -731,8 +748,9 @@ def processTech(inputs, local, outputs, tech):
     # EmissionActivity
     if goodValue(tech['emission_activity']):
         for vintage in buildYears:
-            outputs['EmissionActivity'].append((emission_type, tech['fuel'], tech['name'], str(vintage), tech['output'],
-                                                tech['emission_activity'], "kt/PJout", " "))
+            outputs['EmissionActivity'].append(
+                (emission_type, tech['fuel'], tech['name'], str(vintage), tech['output'],
+                 tech['emission_activity'], "kt/PJout", " "))
 
     # ExistingCapacity
     exist_cap = 0  # Keep track of current capacity, growthrate_seed must be equal to or greater than this
@@ -790,6 +808,16 @@ def processTech(inputs, local, outputs, tech):
         for period in active_future_periods_con:
             outputs['MaxCapacity'].append((str(period), tech['name'], tech['max_capacity'], "GW", " "))
 
+    # MinCapacity
+    if local['include_min_capacity_limit'] == 'Y':
+        if tech['name'] in list(inputs['MinCapacity'].Technology):
+            df = inputs['MinCapacity']
+            dfx = df[df.loc[:, 'Technology'] == tech['name']]
+            for period, MinCapacity, in zip(dfx.Year, dfx.MinCapacity):
+                if period in active_future_periods_con:
+                    MinCapacity = MinCapacity / 1000.0  # Convert from MW to GW
+                    outputs['MinCapacity'].append((str(period), tech['name'], MinCapacity, "GW", " "))
+
     # MaxActivity (also used to enforce retirement)
     # Dual constraint
     if goodValue(tech['max_activity']) and goodValue(tech['Retirement']):
@@ -830,7 +858,6 @@ def processTech(inputs, local, outputs, tech):
         outputs['RampDown'].append((tech['name'], str(tech['ramp_rate'])))
 
     return local, outputs
-
 
 # =============================================================================
 # Create Sensitivity Inputs
@@ -1053,7 +1080,8 @@ def applySensitivity(inputs, sensitivity, local):
             if goodValue(local['MinGrowthSeed']):
                 local['MinGrowthSeed'] = local['MinGrowthSeed'] * multiplier
 
-    elif sensitivity['type'] in ['PowerPlants', 'Fuels', 'Connections']:  # Baseline is excluded (no modifications made)
+    elif sensitivity['type'] in ['PowerPlants', 'Fuels',
+                                 'Connections']:  # Baseline is excluded (no modifications made)
         # -------------------
         # Determine which inputs dictionary entry to modify
         # -------------------
@@ -1171,7 +1199,8 @@ def applyMonteCarlo(inputs, monte_carlo, local):
             if goodValue(local['MinGrowthSeed']):
                 local['MinGrowthSeed'] = monte_carlo['value']
 
-    elif monte_carlo['type'] in ['PowerPlants', 'Fuels', 'Connections']:  # Baseline is excluded (no modifications made)
+    elif monte_carlo['type'] in ['PowerPlants', 'Fuels',
+                                 'Connections']:  # Baseline is excluded (no modifications made)
         # -------------------
         # Determine which inputs dictionary entry to modify
         # -------------------

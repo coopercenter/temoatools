@@ -27,6 +27,7 @@ if __name__ == '__main__':
     modelInputs_XLSX_list = ['data_combined.xlsx']
     scenarioInputs = 'scenarios_emerging_tech.xlsx'
     scenarioNames_list = [['BAU', 'unconstrained', 'emission_limit']]
+    scenarioNames_list = [['BAU']]
     ncpus = 1  # int(os.getenv('NUM_PROCS'))
     solver = ''  # 'gurobi'
 
