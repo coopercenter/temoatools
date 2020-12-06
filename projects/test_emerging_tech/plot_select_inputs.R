@@ -1,9 +1,11 @@
+library(dplyr)
 library(RSQLite)
 library(ggplot2)
 library(scales)
 library(gridExtra)
 library(grid)
 library("ggpubr")
+library(RColorBrewer)
 
 # inputs
 db = 'all.sqlite' # database to analyze, assumed to be in results directory
@@ -13,6 +15,7 @@ db = 'all.sqlite' # database to analyze, assumed to be in results directory
 tech_rename <- c('E_BECCS'="'BECCS'",
                  'E_OCAES'="'OCAES'",
                  'E_PV_DIST_RES'="'Residential solar PV'",
+                 'EC_SOLPV'="'Industrial solar PV'",
                  'E_SCO2'="sCO[2]",
                  'EC_WIND'="'Offshore wind'")
 
@@ -59,7 +62,7 @@ tod_rename <- c('hr01'=1,
                 'hr24'=24)
 
 
-cbPalette <- 
+# cbPalette <- 
 # cbPalette <- c("#E69F00", "#000000",  "#009E73", "#0072B2", "#D55E00", "#CC79A7", "#56B4E9", "#F0E442") # Selected colors
 
 # Column width guidelines https://www.elsevier.com/authors/author-schemas/artwork-and-media-instructions/artwork-sizing
@@ -373,10 +376,12 @@ options(ggplot2.discrete.color = custom_palette)
 options(ggplot2.continuous.color = custom_palette)
 options(ggplot2.continuous.color = custom_palette)
 
-# Normalize demand
-tbl2$dds <- tbl2$dds / max(tbl2$dds)
+# Normalize demand by season
+for (i in 1:length(season_rename)){
+  tbl2[tbl2$season_name == season_rename[i],'dds'] <- tbl2[tbl2$season_name == season_rename[i],'dds'] / max(tbl2[tbl2$season_name == season_rename[i],'dds'])
+}
 # Rename demand columns to match capacity factor table
-tbl2 <- tbl2 %>% rename(tech=demand_name, cf_tech=dds)
+tbl2 <- tbl2 %>% rename(tech='demand_name', cf_tech='dds')
 # Rename entries in demand
 demand_rename = c('ELC_DMD'='Demand')
 tbl2 <- transform(tbl2, tech = demand_rename[as.character(tech)])
