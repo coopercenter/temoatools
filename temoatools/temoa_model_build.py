@@ -677,9 +677,16 @@ def processTech(inputs, local, outputs, tech):
                         (representativeDay, timeOfDay, tech['name'], tech['capacity_factor'], " "))
         # Capacity factor that varies with timeOfday and representativeDay
         else:
+            # select entries that use this fuel
+            df = inputs['capacityFactorTOD'][inputs['capacityFactorTOD'].fuel == tech['fuel']]
+            # calculate current annual capacity factor
+            cf_current = 0.0
+            for day, time_frac in zip(inputs['representativeDays'].representativeDay,
+                                      inputs['representativeDays'].timeFrac):
+                cf_current = cf_current + time_frac * df[df.representativeDay == day].capacityFactor.mean() / 100.0
             for index, row in inputs['capacityFactorTOD'].iterrows():
                 if row['fuel'] == tech['fuel']:
-                    value = row['capacityFactor'] * tech['capacity_factor']
+                    value = (row['capacityFactor'] / 100.0) * tech['capacity_factor'] / cf_current
                     # enforce that value is between 0 and 1
                     if value < 0.0:
                         value = 0.0
@@ -858,6 +865,7 @@ def processTech(inputs, local, outputs, tech):
         outputs['RampDown'].append((tech['name'], str(tech['ramp_rate'])))
 
     return local, outputs
+
 
 # =============================================================================
 # Create Sensitivity Inputs
