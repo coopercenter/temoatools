@@ -26,9 +26,9 @@ if __name__ == '__main__':
     project_path = os.getcwd()
     modelInputs_XLSX_list = ['data_combined.xlsx']
     scenarioInputs = 'scenarios_emerging_tech.xlsx'
-    scenarioNames_list = [['BAU', 'unconstrained', 'emission_limit']]
-    scenarioNames_list = [['BAU']]
-    ncpus = 1  # int(os.getenv('NUM_PROCS'))
+    scenarioNames_list = [['none', 'all', 'BECCS', 'OCAES', 'DIST_PV', 'sCO2']]
+    # scenarioNames_list = [['none']]
+    ncpus = 2  # int(os.getenv('NUM_PROCS'))
     solver = ''  # 'gurobi'
 
     # combine data files
