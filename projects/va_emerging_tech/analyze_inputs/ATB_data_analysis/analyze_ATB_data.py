@@ -84,12 +84,12 @@ for i in range(2):
                     s[output_var] = exponent
 
                 # Plot one validation case for each technology
-                if input_var == 'CAPEX_Moderate':
+                if input_var in ['CAPEX_Advanced', 'CAPEX_Moderate', 'CAPEX_Conservative']:
                     plt.figure()
                     plt.plot(years, df.loc[input_var, :].values, 'k.')
                     fit = df.loc[input_var, 2018] * np.exp(exponent * years)
                     plt.plot(years, fit, 'b--')
-                    save_name = curve_fit_type + '_curve_fit_CAPEX_' + key + '.png'
+                    save_name = curve_fit_type + '_curve_fit_' + input_var + '_' + key + '.png'
                     plt.xlabel('Year')
                     plt.ylabel('CAPEX ($/kW)')
                     plt.ylim(bottom=0.0)
