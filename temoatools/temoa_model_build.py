@@ -707,7 +707,7 @@ def processTech(inputs, local, outputs, tech):
                 if (vintage <= period) and ((period - vintage) < tech['lifetime']):
                     if goodValue(tech['CostFixedIncr']):
                         N = float(period - start_year)
-                        costFixed = tech['cost_fixed'] * (1.0 + tech['CostFixedIncr'] / 100.0) ** N
+                        costFixed = tech['cost_fixed'] * np.exp(N * tech['CostFixedIncr'] / 100.0)
                     else:
                         costFixed = tech['cost_fixed']
                     outputs['CostFixed'].append(
@@ -719,7 +719,7 @@ def processTech(inputs, local, outputs, tech):
         for year in futureBuildYears:
             if goodValue(tech['CostInvestIncr']):
                 N = float(year - start_year)
-                costInvest = tech['cost_invest'] * (1.0 + tech['CostInvestIncr'] / 100.0) ** N
+                costInvest = tech['cost_invest'] * np.exp(N * tech['CostInvestIncr'] / 100.0)
             else:
                 costInvest = tech['cost_invest']
             outputs['CostInvest'].append((tech['name'], str(year), costInvest, "M USD/GW", " "))
@@ -732,7 +732,7 @@ def processTech(inputs, local, outputs, tech):
                 if (vintage <= period) and ((period - vintage) < tech['lifetime']):
                     if goodValue(tech['CostVariableIncr']):
                         N = float(period - start_year)
-                        costVar = tech['cost_variable'] * (1.0 + tech['CostVariableIncr'] / 100.0) ** N
+                        costVar = tech['cost_variable'] * np.exp(N * tech['CostVariableIncr'] / 100.0)
                     else:
                         costVar = tech['cost_variable']
                     outputs['CostVariable'].append(

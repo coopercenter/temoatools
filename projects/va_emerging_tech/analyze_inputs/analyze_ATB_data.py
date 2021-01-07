@@ -8,6 +8,16 @@ import matplotlib.pyplot as plt
 # "2020 Annual Technology Baseline." Golden, CO:
 # National Renewable Energy Laboratory. https://atb.nrel.gov/.
 
+# Inputs:
+# CAPEX [$/kW]
+# Fixed O&M [$/kW-yr]
+# Variable O&M [$/MWH]
+
+# Outputs:
+# CAPEX [$/kW]
+# Fixed O&M [$/kW-yr]
+# Variable O&M [M$/PJ]
+# rates [fraction]
 
 # Exponential curve fit with intercept of 1.0
 def func(x, a):
@@ -48,7 +58,7 @@ for key in data.keys():
     s['Technology'] = key
     s['CAPEX_2018'] = df.loc['CAPEX_Moderate', 2018]
     s['FixedOM_2018'] = df.loc['FixedOM_Moderate', 2018]
-    s['VariableOM_2018'] = df.loc['VariableOM_Moderate', 2018]
+    s['VariableOM_2018'] = df.loc['VariableOM_Moderate', 2018] * 0.000001 * 277777.7778 # convert $/MWh to M$/PJ
 
     input_vars = ['CAPEX_Advanced', 'CAPEX_Moderate', 'CAPEX_Conservative',
                   'FixedOM_Advanced', 'FixedOM_Moderate', 'FixedOM_Conservative',
@@ -68,16 +78,14 @@ for key in data.keys():
                 plt.plot(years, df.loc[input_var, :].values, 'k.')
                 fit = df.loc[input_var, 2018] * np.exp(popt[0] * years)
                 plt.plot(years, fit, 'b--')
-                save_name = 'validation_CAPEX_' + key + '.png'
+                save_name = 'curve_fit_CAPEX_' + key + '.png'
                 plt.xlabel('Year')
                 plt.ylabel('CAPEX ($/kW)')
+                plt.ylim(bottom=0.0)
                 plt.savefig(save_name)
                 plt.close()
         else:
             s[output_var] = 0.0
-
-
-
 
     # save output
     output = output.append(s, ignore_index=True)
