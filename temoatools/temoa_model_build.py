@@ -495,7 +495,8 @@ def processFuels(inputs, local, outputs):
         tech['Ref_DiscountRate'] = None
 
         # Constraints
-        tech['max_capacity'] = None
+        tech['max_capacity'] = inputs['Fuels'].loc[
+                                   techType, 'MaxCapacity'] / 1000.0  # Convert from MW to GW
         tech['max_activity'] = inputs['Fuels'].loc[techType, 'MaxActivity']
         tech['ramp_rate'] = None
         tech['Retirement'] = inputs['Fuels'].loc[techType, 'Retirement']
