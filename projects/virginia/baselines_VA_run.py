@@ -27,7 +27,7 @@ if __name__ == '__main__':
     modelInputs_XLSX_list = ['data_virginia.xlsx']
     scenarioInputs = 'scenarios_multiple.xlsx'
     scenarioNames_list = [['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']]
-    ncpus = 2  # int(os.getenv('NUM_PROCS'))
+    ncpus = 1  # int(os.getenv('NUM_PROCS'))
     solver = ''  # 'gurobi'
 
     for modelInputs_XLSX, scenarioNames in zip(modelInputs_XLSX_list, scenarioNames_list):

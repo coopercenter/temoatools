@@ -425,8 +425,7 @@ def processPowerPlants(inputs, local, outputs):
         tech['Ref_DiscountRate'] = inputs['PowerPlantsCosts'].loc[techType, 'Ref_DiscountRate']
 
         # Constraints
-        tech['max_capacity'] = inputs['PowerPlantsConstraints'].loc[
-                                   techType, 'MaxCapacity'] / 1000.0  # Convert from MW to GW
+        tech['max_capacity'] = inputs['PowerPlantsConstraints'].loc[techType, 'MaxCapacity']
         tech['max_activity'] = inputs['PowerPlantsConstraints'].loc[techType, 'MaxActivity']
         tech['ramp_rate'] = inputs['PowerPlantsConstraints'].loc[techType, 'RampRate']
         tech['Retirement'] = None
@@ -439,7 +438,7 @@ def processPowerPlants(inputs, local, outputs):
         for index, row in inputs['PowerPlantsExisting'].iterrows():
             if row['powerplant'] == techType:
                 tech['existing_capacity_year'].append(row['YearInstalled'])
-                tech['existing_capacity_rating'].append(row['Capacity'] / 1000.0)  # Convert from MW to GW
+                tech['existing_capacity_rating'].append(row['Capacity'])
 
         # Update outputs for this technology
         local, outputs = processTech(inputs, local, outputs, tech)
@@ -495,8 +494,7 @@ def processFuels(inputs, local, outputs):
         tech['Ref_DiscountRate'] = None
 
         # Constraints
-        tech['max_capacity'] = inputs['Fuels'].loc[
-                                   techType, 'MaxCapacity'] / 1000.0  # Convert from MW to GW
+        tech['max_capacity'] = inputs['Fuels'].loc[techType, 'MaxCapacity']
         tech['max_activity'] = inputs['Fuels'].loc[techType, 'MaxActivity']
         tech['ramp_rate'] = None
         tech['Retirement'] = inputs['Fuels'].loc[techType, 'Retirement']
@@ -509,7 +507,7 @@ def processFuels(inputs, local, outputs):
         for index, row in inputs['FuelsExisting'].iterrows():
             if row['fuel'] == techType:
                 tech['existing_capacity_year'].append(row['YearInstalled'])
-                tech['existing_capacity_rating'].append(row['Capacity'] / 1000.0)  # Convert from MW to GW
+                tech['existing_capacity_rating'].append(row['Capacity'])
 
         # Update outputs for this technology
         local, outputs = processTech(inputs, local, outputs, tech)
@@ -578,7 +576,7 @@ def processConnections(inputs, local, outputs):
         for index, row in inputs['ConnectionsExisting'].iterrows():
             if row['connection'] == techType:
                 tech['existing_capacity_year'].append(row['YearInstalled'])
-                tech['existing_capacity_rating'].append(row['Capacity'] / 1000.0)  # Convert from MW to GW
+                tech['existing_capacity_rating'].append(row['Capacity'])
 
         # Update outputs for this technology
         local, outputs = processTech(inputs, local, outputs, tech)
@@ -702,12 +700,15 @@ def processTech(inputs, local, outputs, tech):
 
     # CostFixed
     if goodValue(tech['cost_fixed']):
-        start_year = local['active_future_periods'][0]
+        if goodValue(tech['FirstBuild']):
+            start_year = tech['FirstBuild']
+        else:
+            start_year = local['active_future_periods'][0]
         for period in local['active_future_periods']:
             for vintage in buildYears:
                 if (vintage <= period) and ((period - vintage) < tech['lifetime']):
                     if goodValue(tech['CostFixedIncr']):
-                        N = float(period - first_build_year)
+                        N = float(period - start_year)
                         costFixed = tech['cost_fixed'] * np.exp(N * tech['CostFixedIncr'] / 100.0)
                     else:
                         costFixed = tech['cost_fixed']
@@ -716,10 +717,13 @@ def processTech(inputs, local, outputs, tech):
 
     # CostInvest
     if goodValue(tech['cost_invest']):
-        start_year = local['active_future_periods'][0]
+        if goodValue(tech['FirstBuild']):
+            start_year = tech['FirstBuild']
+        else:
+            start_year = local['active_future_periods'][0]
         for year in futureBuildYears:
             if goodValue(tech['CostInvestIncr']):
-                N = float(year - first_build_year)
+                N = float(year - start_year)
                 costInvest = tech['cost_invest'] * np.exp(N * tech['CostInvestIncr'] / 100.0)
             else:
                 costInvest = tech['cost_invest']
@@ -727,12 +731,15 @@ def processTech(inputs, local, outputs, tech):
 
     # CostVariable
     if goodValue(tech['cost_variable']):
-        start_year = local['active_future_periods'][0]
+        if goodValue(tech['FirstBuild']):
+            start_year = tech['FirstBuild']
+        else:
+            start_year = local['active_future_periods'][0]
         for period in local['active_future_periods']:
             for vintage in buildYears:
                 if (vintage <= period) and ((period - vintage) < tech['lifetime']):
                     if goodValue(tech['CostVariableIncr']):
-                        N = float(period - first_build_year)
+                        N = float(period - start_year)
                         costVar = tech['cost_variable'] * np.exp(N * tech['CostVariableIncr'] / 100.0)
                     else:
                         costVar = tech['cost_variable']
@@ -764,6 +771,7 @@ def processTech(inputs, local, outputs, tech):
     exist_cap = 0  # Keep track of current capacity, growthrate_seed must be equal to or greater than this
     for vintage, capacity in zip(tech['existing_capacity_year'], tech['existing_capacity_rating']):
         if min(local['active_future_periods']) - vintage < tech['lifetime']:  # Prevent including if already retired
+            capacity = capacity / 1000.0  # Convert from MW to GW
             outputs['ExistingCapacity'].append((tech['name'], vintage, capacity, "GW", " "))
             exist_cap = exist_cap + capacity
 
@@ -814,17 +822,18 @@ def processTech(inputs, local, outputs, tech):
     # MaxCapacity
     if goodValue(tech['max_capacity']):
         for period in active_future_periods_con:
-            outputs['MaxCapacity'].append((str(period), tech['name'], tech['max_capacity'], "GW", " "))
+            max_capacity = tech['max_capacity'] / 1000.0  # Convert from MW to GW
+            outputs['MaxCapacity'].append((str(period), tech['name'], max_capacity, "GW", " "))
 
     # MinCapacity
     if local['include_min_capacity_limit'] == 'Y':
         if tech['name'] in list(inputs['MinCapacity'].Technology):
             df = inputs['MinCapacity']
             dfx = df[df.loc[:, 'Technology'] == tech['name']]
-            for period, MinCapacity, in zip(dfx.Year, dfx.MinCapacity):
+            for period, min_capacity, in zip(dfx.Year, dfx.MinCapacity):
                 if period in active_future_periods_con:
-                    MinCapacity = MinCapacity / 1000.0  # Convert from MW to GW
-                    outputs['MinCapacity'].append((str(period), tech['name'], MinCapacity, "GW", " "))
+                    min_capacity = min_capacity / 1000.0  # Convert from MW to GW
+                    outputs['MinCapacity'].append((str(period), tech['name'], min_capacity, "GW", " "))
 
     # MaxActivity (also used to enforce retirement)
     # Dual constraint
