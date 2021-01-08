@@ -1,1 +1,0 @@
-# Project files for the Virginia Emerging Technologies (VET) Project
