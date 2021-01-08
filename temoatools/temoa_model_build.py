@@ -32,7 +32,7 @@ temoaTables = [('commodities', 3), ('technologies', 5), ('tech_baseload', 1),
                ('GlobalDiscountRate', 1), ('GrowthRateMax', 3), ('GrowthRateSeed', 4),
                ('RampUp', 2), ('RampDown', 2), ('ReserveMargin', 2), ('SegFrac', 4),
                ('StorageDuration', 3),
-               ('MinGenGroupOfTechnologies_Data', 3), ('MinGenGroupOfTechnologies', 4), ('CapacityCredit', 2)]
+               ('MinGenGroupOfTechnologies_Data', 3), ('MinGenGroupOfTechnologies', 4), ('CapacityCredit', 3)]
 
 # =============================================================================
 # Hard coded inputs
@@ -398,8 +398,9 @@ def processPowerPlants(inputs, local, outputs):
         tech['renewable'] = inputs['PowerPlants'].loc[techType, 'renewable']
         tech['storage'] = inputs['PowerPlants'].loc[techType, 'storage']
         tech['sector'] = 'electric'
-        tech['CapacityCredit'] = inputs['PowerPlants'].loc[techType, 'CapacityCredit']
         tech['StorageDuration'] = inputs['PowerPlants'].loc[techType, 'StorageDuration']
+        tech['CapacityCredit'] = inputs['PowerPlants'].loc[techType, 'CapacityCredit']
+        tech['CapacityCreditIncr'] = inputs['PowerPlants'].loc[techType, 'CapacityCreditIncr']
 
         tech['c2a'] = 'Y'  # Indicator whether to include a capacity to activity input, only needed for powerplants
 
@@ -472,7 +473,9 @@ def processFuels(inputs, local, outputs):
         tech['renewable'] = 'N'
         tech['storage'] = 'N'
         tech['sector'] = 'supply'
+        tech['StorageDuration'] = None
         tech['CapacityCredit'] = None
+        tech['CapacityCreditIncr'] = None
 
         tech['c2a'] = 'Y'  # Indicator whether to include a capacity to activity input, only needed for powerplants
 
@@ -541,7 +544,9 @@ def processConnections(inputs, local, outputs):
         tech['renewable'] = 'N'
         tech['storage'] = 'N'
         tech['sector'] = 'transport'
+        tech['StorageDuration'] = None
         tech['CapacityCredit'] = None
+        tech['CapacityCreditIncr'] = None
 
         tech['c2a'] = 'Y'  # Indicator whether to include a capacity to activity input, only needed for powerplants
 
@@ -659,7 +664,17 @@ def processTech(inputs, local, outputs, tech):
     # --------
     # CapacityCredit
     if goodValue(tech['CapacityCredit']):
-        outputs['CapacityCredit'].append((tech['name'], tech['CapacityCredit']))
+        if goodValue(tech['FirstBuild']):
+            start_year = tech['FirstBuild']
+        else:
+            start_year = local['active_future_periods'][0]
+        for year in futureBuildYears:
+            if goodValue(tech['CapacityCreditIncr']):
+                N = float(year - start_year)
+                capacity_credit = tech['CapacityCredit'] * np.exp(N * tech['CapacityCreditIncr'] / 100.0)
+            else:
+                capacity_credit = tech['CapacityCredit']
+            outputs['CapacityCredit'].append((str(year), tech['name'], capacity_credit))
 
     # CapacityToActivity
     if tech['c2a'] == 'Y':
