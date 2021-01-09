@@ -44,7 +44,7 @@ if __name__ == '__main__':
 
         # ====================================
         # Perform Simulations
-        option = 1  # 1 - Run single, 2 - Run all
+        option = 2  # 1 - Run single, 2 - Run all
         # ====================================
 
         if option == 1:

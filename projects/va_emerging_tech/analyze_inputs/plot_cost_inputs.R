@@ -14,34 +14,34 @@ db = 'all.sqlite' # database to analyze, assumed to be in results directory
 # This is order that items will be plotted, only items included will be plotted
 tech_rename <- c(
   'E_BECCS'="'Bioenergy with CCS (BECCS)'",
-  'EC_PUMP'="'Pumped Hydro Storage'",
+  'EC_PUMP'="'Pumped Hydro Storage (12 hour)'",
   'EC_COAL'="'Coal'",
   'E_BIO'="'Biomass'",
   'E_SCO2'="'Natural Gas with CCS - sCO'[2]",
   'EF_WIND'="'Offshore Wind - Floating'",
   'EC_WIND'="'Offshore Wind - Fixed bottom'",
-  'E_OCAES'="'Offshore CAES'",
+  'E_OCAES'="'Offshore CAES (24 hour)'",
   'EC_NG_CC'="'Natural Gas and Oil Combined Cycle'",
   'EC_NG_OC'="'Natural Gas Turbine'",
   'E_PV_DIST_RES'="'Solar PV - Residential'",
   'ED_SOLPV'="'Solar PV - Commercial'",
   'EC_SOLPV'="'Solar PV - Utility'",
-  'EC_BATT'="'Battery'")
+  'EC_BATT'="'Battery (4 hour)'")
 
 h <- hash()
 h[['E_BECCS']] <- c('green', 'solid')
 h[['EC_PUMP']] <- c('pink', 'solid')
 h[['EC_COAL']] <- c('black', 'solid')
 h[['E_BIO']] <- c('green', 'dashed')
-h[['E_SCO2']] <- c('red', 'solid')
+h[['E_SCO2']] <- c('red', 'dotted')
 h[['EF_WIND']] <- c('darkblue', 'solid')
 h[['EC_WIND']] <- c('darkblue', 'dashed')
 h[['E_OCAES']] <- c('lightblue', 'solid')
-h[['EC_NG_CC']] <- c('red', 'dashed')
-h[['EC_NG_OC']] <- c('red', 'dotted')
-h[['E_PV_DIST_RES']] <- c('orange', 'solid')
-h[['ED_SOLPV']] <- c('orange', 'dashed')
-h[['EC_SOLPV']] <- c('orange', 'dotted')
+h[['EC_NG_CC']] <- c('red', 'solid')
+h[['EC_NG_OC']] <- c('red', 'dashed')
+h[['E_PV_DIST_RES']] <- c('orange', 'dotted')
+h[['ED_SOLPV']] <- c('orange', 'solid')
+h[['EC_SOLPV']] <- c('orange', 'dashed')
 h[['EC_BATT']] <- c('gray', 'solid')
 
 colors <- hash()

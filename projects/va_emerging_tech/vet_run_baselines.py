@@ -26,13 +26,12 @@ if __name__ == '__main__':
     project_path = os.getcwd()
     modelInputs_XLSX_list = ['data_combined.xlsx']
     scenarioInputs = 'scenarios_emerging_tech.xlsx'
-    scenarioNames_list = [['none', 'all', 'BECCS', 'OCAES', 'DIST_PV', 'sCO2']]
-    # scenarioNames_list = [['none']]
-    ncpus = 2  # int(os.getenv('NUM_PROCS'))
+    scenarioNames_list = [['all', 'none', 'BECCS', 'OCAES', 'DIST_PV', 'sCO2']]
+    ncpus = 1  # int(os.getenv('NUM_PROCS'))
     solver = ''  # 'gurobi'
 
     # combine data files
-    tt.combine(project_path=project_path, primary='data_virginia.xlsx',
+    tt.combine(project_path=project_path, primary='data_va.xlsx',
                data_files=['data_emerging_tech.xlsx', 'data_H2_VFB.xlsx'],
                output='data_combined.xlsx')
 
@@ -55,7 +54,7 @@ if __name__ == '__main__':
 
         if option == 1:
             # Perform single simulation
-            evaluateModel(modelInputs, scenarioInputs, scenarioNames[0], temoa_path)
+            evaluateModel(modelInputs, scenarioInputs, scenarioNames[0], temoa_path, project_path, solver)
 
         elif option == 2:
             # Perform simulations in parallel

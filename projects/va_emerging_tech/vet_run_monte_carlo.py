@@ -71,12 +71,12 @@ if __name__ == '__main__':
     project_path = os.getcwd()
     modelInputs_XLSX = 'data_combined.xlsx'
     scenarioInputs = 'scenarios_emerging_tech.xlsx'
-    scenarioNames = ['emission_limit']
+    scenarioNames = ['all']
     monte_carlo_inputs = 'monte_carlo_inputs.xlsx'
-    monte_carlo_case = 'case1'
+    monte_carlo_case = 'all'
     ncpus = 1  # default, unless otherwise specified in sbatch script
     solver = ''  # leave blank to let temoa decide which solver to use of those installed
-    iterations = 10
+    iterations = 100
 
     # =======================================================
     # begin script
@@ -87,7 +87,7 @@ if __name__ == '__main__':
         ncpus = ncpus  # otherwise default to this number of cores
 
     # combine data files
-    tt.combine(project_path=project_path, primary='data_virginia.xlsx',
+    tt.combine(project_path=project_path, primary='data_va.xlsx',
                data_files=['data_emerging_tech.xlsx', 'data_H2_VFB.xlsx'],
                output='data_combined.xlsx')
 

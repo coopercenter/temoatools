@@ -78,7 +78,7 @@ if __name__ == '__main__':
     project_path = os.getcwd()
     modelInputs_XLSX = 'data_combined.xlsx'
     scenarioInputs = 'scenarios_emerging_tech.xlsx'
-    scenarioNames = ['emission_limit']
+    scenarioNames = ['all']
     sensitivityInputs = 'sensitivityVariables_emerging_tech.xlsx'
     sensitivityMultiplier = 10.0  # percent perturbation
     ncpus = 1   # default, unless otherwise specified in sbatch script
@@ -93,7 +93,7 @@ if __name__ == '__main__':
         ncpus = ncpus  # otherwise default to this number of cores
 
     # combine data files
-    tt.combine(project_path=project_path, primary='data_virginia.xlsx',
+    tt.combine(project_path=project_path, primary='data_va.xlsx',
                data_files=['data_emerging_tech.xlsx', 'data_H2_VFB.xlsx'],
                output='data_combined.xlsx')
 
