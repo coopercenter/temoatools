@@ -1136,7 +1136,7 @@ def applySensitivity(inputs, sensitivity, local):
                 entryName = 'PowerPlantsConstraints'
 
             # PowerPlants
-            elif sensitivity['variable'] in ['CapacityCredit', 'StorageDuration']:
+            elif sensitivity['variable'] in ['StorageDuration', 'CapacityCredit', 'CapacityCreditIncr']:
                 entryName = 'PowerPlants'
 
                 # Fuels
