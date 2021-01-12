@@ -17,7 +17,6 @@ sectorName = 'electric'  # Name of sector to be analyzed
 yearlyCosts, LCOE = tt.getCosts(folder, dbs, save_data=saveData, create_plots=createPlots)
 
 # Emissions
-
 yearlyEmissions, avgEmissions = tt.getEmissions(folder, dbs, save_data=saveData, create_plots=createPlots)
 
 if not onlySimple:

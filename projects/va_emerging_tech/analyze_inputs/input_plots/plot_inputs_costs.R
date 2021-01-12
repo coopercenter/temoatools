@@ -17,13 +17,13 @@ tech_rename <- c(
   'EC_PUMP'="'Pumped Hydro Storage (12 hour)'",
   'EC_COAL'="'Coal'",
   'E_BIO'="'Biomass'",
-  'E_SCO2'="'Natural Gas with CCS - sCO'[2]",
   'EF_WIND'="'Offshore Wind - Floating'",
   'EC_WIND'="'Offshore Wind - Fixed bottom'",
+  'E_SCO2'="'Natural Gas with CCS - sCO'[2]",
   'E_OCAES'="'Offshore CAES (24 hour)'",
   'EC_NG_CC'="'Natural Gas and Oil Combined Cycle'",
-  'EC_NG_OC'="'Natural Gas Turbine'",
   'E_PV_DIST_RES'="'Solar PV - Residential'",
+  'EC_NG_OC'="'Natural Gas Turbine'",
   'ED_SOLPV'="'Solar PV - Commercial'",
   'EC_SOLPV'="'Solar PV - Utility'",
   'EC_BATT'="'Battery (4 hour)'")
@@ -44,6 +44,7 @@ h[['ED_SOLPV']] <- c('orange', 'solid')
 h[['EC_SOLPV']] <- c('orange', 'dashed')
 h[['EC_BATT']] <- c('gray', 'solid')
 
+# http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/
 colors <- hash()
 colors[['black']] <- "#000000"
 colors[['gray']] <- "#999999"
@@ -54,16 +55,20 @@ colors[['yellow']] <- "#F0E442"
 colors[['darkblue']] <- "#0072B2"
 colors[['red']] <- "#D55E00"
 colors[['pink']] <- "#CC79A7"
+colors[['brown']] <- "#993300"
 
 
-# tech_palette  <- c("#E69F00", "#000000", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7") # Set manually
 # tech_palette <- brewer.pal(n=length(tech_rename),name="Set1") # Use a predefined a palette https://www.datanovia.com/en/blog/top-r-color-palettes-to-know-for-great-data-visualization/
 #tech_palette <- colorRampPalette(brewer.pal(8, "Set1"))(length(tech_rename)) # Use a predefined a palette https://www.datanovia.com/en/blog/easy-way-to-expand-color-palettes-in-r/
 
+fuel_rename <- c('IMPOIL'="'Oil'",
+                 'IMPNATGAS'="'Natural gas'",
+                 'IMPBIO'="'Biomass'",
+                 'IMPCOAL'="'Coal'",
+                 'IMPNUCLEAR'="'Nuclear'")
+fuel_palette <- c(colors[['brown']], colors[['red']], colors[['green']], colors[['black']], colors[['pink']])
 
-# cbPalette <- 
-# cbPalette <- c("#E69F00", "#000000",  "#009E73", "#0072B2", "#D55E00", "#CC79A7", "#56B4E9", "#F0E442") # Selected colors
-
+ 
 # Column width guidelines https://www.elsevier.com/authors/author-schemas/artwork-and-media-instructions/artwork-sizing
 # Single column: 90mm = 3.54 in
 # 1.5 column: 140 mm = 5.51 in
@@ -74,11 +79,11 @@ colors[['pink']] <- "#CC79A7"
 # ======================== #
 dir_work = dirname(rstudioapi::getSourceEditorContext()$path)
 setwd(dir_work)
-setwd('../databases')
+setwd('../../databases')
 
 # connect to database
 con <- dbConnect(SQLite(),db)
-setwd('../analyze_inputs')
+setwd(dir_work)
 
 # -------------------------
 # process tech_rename, hash, and colors
@@ -101,6 +106,14 @@ for (i in 1:length(tech_rename)) {
   line_styles <- c(line_styles, line_style)
 }
 
+temp <- as.list(fuel_rename)
+fuel_list <- c()
+fuel_levels <- c()
+for (i in 1:length(fuel_rename)) {
+  fuel_list <- c(fuel_list, names(temp[i]))
+  fuel_levels <- c(fuel_levels, temp[[i]])
+}
+
 # Set color palette
 options(ggplot2.discrete.fill = tech_palette)
 options(ggplot2.discrete.color = tech_palette)
@@ -110,7 +123,7 @@ options(ggplot2.continuous.color = tech_palette)
 # -------------------------
 # Power Plant Investment Costs
 table = 'CostInvest'
-savename = 'Inputs_PowerPlants_InvestmentCosts.pdf'
+savename = 'Inputs_PowerPlants_InvestmentCosts.png'
 # -------------------------
 
 # read-in data
@@ -123,7 +136,7 @@ tbl$tech <- factor(tbl$tech,levels = tech_levels) # Plot series in specified ord
 names(tbl)[names(tbl) == "tech"] <- "Technologies" # rename column
 
 # plot
-ggplot(data=tbl, aes_string(x='vintage',y='cost_invest',color='Technologies',linetype='Technologies'))+
+plot_CAPEX <- ggplot(data=tbl, aes_string(x='vintage',y='cost_invest',color='Technologies',linetype='Technologies'))+
   geom_line()+
   scale_linetype_manual(values=line_styles,labels=parse_format())+
   scale_color_manual(values=tech_palette,labels=parse_format())+
@@ -134,13 +147,13 @@ ggplot(data=tbl, aes_string(x='vintage',y='cost_invest',color='Technologies',lin
       legend.key = element_rect(colour = "transparent", fill = "white"))
 
 # save
-ggsave(savename, device="pdf", width=7.48, height=5.5, units="in",dpi=300)
+# ggsave(savename, device="png", width=7.48, height=5.5, units="in",dpi=300)
 
 
 # -------------------------
 # Power Plant Variable Costs
 table = 'CostVariable'
-savename = 'Inputs_PowerPlants_VariableCosts.pdf'
+savename = 'Inputs_PowerPlants_VariableCosts.png'
 conversion = 277.777778 # M$/PJ to $/kWh
 # -------------------------
 
@@ -166,13 +179,13 @@ ggplot(data=tbl, aes_string(x='periods',y='cost_variable',color='Technologies',l
         legend.key = element_rect(colour = "transparent", fill = "white"))
 
 # save
-ggsave(savename, device="pdf", width=7.48, height=5.5, units="in",dpi=300)
+ggsave(savename, device="png", width=7.48, height=5.5, units="in",dpi=300)
 
 
 # -------------------------
 # Power Plant Fixed Costs
 table = 'CostFixed'
-savename = 'Inputs_PowerPlants_FixedCosts.pdf'
+savename = 'Inputs_PowerPlants_FixedCosts.png'
 # -------------------------
 
 # read-in data
@@ -195,7 +208,56 @@ ggplot(data=tbl, aes_string(x='periods',y='cost_fixed',color='Technologies',line
         legend.background=element_rect(fill = alpha("white", 0)),
         legend.key = element_rect(colour = "transparent", fill = "white"))
 # save
-ggsave(savename, device="pdf", width=7.48, height=5.5, units="in",dpi=300)
+ggsave(savename, device="png", width=7.48, height=5.5, units="in",dpi=300)
+
+# -------------------------
+# Fuel Costs
+table = 'CostVariable'
+savename = 'Inputs_Fuels_VariableCosts.png'
+# -------------------------
+
+# Set color palette
+options(ggplot2.discrete.fill = fuel_palette)
+options(ggplot2.discrete.color = fuel_palette)
+options(ggplot2.continuous.color = fuel_palette)
+options(ggplot2.continuous.color = fuel_palette)
+
+# read-in data
+tbl <- dbReadTable(con, table)
+
+# process data
+tbl <- tbl[tbl$tech %in% fuel_list, ]
+tbl <- transform(tbl, tech = fuel_rename[as.character(tech)])
+tbl$tech <- factor(tbl$tech,levels = fuel_levels)
+
+# plot
+plot_Fuels <- ggplot(data=tbl, aes_string(x='periods',y='cost_variable',color='tech'))+
+  geom_line()+
+  scale_colour_discrete(labels=parse_format())+
+  labs(x='Year (-)', y=expression(paste("Cost (US$ MJ"^-1,")")),
+       col='Fuels')+
+  theme(panel.background = element_rect(fill = NA, colour ="black"),
+        panel.border = element_rect(linetype="solid", fill=NA),
+        legend.background=element_rect(fill = alpha("white", 0)),
+        legend.key = element_rect(colour = "transparent", fill = "white"))
+
+# save
+# ggsave(savename, device="png", width=3.54, height=3.54, units="in",dpi=300)
+
+
+# --------------------------
+# combine technology inputs into single figure
+# https://www.datanovia.com/en/lessons/combine-multiple-ggplots-into-a-figure/
+# --------------------------
+ggarrange(plot_CAPEX, plot_Fuels, nrow=2, ncol=1, heights = c(2.5,1), align="v")
+
+
+# grid.newpage()
+# grid.arrange( ggplotGrob(plot_CAPEX), ggplotGrob(plot_Fuels), nrow=1, ncol=2, widths=c(2,1))
+
+# save
+savename = 'Inputs_Overview.png'
+ggsave(savename, device="png", width=7.48, height=7.0, units="in",dpi=500)
 
 # -------------------------
 # finish program and tidy up

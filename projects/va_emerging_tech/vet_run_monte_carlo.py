@@ -71,7 +71,7 @@ if __name__ == '__main__':
     project_path = os.getcwd()
     modelInputs_XLSX = 'data_combined.xlsx'
     scenarioInputs = 'scenarios_emerging_tech.xlsx'
-    scenarioNames = ['all']
+    scenarioNames = ['all', 'none', 'BECCS', 'OCAES', 'DIST_PV', 'sCO2']
     monte_carlo_inputs = 'monte_carlo_inputs.xlsx'
     monte_carlo_case = 'all'
     ncpus = 1  # default, unless otherwise specified in sbatch script
