@@ -34,9 +34,10 @@ import temoatools as tt
 # =======================================================
 # Function to evaluate a single model
 # =======================================================
-def evaluateMonteCarlo(modelInputs, scenarioXLSX, scenarioName, temoa_path, project_path, solver, cases, caseNum):
+def evaluateMonteCarlo(modelInputs, scenarioXLSX, scenarioName, monte_carlo_case, temoa_path, project_path, solver,
+                       cases, caseNum):
     # Unique filename
-    model_filename = scenarioName + '_MC_' + str(caseNum)
+    model_filename = 'MC_' + monte_carlo_case + '_' + scenarioName + '_' + str(caseNum)
 
     # Prepare monte carlo inputs
     cols = ['type', 'variable', 'tech', caseNum]
@@ -70,10 +71,10 @@ if __name__ == '__main__':
     temoa_path = os.path.abspath('../../temoa-energysystem')
     project_path = os.getcwd()
     modelInputs_XLSX = 'data_combined.xlsx'
-    scenarioInputs = 'scenarios_emerging_tech.xlsx'
-    scenarioNames = ['all', 'none', 'BECCS', 'OCAES', 'DIST_PV', 'sCO2']
     monte_carlo_inputs = 'monte_carlo_inputs.xlsx'
-    monte_carlo_case = 'all'
+    monte_carlo_cases = ['biomass', 'default']  # each case corresponds with a list in scenarioNames
+    scenarioInputs = 'scenarios_emerging_tech.xlsx'
+    scenarioNames = [['all'], ['all', 'none', 'BECCS', 'OCAES', 'DIST_PV', 'sCO2']]
     ncpus = 1  # default, unless otherwise specified in sbatch script
     solver = ''  # leave blank to let temoa decide which solver to use of those installed
     iterations = 100
@@ -106,29 +107,29 @@ if __name__ == '__main__':
     # Perform Simulations
     # ====================================
 
-    for scenarioName in scenarioNames:
-        # Create monte carlo cases
-        os.chdir(os.path.join(project_path, 'data'))
-        cases = tt.createMonteCarloCases_distributions(monte_carlo_inputs, monte_carlo_case, iterations)
-        os.chdir(project_path)
+    for monte_carlo_case, scenarioNames_list in zip(monte_carlo_cases, scenarioNames):
+        for scenarioName in scenarioNames_list:
+            # Create monte carlo cases
+            os.chdir(os.path.join(project_path, 'data'))
+            cases = tt.createMonteCarloCases_distributions(monte_carlo_inputs, monte_carlo_case, iterations)
+            os.chdir(project_path)
 
-        # Save cases
-        os.chdir(os.path.join(project_path, mc_dir))
-        cases.to_csv('MonteCarloInputs_' + scenarioName + '.csv', index=False)
-        os.chdir(project_path)
+            # Save cases
+            os.chdir(os.path.join(project_path, mc_dir))
+            cases.to_csv('MonteCarloInputs_' + monte_carlo_case + '_' + scenarioName + '.csv', index=False)
+            os.chdir(project_path)
 
-        # Perform simulations in parallel
-        with parallel_backend('multiprocessing', n_jobs=ncpus):
-            outputs = Parallel(n_jobs=ncpus, verbose=5)(
-                delayed(evaluateMonteCarlo)(modelInputs, scenarioInputs, scenarioName, temoa_path, project_path, solver,
-                                            cases,
-                                            caseNum) for
-                caseNum in range(iterations))
+            # Perform simulations in parallel
+            with parallel_backend('multiprocessing', n_jobs=ncpus):
+                outputs = Parallel(n_jobs=ncpus, verbose=5)(
+                    delayed(evaluateMonteCarlo)(modelInputs, scenarioInputs, scenarioName, monte_carlo_case, temoa_path,
+                                                project_path,
+                                                solver, cases, caseNum) for caseNum in range(iterations))
 
-        # Save results to a csv
-        os.chdir(os.path.join(project_path, mc_dir))
-        df = pd.DataFrame()
-        for output in outputs:
-            df = df.append(output, ignore_index=True)
-        df.to_csv('MonteCarloResults_' + scenarioName + '.csv')
-        os.chdir(project_path)
+            # Save results to a csv
+            os.chdir(os.path.join(project_path, mc_dir))
+            df = pd.DataFrame()
+            for output in outputs:
+                df = df.append(output, ignore_index=True)
+            df.to_csv('MonteCarloResults_' + monte_carlo_case + '_' + scenarioName + '.csv')
+            os.chdir(project_path)

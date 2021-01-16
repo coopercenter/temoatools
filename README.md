@@ -8,9 +8,9 @@ parallelization libraries.
 
 More details:
 1) temoatools simplifying assumptions
-    - the following costs do not change with time
+    - Costs change over time following an exponential growth/decline curve using a user-specified rate of change
         - fixed costs
-        - variable costs
+        - variable costs (including fuel costs)
         - capital costs
     - demand is only for a single sector
 
