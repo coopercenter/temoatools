@@ -8,59 +8,12 @@ library("ggpubr")
 library(dplyr)
 
 # inputs
-csv = 'MonteCarloResults_all.csv' # database to analyze, assumed to be in monte_carlo directory
+csv = 'combined_results.csv' # database to analyze, assumed to be in monte_carlo directory
 
 
-# This is order that items will be plotted, only items included will be plotted
-tech_rename <- c('E_BECCS'="'BECCS'",
-                 'E_OCAES'="'OCAES'",
-                 'E_PV_DIST_RES'="'Residential solar PV'",
-                 'E_SCO2'="sCO[2]")
 
 
-# tech_palette  <- c("#E69F00", "#000000", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7") # Set manually
-tech_palette <- brewer.pal(n=length(tech_rename),name="Set1") # Use a predefined a palette https://www.datanovia.com/en/blog/top-r-color-palettes-to-know-for-great-data-visualization/
-# display.brewer.pal(n=length(tech_rename),name="Set1")
-
-fuel_rename <- c('IMPBIOMASS'="'Biomass'",
-                 'IMPNATGAS'="'Natural gas'")
-# fuel_palette  <- c("#000000", "#000000", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7") # Set manually
-fuel_palette <- brewer.pal(n=length(fuel_rename),name="Set1") # predefined palette # http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/
-
-season_rename <- c('fall'='Fall',
-  'winter'='Winter',
-  'winter2'='Winter 2',
-  'spring'='Spring',
-  'summer'='Summer',
-  'summer2'='Summer 2')
-
-tod_rename <- c('hr01'=1,
-                'hr02'=2,
-                'hr03'=3,
-                'hr04'=4,
-                'hr05'=5,
-                'hr06'=6,
-                'hr07'=7,
-                'hr08'=8,
-                'hr09'=9,
-                'hr10'=10,
-                'hr11'=11,
-                'hr12'=12,
-                'hr13'=13,
-                'hr14'=14,
-                'hr15'=15,
-                'hr16'=16,
-                'hr17'=17,
-                'hr18'=18,
-                'hr19'=19,
-                'hr20'=20,
-                'hr21'=21,
-                'hr22'=22,
-                'hr23'=23,
-                'hr24'=24)
-
-
-cbPalette <- 
+# cbPalette <- 
 # cbPalette <- c("#E69F00", "#000000",  "#009E73", "#0072B2", "#D55E00", "#CC79A7", "#56B4E9", "#F0E442") # Selected colors
 
 # Column width guidelines https://www.elsevier.com/authors/author-schemas/artwork-and-media-instructions/artwork-sizing
@@ -78,198 +31,190 @@ setwd('monte_carlo')
 # load data
 df <- read.csv(csv)
 
-# convert values to double
-as.double(df$value)
-
-# Set color palette
-options(ggplot2.discrete.fill = tech_palette)
-options(ggplot2.discrete.color = tech_palette)
-options(ggplot2.continuous.color = tech_palette)
-options(ggplot2.continuous.color = tech_palette)
 
 
 # -------------------------
-# process tech_rename, fuel_rename, and tod_rename
-# split each into a list of technologies (i.e. tech_list) and names to be used (i.e. tech_levels)
+# Costs
 # -------------------------
-temp <- as.list(tech_rename)
-tech_list <- c()
-tech_levels <- c()
-for (i in 1:length(tech_rename)) {
-  tech_list <- c(tech_list, names(temp[i]))
-  tech_levels <- c(tech_levels, temp[[i]])
-}
+# select data
+costs<-df[(df$quantity=="costs_by_year"),]
+# factor year
+costs$year <- factor(costs$year)
 
-temp <- as.list(fuel_rename)
-fuel_list <- c()
-fuel_levels <- c()
-for (i in 1:length(fuel_rename)) {
-  fuel_list <- c(fuel_list, names(temp[i]))
-  fuel_levels <- c(fuel_levels, temp[[i]])
-}
+ggplot(costs ,aes(x=year,y=value, fill=database))+
+  geom_boxplot(outlier.size = 0.2) +
+  labs(x='', y=expression(paste("Cost of electricity (US$ kWh"^-1,")")))
 
-temp <- as.list(season_rename)
-season_list <- c()
-season_levels <- c()
-for (i in 1:length(season_rename)) {
-  season_list <- c(season_list, names(temp[i]))
-  season_levels <- c(season_levels, temp[[i]])
-}
+# + facet_wrap(~ database)
 
-# -------------------------
-# Costs by year
-quantity = 'costs_by_year'
-savename = 'Results_costs_by_year.pdf'
-# -------------------------
 
-# select data 
-dfx <- df[df$quantity %in% quantity, ]
-
-# process data
-dfx$value <- as.double(dfx$value)
-dfx$database <- factor(dfx$database)
-
-# plot
-plot_costs <- 
-  ggplot(data=dfx, aes_string(x='year',y='value',color='database'))+
-  geom_line() + geom_point() +
-  scale_colour_discrete(labels=parse_format())+
-  labs(x='Year (-)', y=expression(paste("Costs (US$ KWh"^-1,"y"^-1,")")),
-       col='Technologies')+
-  theme(panel.background = element_rect(fill = NA, colour ="black"),
-        panel.border = element_rect(linetype="solid", fill=NA),
-        legend.background=element_rect(fill = alpha("white", 0)),
-        legend.key = element_rect(colour = "transparent", fill = "white"))
 
 # save
-# ggsave(savename, device="pdf", width=7.48, height=5.5, units="in",dpi=300)
+ggsave('mc_costs_by_year.png', device="png", width=7.48, height=5.5, units="in",dpi=300)
 
 # -------------------------
-# Emissions by year
-quantity = 'emissions_by_year'
-conversion = 1e-3 # Mton to Gton
-savename = 'Results_emissions_by_year.pdf'
+# Emissions
 # -------------------------
-# select data 
-dfx <- df[df$quantity %in% quantity, ]
-
-# process data
-dfx$value <- as.double(dfx$value)
-dfx$value <- dfx$value * conversion
-dfx$database <- factor(dfx$database)
+emissions<-df[(df$quantity=="emissions_by_year"),]
+# factor year
+emissions$year <- factor(emissions$year)
 
 
-# plot
-plot_emissions <-ggplot(data=dfx, aes_string(x='year',y='value',color='database'))+
-  geom_line() + geom_point() +
-  scale_colour_discrete(labels=parse_format())+
-  labs(x='Year (-)', y=expression(paste("Emissions (Gton CO"[2],"y"^-1,")")),
-       col='Technologies')+
-  theme(panel.background = element_rect(fill = NA, colour ="black"),
-        panel.border = element_rect(linetype="solid", fill=NA),
-        legend.background=element_rect(fill = alpha("white", 0)),
-        legend.key = element_rect(colour = "transparent", fill = "white"))
+ggplot(emissions ,aes(x=year,y=value, fill=database))+
+  geom_boxplot(outlier.size = 0.2) +
+  labs(x='', y=expression(paste("Emissions (Mton CO"[2],")")))
 
 # save
-# ggsave(savename, device="pdf", width=7.48, height=5.5, units="in",dpi=300)
-
-# --------------------------
-# combine costs and emissions into single figure
-# https://www.datanovia.com/en/lessons/combine-multiple-ggplots-into-a-figure/
-# --------------------------
-ggarrange(plot_costs, plot_emissions, 
-          labels=c("a","b"), ncol=2, nrow=1,
-          common.legend = TRUE, legend ="bottom")
-
-
-# grid.newpage()
-# grid.arrange( ggplotGrob(plot_CostInvest), ggplotGrob(plot_CostFixed), ggplotGrob(plot_CostVariable), 
-#               ggplotGrob(plot_Efficiency), nrow=2, ncol=2)
-
-# save
-savename = 'results_costs_and_emissions.png'
-ggsave(savename, device="png", width=7.48, height=5.5, units="in",dpi=300)
-
-# ggsave(savename, device="pdf",
-#        width=7.4, height=6.0, units="in",dpi=1000,
-#        plot = grid.arrange( ggplotGrob(plot_CostInvest), ggplotGrob(plot_CostFixed), ggplotGrob(plot_CostVariable), 
-#                             ggplotGrob(plot_Efficiency), nrow=2, ncol=2))
+ggsave('mc_emissions_by_year.png', device="png", width=7.48, height=5.5, units="in",dpi=300)
 
 # -------------------------
-# Capacity by year
-quantity = 'capacity_by_year'
-savename = 'Results_capacity_by_year.png'
+# Capacity
 # -------------------------
+capacity<-df[(df$quantity=="capacity_by_year"),]
+# factor year
+capacity$year <- factor(capacity$year)
 
-# select data 
-dfx <- df[df$quantity %in% quantity, ]
-dfx <- dfx[dfx$tech_or_fuel %in% tech_list, ]
+# Rename Technology
+rename <- c("EC_BATT"="'Batteries'",
+            "ED_BATT"="'Batteries'",
+            "EX_HYDRO"="'Nuclear and hydro'",
+            "EX_NUCLEAR"="'Nuclear and hydro'",
+            "EX_COAL"="'Coal and petroleum'",
+            "EC_COAL"="'Coal and petroleum'",
+            "EX_OIL"="'Coal and petroleum'",
+            "EC_OIL_CC"="'Coal and petroleum'",
+            "EX_NG_CC"="'Natural gas'",
+            "EX_NG_CT"="'Natural gas'",
+            "EC_NG_CC"="'Natural gas'",
+            "EC_NG_OC"="'Natural gas'",
+            "EC_PUMP"="'Pumped hydro'",
+            "EX_PUMP"="'Pumped hydro'",
+            "EX_BIO"="'Biomass'",
+            "EC_BIO"="'Biomass'",
+            "E_BECCS"="'BECCS'",
+            'EX_SOLPV'="'Solar'",
+            "EC_SOLPV"="'Solar'",
+            "ED_SOLPV"="'Solar'",
+            "E_PV_DIST_RES"="'Residential solar'",
+            'EX_WIND'="'Wind'",
+            'EC_WIND'="'Wind'",
+            "EF_WIND"="'Wind'",
+            "E_OCAES"="'OCAES'",
+            "E_SCO2"="'sCO2'")
 
-# process data
-dfx$value <- as.double(dfx$value)
-dfx$database <- factor(dfx$database)
-dfx <- transform(dfx, tech_or_fuel = tech_rename[as.character(tech_or_fuel)])
+capacity <- transform(capacity, tech_or_fuel = rename[as.character(tech_or_fuel)])
 
+
+# Summarise to create line plots
+capacity_smry <- capacity %>% # the names of the new data frame and the data frame to be summarised
+  group_by(.dots=c("tech_or_fuel", "year", "database")) %>%   # the grouping variable
+  summarise(mean = mean(value),  # calculates the mean
+            min = min(value), # calculates the minimum
+            max = max(value),# calculates the maximum
+            sd=sd(value)) # calculates the standard deviation
 dodge = 0.2
-ggplot(dfx,aes_string(x='year', y='value', fill='database', group='database', color='database'))+
+ggplot(capacity_smry,aes(x=year, y=mean, ymin=min, ymax=max, fill=database, group=database, color=database))+
   facet_wrap(~tech_or_fuel, labeller = label_parsed)+
   geom_line(size=1,position=position_dodge(width=dodge))+
+  geom_ribbon(alpha=0.2, colour = NA,position=position_dodge(width=dodge))+
   geom_point(position=position_dodge(width=dodge))+
-  labs(x='Year', y=expression(paste("Capacity (GW y"^-1,")")))+
-  theme(legend.position="bottom", legend.title = element_blank(),axis.text.x = element_text(angle = 90,vjust=0.5), 
-        panel.background = element_rect(fill = NA, colour ="black"),
-        panel.border = element_rect(linetype="solid", fill=NA),
-        strip.background = element_rect(colour = NA, fill = NA))
+  labs(x='Year', y=expression(paste("Capacity (GW)")))+
+  theme(legend.position="bottom", legend.title = element_blank(),
+        axis.text.x = element_text(angle = 90,vjust=0.5)) 
+
 
 # save
-ggsave(savename, device="png", width=7.48, height=5.5, units="in",dpi=300)
+ggsave('mc_capacity_by_year.png', device="png", width=7.48, height=5.5, units="in",dpi=300)
 
 # -------------------------
-# Activity by year
-quantity = 'activity_by_year'
-savename = 'Results_activity_by_year.png'
+# Activity
 # -------------------------
-# select data 
-dfx <- df[df$quantity %in% quantity, ]
-dfx <- dfx[dfx$tech_or_fuel %in% tech_list, ]
+activity<-df[(df$quantity=="activity_by_year"),]
+# factor year
+activity$year <- factor(activity$year)
+# rename
+activity <- transform(activity, tech_or_fuel = rename[as.character(tech_or_fuel)])
 
-# process data
-dfx$value <- as.double(dfx$value)
-dfx$database <- factor(dfx$database)
-dfx <- transform(dfx, tech_or_fuel = tech_rename[as.character(tech_or_fuel)])
-
+# Summarise to create line plots
+activity_smry <- activity %>% # the names of the new data frame and the data frame to be summarised
+  group_by(.dots=c("tech_or_fuel", "year", "database")) %>%   # the grouping variable
+  summarise(mean = mean(value),  # calculates the mean
+            min = min(value), # calculates the minimum
+            max = max(value),# calculates the maximum
+            sd=sd(value)) # calculates the standard deviation
 dodge = 0.2
-ggplot(dfx,aes_string(x='year', y='value', fill='database', group='database', color='database'))+
+ggplot(activity_smry,aes(x=year, y=mean, ymin=min, ymax=max, fill=database, group=database, color=database))+
   facet_wrap(~tech_or_fuel, labeller = label_parsed)+
   geom_line(size=1,position=position_dodge(width=dodge))+
+  geom_ribbon(alpha=0.2, colour = NA,position=position_dodge(width=dodge))+
   geom_point(position=position_dodge(width=dodge))+
   labs(x='Year', y=expression(paste("Activity (TWh y"^-1,")")))+
-  theme(legend.position="bottom", legend.title = element_blank(),axis.text.x = element_text(angle = 90,vjust=0.5), 
-        panel.background = element_rect(fill = NA, colour ="black"),
-        panel.border = element_rect(linetype="solid", fill=NA),
-        strip.background = element_rect(colour = NA, fill = NA))
+  theme(legend.position="bottom", legend.title = element_blank(),
+        axis.text.x = element_text(angle = 90,vjust=0.5)) 
 
 # save
-ggsave(savename, device="png", width=7.48, height=5.5, units="in",dpi=300)
+ggsave('mc_activity_by_year.png', device="png", width=7.48, height=5.5, units="in",dpi=300)
+
+# -------------------------
+# Activity TOD V1
+# -------------------------
+activityTOD<-df[(df$quantity=="activity_by_tod"),]
+activityTOD<-activityTOD[(activityTOD$year==2050),]
+activityTOD<-activityTOD[(activityTOD$database=="All"),]
+activityTOD<-activityTOD[(activityTOD$season=="summer")|(activityTOD$season=="winter2"),]
+# rename
+activityTOD <- transform(activityTOD, tech_or_fuel = rename[as.character(tech_or_fuel)])
+
+# factor 
+activityTOD$tod <- factor(activityTOD$tod)
+
+ggplot(activityTOD,aes(x=tod, y=value))+
+  facet_grid(season~tech_or_fuel, labeller = label_parsed)+
+  geom_line(size=1,position=position_dodge(width=dodge))
+
+
+
+# save
+ggsave('mc_activity_by_year.png', device="png", width=7.48, height=5.5, units="in",dpi=300)
 
 
 # -------------------------
-# Activity by time of day
-quantity = 'activity_by_tod'
-savename = 'Results_emissions_by_year.pdf'
+# Activity TOD V2
 # -------------------------
+activityTOD<-df[(df$quantity=="activity_by_tod"),]
+activityTOD<-activityTOD[(activityTOD$year==2050),]
+activityTOD<-activityTOD[(activityTOD$database=="All"),]
+activityTOD<-activityTOD[(activityTOD$season=="summer")|(activityTOD$season=="winter2"),]
+# rename
+activityTOD <- transform(activityTOD, tech_or_fuel = rename[as.character(tech_or_fuel)])
+
+# factor 
+activityTOD$tod <- factor(activityTOD$tod)
+
+
+activityTOD_smry <- activityTOD %>% # the names of the new data frame and the data frame to be summarised
+  group_by(.dots=c("tech_or_fuel", "tod", "season")) %>%   # the grouping variable
+  summarise(mean = mean(value),  # calculates the mean
+            min = min(value), # calculates the minimum
+            max = max(value),# calculates the maximum
+            sd=sd(value)) # calculates the standard deviation
+# factor 
+activityTOD_smry$tod <- factor(activityTOD_smry$tod)
+
+dodge = 0.2
+ggplot(activityTOD_smry,aes(x=tod, y=mean, ymin=min, ymax=max, fill=season, group=season, color=season))+
+  facet_grid(season~tech_or_fuel, labeller = label_parsed)+
+  geom_line(size=1,position=position_dodge(width=dodge))+
+  geom_ribbon(alpha=0.2, colour = NA,position=position_dodge(width=dodge))+
+  geom_point(position=position_dodge(width=dodge))+
+  labs(x='Year', y=expression(paste("Activity (TWh y"^-1,")")))+
+  theme(legend.position="bottom", legend.title = element_blank(),
+        axis.text.x = element_text(angle = 90,vjust=0.5)) 
 
 
 
-# -------------------------
-# finish program and tidy up
-# -------------------------
-# https://cran.r-project.org/web/packages/egg/vignettes/Ecosystem.html
-
-
-
-
-
+# save
+ggsave('mc_activity_by_year.png', device="png", width=7.48, height=5.5, units="in",dpi=300)
 
 # -------------------------
 # finish program and tidy up

@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH -N 1
-#SBATCH --cpus-per-task=10
+#SBATCH --cpus-per-task=30
 #SBATCH -t 20:00:00
 #SBATCH -p standard
 
