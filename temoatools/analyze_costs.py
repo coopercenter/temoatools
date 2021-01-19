@@ -190,7 +190,7 @@ def SingleDB(folder, db, elc_dmd='ELC_DMD', conversion=0.359971):
         if periods in t_periods and tech in techs:
             df_CostFixed.loc[periods, tech] = cost_fixed
 
-            # ------------
+    # ------------
     # CostVariable
     # ------------
     # Access database
@@ -209,12 +209,21 @@ def SingleDB(folder, db, elc_dmd='ELC_DMD', conversion=0.359971):
             df_CostVariable.loc[periods, tech] = cost_variable
 
     # ------------
-    # Discount Rate
+    # Global Discount Rate
     # ------------
     qry = "SELECT * FROM GlobalDiscountRate"
     cur.execute(qry)
     db_rate = cur.fetchall()
-    rate = db_rate[0][0]
+    rate_global = db_rate[0][0]
+
+    # ------------
+    # Discount Rate - Technology specific
+    # ------------
+    qry = "SELECT * FROM DiscountRate"
+    cur.execute(qry)
+    db_rate_tech = cur.fetchall()
+    rate_tech = db_rate_tech
+    df_rate_tech = pd.DataFrame(rate_tech, columns=['tech', 'vintage', 'tech_rate', 'tech_rate_notes'])
 
     # ------------
     # LifetimeLoanTech
@@ -334,6 +343,13 @@ def SingleDB(folder, db, elc_dmd='ELC_DMD', conversion=0.359971):
         df_loanPayments = pd.DataFrame(data=0.0, index=rows, columns=cols, dtype='float64')
 
         for tech in techs:
+
+            # select appropriate discount rate, assumes it is constant
+            if tech in df_rate_tech.tech.unique():
+                rate = df_rate_tech[df_rate_tech.tech == tech].tech_rate.mean()
+            else:
+                rate = rate_global
+
             for buildYear in t_periods:
 
                 if df_investments.loc[buildYear, tech] > 0:
@@ -393,7 +409,7 @@ def SingleDB(folder, db, elc_dmd='ELC_DMD', conversion=0.359971):
         # Store yearlyCosts_single and LCOE_single
         for year in df.index:
             yearlyCosts.loc[(db, s), year] = df.loc[year, 'ELC_Cost']
-        LCOE.loc[(db, s), ] = LCOE_single
+        LCOE.loc[(db, s),] = LCOE_single
 
     # Return to original directory
     os.chdir(origDir)
