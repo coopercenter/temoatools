@@ -3,7 +3,7 @@ import pandas as pd
 
 os.chdir('monte_carlo')
 
-to_analyze = {'MonteCarloResults_biomass_all.csv': 'All (biomass)',
+to_analyze = {'MonteCarloResults_default_BECCS.csv': 'BECCS',
               'MonteCarloResults_default_all.csv': 'All',
               'MonteCarloResults_default_none.csv': 'None',
               'MonteCarloResults_default_DIST_PV.csv': 'Rooftop Solar',
