@@ -17,7 +17,34 @@ levels <- c("None",
             "OCAES",
             "Rooftop Solar",
             "sCO2")
-# df1$Case <- factor(df1$Case, levels = levels)
+
+# Rename Technology
+rename <- c("EC_BATT"="'Batteries'",
+            "ED_BATT"="'Batteries'",
+            "EX_HYDRO"="'Nuclear and hydro'",
+            "EX_NUCLEAR"="'Nuclear and hydro'",
+            "EX_COAL"="'Coal and petroleum'",
+            "EC_COAL"="'Coal and petroleum'",
+            "EX_OIL"="'Coal and petroleum'",
+            "EC_OIL_CC"="'Coal and petroleum'",
+            "EX_NG_CC"="'Natural gas'",
+            "EX_NG_CT"="'Natural gas'",
+            "EC_NG_CC"="'Natural gas'",
+            "EC_NG_OC"="'Natural gas'",
+            "EC_PUMP"="'Pumped hydro'",
+            "EX_PUMP"="'Pumped hydro'",
+            "EX_BIO"="'Biomass'",
+            "EC_BIO"="'Biomass'",
+            "E_BECCS"="'BECCS'",
+            'EX_SOLPV'="'Solar - Utility/Commercial'",
+            "EC_SOLPV"="'Solar - Utility/Commercial'",
+            "ED_SOLPV"="'Solar - Utility/Commercial'",
+            "E_PV_DIST_RES"="'Solar - Residential'",
+            'EX_WIND'="'Wind'",
+            'EC_WIND'="'Wind'",
+            "EF_WIND"="'Wind'",
+            "E_OCAES"="'OCAES'",
+            "E_SCO2"="'sCO2'")
 
 
 # http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/
@@ -54,6 +81,8 @@ costs<-df[(df$quantity=="costs_by_year"),]
 costs$year <- factor(costs$year)
 # set plot order
 costs$database <- factor(costs$database, levels = levels)
+# convert from cents/kWh to dollars/kWh
+costs$value <- costs$value / 100.0
 
 # ---
 # V1
@@ -87,6 +116,10 @@ cost_smry <- costs %>% # the names of the new data frame and the data frame to b
             mean = mean(value),
             max = max(value))
 
+cost_avg <- costs %>% # the names of the new data frame and the data frame to be summarised
+  group_by(.dots=c("database")) %>%   # the grouping variable
+  summarise(mean = mean(value))
+
 cost_sum <- cost_smry %>% # the names of the new data frame and the data frame to be summarised
   group_by(.dots=c("database")) %>%   # the grouping variable
   summarise(min = sum(min),
@@ -114,6 +147,8 @@ emissions<-df[(df$quantity=="emissions_by_year"),]
 emissions$year <- factor(emissions$year)
 # set plot order
 emissions$database <- factor(emissions$database, levels = levels)
+# convert from kton/yr to Mton/yr
+emissions$value <- emissions$value / 1000.0
 
 # ---
 # V1
@@ -142,11 +177,19 @@ ggsave('mc_emissions_by_year_v2.png', device="png", width=7.48, height=5.5, unit
 # ---
 emissions_smry <- emissions %>% # the names of the new data frame and the data frame to be summarised
   group_by(.dots=c("year", "database")) %>%   # the grouping variable
-  summarise(mean = mean(value))  # calculates the mean
+  summarise(min = min(value),
+            mean = mean(value),
+            max = max(value))
 
 emissions_total <- emissions_smry %>% # the names of the new data frame and the data frame to be summarised
   group_by(.dots=c("database")) %>%   # the grouping variable
-  summarise(sum = sum(mean))  # calculates the mean
+  summarise(min = sum(min),
+            mean = sum(mean),
+            max = sum(max))
+
+emissions_avg <- emissions %>% # the names of the new data frame and the data frame to be summarised
+  group_by(.dots=c("database")) %>%   # the grouping variable
+  summarise(mean = mean(value))
 
 
 # -------------------------
@@ -171,7 +214,7 @@ plt_emi <- ggplot(emissions ,aes(x=year,y=value, fill=database))+
 ggarrange(plt_cost, plt_emi, nrow=2, ncol=1, heights = c(1.0,1.0), align="v")
 
 # save
-ggsave('mc_costs_and_emissions_by_year.png', device="png", width=8.48, height=5.5, units="in",dpi=300)
+ggsave('mc_costs_and_emissions_by_year.png', device="png", width=8.48, height=5.5, units="in",dpi=400)
 
 # -------------------------
 # Capacity
@@ -179,35 +222,9 @@ ggsave('mc_costs_and_emissions_by_year.png', device="png", width=8.48, height=5.
 capacity<-df[(df$quantity=="capacity_by_year"),]
 # factor year
 capacity$year <- factor(capacity$year)
-
-# Rename Technology
-rename <- c("EC_BATT"="'Batteries'",
-            "ED_BATT"="'Batteries'",
-            "EX_HYDRO"="'Nuclear and hydro'",
-            "EX_NUCLEAR"="'Nuclear and hydro'",
-            "EX_COAL"="'Coal and petroleum'",
-            "EC_COAL"="'Coal and petroleum'",
-            "EX_OIL"="'Coal and petroleum'",
-            "EC_OIL_CC"="'Coal and petroleum'",
-            "EX_NG_CC"="'Natural gas'",
-            "EX_NG_CT"="'Natural gas'",
-            "EC_NG_CC"="'Natural gas'",
-            "EC_NG_OC"="'Natural gas'",
-            "EC_PUMP"="'Pumped hydro'",
-            "EX_PUMP"="'Pumped hydro'",
-            "EX_BIO"="'Biomass'",
-            "EC_BIO"="'Biomass'",
-            "E_BECCS"="'BECCS'",
-            'EX_SOLPV'="'Solar'",
-            "EC_SOLPV"="'Solar'",
-            "ED_SOLPV"="'Solar'",
-            "E_PV_DIST_RES"="'Residential solar'",
-            'EX_WIND'="'Wind'",
-            'EC_WIND'="'Wind'",
-            "EF_WIND"="'Wind'",
-            "E_OCAES"="'OCAES'",
-            "E_SCO2"="'sCO2'")
-
+# set plot order
+capacity$database <- factor(capacity$database, levels = levels)
+# rename technologies
 capacity <- transform(capacity, tech_or_fuel = rename[as.character(tech_or_fuel)])
 
 
@@ -226,11 +243,12 @@ ggplot(capacity_smry,aes(x=year, y=mean, ymin=min, ymax=max, fill=database, grou
   geom_point(position=position_dodge(width=dodge))+
   labs(x='Year', y=expression(paste("Capacity (GW)")))+
   theme(legend.position="bottom", legend.title = element_blank(),
-        axis.text.x = element_text(angle = 90,vjust=0.5)) 
+        axis.text.x = element_text(angle = 90,vjust=0.5)) +
+  scale_y_continuous(trans='pseudo_log', breaks = c(0,2,5,10,20,60))
 
 
 # save
-ggsave('mc_capacity_by_year.png', device="png", width=7.48, height=5.5, units="in",dpi=300)
+ggsave('mc_capacity_by_year.png', device="png", width=7.48, height=6.5, units="in",dpi=600)
 
 # -------------------------
 # Activity
@@ -240,6 +258,10 @@ activity<-df[(df$quantity=="activity_by_year"),]
 activity$year <- factor(activity$year)
 # rename
 activity <- transform(activity, tech_or_fuel = rename[as.character(tech_or_fuel)])
+# set plot order
+activity$database <- factor(activity$database, levels = levels)
+# convert from GWh to Twh
+activity$value <- activity$value / 1000.0
 
 # Summarise to create line plots
 activity_smry <- activity %>% # the names of the new data frame and the data frame to be summarised
@@ -256,10 +278,11 @@ ggplot(activity_smry,aes(x=year, y=mean, ymin=min, ymax=max, fill=database, grou
   geom_point(position=position_dodge(width=dodge))+
   labs(x='Year', y=expression(paste("Activity (TWh y"^-1,")")))+
   theme(legend.position="bottom", legend.title = element_blank(),
-        axis.text.x = element_text(angle = 90,vjust=0.5)) 
+        axis.text.x = element_text(angle = 90,vjust=0.5)) +
+  scale_y_continuous(trans='pseudo_log', breaks = c(0,2,5,10,20,50,100))
 
 # save
-ggsave('mc_activity_by_year.png', device="png", width=7.48, height=5.5, units="in",dpi=300)
+ggsave('mc_activity_by_year.png', device="png", width=7.48, height=6.5, units="in",dpi=500)
 
 # -------------------------
 # Process demand data
@@ -310,7 +333,7 @@ setwd('monte_carlo')
 table1 = 'Demand'
 table2 = 'DemandSpecificDistribution'
 savename = 'Inputs_Demand.pdf'
-conversion = 277.777778 # M$/PJ to $/kWh
+conversion = 277.777778 # PJ to GWh
 
 # read-in data
 tbl1 <- dbReadTable(con, table1)
@@ -349,7 +372,6 @@ activityTOD <- transform(activityTOD, tech_or_fuel = rename[as.character(tech_or
 
 # select subset of databases
 activityTOD_all <- activityTOD[(activityTOD$scenario=='all'),]
-
 
 
 # -------------------------
@@ -414,6 +436,55 @@ ggplot(activityTOD_smry,aes(x=tod, y=mean, ymin=min, ymax=max, fill=database, gr
 # save
 ggsave('mc_activity_by_tod_v3.png', device="png", width=7.48, height=5.5, units="in",dpi=300)
 
+# -------------------------
+# Activity TOD V4
+# -------------------------
+activityTOD_smry <- activityTOD %>% # the names of the new data frame and the data frame to be summarised
+  group_by(.dots=c("tech_or_fuel", "tod", "season", "database")) %>%   # the grouping variable
+  summarise(mean = mean(value),  # calculates the mean
+            min = min(value), # calculates the minimum
+            max = max(value),# calculates the maximum
+            sd=sd(value)) # calculates the standard deviation
+# factor 
+activityTOD_smry$tod <- factor(activityTOD_smry$tod)
+
+# select subset
+# season_rename <- c('fall'="'Fall'",
+#                    'winter'="'Winter - Sunny days'",
+#                    'winter2'="'Winter - Cloudy days'",
+#                    'spring'="'Spring'",
+#                    'summer'="'Summer - Sunny days'",
+#                    'summer2'="'Summer - Cloudy days'")
+activityTOD1 <- activityTOD_smry[(activityTOD_smry$season=="'Summer - Sunny days'"),]
+activityTOD2 <- activityTOD_smry[(activityTOD_smry$season=="'Winter - Cloudy days'"),]
+
+# set plot order
+activityTOD1$database <- factor(activityTOD1$database, levels = levels)
+activityTOD2$database <- factor(activityTOD2$database, levels = levels)
+
+dodge = 0.2
+ggplot(activityTOD1,aes(x=tod, y=mean, ymin=min, ymax=max, fill=database, group=database, color=database))+
+  facet_wrap(~tech_or_fuel, labeller = label_parsed)+
+  geom_line(size=1,position=position_dodge(width=dodge))+
+  geom_ribbon(alpha=0.2, colour = NA,position=position_dodge(width=dodge))+
+  geom_point(position=position_dodge(width=dodge))+
+  labs(x='Year', y=expression(paste("Activity fraction (-)")))+
+  theme(legend.position="bottom", legend.title = element_blank(),
+        axis.text.x = element_text(angle = 90,vjust=0.5)) + ylim(0,1.0)
+# save
+ggsave('mc_activity_by_tod_v4_summer.png', device="png", width=7.48, height=5.5, units="in",dpi=300)
+
+ggplot(activityTOD2,aes(x=tod, y=mean, ymin=min, ymax=max, fill=database, group=database, color=database))+
+  facet_wrap(~tech_or_fuel, labeller = label_parsed)+
+  geom_line(size=1,position=position_dodge(width=dodge))+
+  geom_ribbon(alpha=0.2, colour = NA,position=position_dodge(width=dodge))+
+  geom_point(position=position_dodge(width=dodge))+
+  labs(x='Year', y=expression(paste("Activity fraction (-)")))+
+  theme(legend.position="bottom", legend.title = element_blank(),
+        axis.text.x = element_text(angle = 90,vjust=0.5)) + ylim(0,1.0)
+
+# save
+ggsave('mc_activity_by_tod_v4_winter2.png', device="png", width=7.48, height=5.5, units="in",dpi=300)
 # -------------------------
 # finish program and tidy up
 # -------------------------

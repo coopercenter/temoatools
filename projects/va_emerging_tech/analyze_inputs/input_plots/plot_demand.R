@@ -178,7 +178,7 @@ ggsave(savename, device="png", width=7.48, height=5.5, units="in",dpi=300)
 # Demand - Yearly
 table1 = 'Demand'
 savename = 'Inputs_Demand_Yearly.png'
-conversion = 277.777778 # M$/PJ to $/kWh
+conversion = 277.777778 # PJ to GWh
 # -------------------------
 
 # read-in data

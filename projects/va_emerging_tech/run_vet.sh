@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH -N 1
-#SBATCH --cpus-per-task=30
-#SBATCH -t 20:00:00
+#SBATCH --cpus-per-task=20
+#SBATCH -t 30:00:00
 #SBATCH -p standard
 
 module purge

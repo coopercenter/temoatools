@@ -444,6 +444,15 @@ def processPowerPlants(inputs, local, outputs):
         # Update outputs for this technology
         local, outputs = processTech(inputs, local, outputs, tech)
 
+        # Add fuel as a commodity
+        if not tech['fuel'] in local['commodities']:
+            outputs['commodities'].append((tech['fuel'], "p", tech['fuel']))
+            local['commodities'].append(tech['fuel'])
+
+        if not tech['output'] in local['commodities']:
+            outputs['commodities'].append((tech['output'], "p", tech['output']))
+            local['commodities'].append(tech['output'])
+
     # Do something    
     return local, outputs
 
