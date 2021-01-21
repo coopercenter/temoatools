@@ -525,9 +525,10 @@ def processFuels(inputs, local, outputs):
         local, outputs = processTech(inputs, local, outputs, tech)
 
         # Fuel Specific Tasks
-        # Add fuel as a commodity
-        outputs['commodities'].append((techType, "p", techType))
-        local['commodities'].append(techType)
+        # Add fuel as a commodity (if not previously added)
+        if not (techType in local['commodities']):
+            outputs['commodities'].append((techType, "p", techType))
+            local['commodities'].append(techType)
 
     return local, outputs
 
