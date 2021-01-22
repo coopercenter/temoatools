@@ -50,9 +50,11 @@ def combine(project_path=os.getcwd(), primary='data_virginia.xlsx',
                 if len(b) > 1:
                     df1[key] = a.append(b[1:], ignore_index=True)
 
-            # write out
-            with pd.ExcelWriter(output, mode='a') as writer:
-                df1[key].to_excel(writer, sheet_name=key, index=False)
+    # Write out by iterating through primary data file keys
+    for key in df1.keys():
+
+        with pd.ExcelWriter(output, mode='a') as writer:
+            df1[key].to_excel(writer, sheet_name=key, index=False)
 
     # return to original directory
     os.chdir('..')

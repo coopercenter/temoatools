@@ -6,6 +6,7 @@ library(gridExtra)
 library(grid)
 library("ggpubr")
 library(RColorBrewer)
+library(hash)
 
 # inputs
 db = 'all.sqlite' # database to analyze, assumed to be in results directory
@@ -52,10 +53,10 @@ colors[['brown']] <- "#993300"
 
 season_rename <- c('fall'='Fall',
   'winter'='Winter - Sunny days',
-  'winter2'='Winter - Cloudy days',
+  'winter2'='Winter - low renewables',
   'spring'='Spring',
   'summer'='Summer - Sunny days',
-  'summer2'='Summer - Cloudy days')
+  'summer2'='Summer - low renewables')
 
 tod_rename <- c('hr01'=1,
                 'hr02'=2,
