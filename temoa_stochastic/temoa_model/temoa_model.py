@@ -235,6 +235,10 @@ def temoa_create_model ( name='The Temoa Energy System Model' ):
     M.CapReduction = Param( M.time_optimize, M.tech_all, M.vintage_all, default = 1.0)
     M.FOMIncrease = Param( M.time_optimize, M.tech_all, default = 1.0)
 
+    # Virginia
+    M.tech_CostInvestIncrease = Set()
+    M.CostInvestIncrease = Param( M.time_optimize, M.tech_all, default = 1.0)
+
     # Objective Function--------------------------------------------------------
     M.TotalCost = Objective(rule=TotalCost_rule, sense=minimize)
     

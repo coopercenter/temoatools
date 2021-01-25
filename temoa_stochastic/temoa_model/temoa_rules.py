@@ -96,6 +96,7 @@ def PeriodCost_rule(M, p):
         M.V_Capacity[S_t, S_v]
         * (
                 value(M.CostInvest[S_t, S_v])
+                * value(M.CostInvestIncrease[p, S_t])
                 * value(M.LoanAnnualize[S_t, S_v])
                 * (value(M.LifetimeLoanProcess[S_t, S_v]) if not GDR else
                    (x ** (P_0 - S_v + 1) * (1 - x ** (-value(M.LifetimeLoanProcess[S_t, S_v]))) / GDR)
