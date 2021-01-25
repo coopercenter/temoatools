@@ -1677,7 +1677,7 @@ expressed in the form of percentage. In Equation :eq:`reserve_margin`, we use
         if o in PowerCommodities:
             PowerTechs.add(t)
 
-    expr_left = sum(value(M.CapacityCredit[t]) *
+    expr_left = sum(value(M.CapacityCredit[p, t]) *   # Virginia - updated to vary with time
                     M.V_CapacityAvailableByPeriodAndTech[p, t] *
                     value(M.CapacityToActivity[t]) *
                     value(M.SegFrac[s, d])

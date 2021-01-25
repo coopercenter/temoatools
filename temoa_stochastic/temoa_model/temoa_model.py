@@ -171,7 +171,7 @@ def temoa_create_model ( name='The Temoa Energy System Model' ):
     M.RampDown = Param( M.tech_ramping )
 
     # Parameters for reserve margin constraints.
-    M.CapacityCredit = Param( M.tech_all, default=1 )
+    M.CapacityCredit = Param(M.time_optimize, M.tech_all, default=1 ) # Virginia - updated to vary with time
     M.ReserveMargin  = Param( M.commodity_all, default=0.0 )
 
     # Storage duration is expressed in hours
