@@ -20,10 +20,10 @@ solver = ''
 cutoff = 0.05  # cutoff^n<1e-6, where n is # of model years excluding the first time step
 
 # Baseline databases to use
-dbs = ["B.sqlite"]
+dbs = ["B2030.sqlite", "B2035.sqlite", "B2050.sqlite"]
 
 # model years
-years = [2018, 2025]
+years = [2018, 2025, 2030, 2035, 2040, 2045, 2050]
 
 # Hurricane scenarios with corresponding probabilities and windspeeds
 scenarios = ["H1", "H2"]
@@ -103,7 +103,7 @@ for db in dbs:
     for year in years:
         f.write(str(year) + ", ")
     f.write(")\n")
-    f.write("stochastic_indices = {'"+variable+"': 0}\n")
+    f.write("stochastic_indices = {'" + variable + "': 0}\n")
     f.write("types = (\n\t")
     for scenario in scenarios:
         f.write("'" + scenario + "', ")
@@ -200,8 +200,8 @@ for db in dbs:
     os.chdir(stochdir)
 
     config_filename = "config_stoch_" + db_name + ".txt"
-    tree_filename = "stoch_" + db_name  + ".py"
-    script_filename = "stoch_" + db_name  + ".sh"
+    tree_filename = "stoch_" + db_name + ".py"
+    script_filename = "stoch_" + db_name + ".sh"
     config_filepath = os.path.join(configdir, config_filename)
 
     f = open(script_filename, "w")
@@ -223,7 +223,7 @@ for db in dbs:
     f.write("cd " + temoadir + "\n")
     f.write("cd tools\n\n")
     f.write("python generate_scenario_tree_JB.py options/" + tree_filename + " --debug\n")
-    f.write("python rewrite_tree_nodes.py options/" + tree_filename + " --debug\n\n")
+    # f.write("python rewrite_tree_nodes.py options/" + tree_filename + " --debug\n\n") # Not needed, only based on build year
     f.write("cd ..\n\n")
     f.write("python temoa_model/temoa_stochastic.py --config=" + config_filepath + "\n")
     f.close()

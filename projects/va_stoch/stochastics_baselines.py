@@ -24,9 +24,9 @@ if __name__ == '__main__':
     # =======================================================
     temoa_path = os.path.abspath('..//..//temoa_stochastic')
     project_path = os.getcwd()
-    modelInputs_XLSX_list = ['data_va_2035.xlsx', 'data_va_2050.xlsx']
+    modelInputs_XLSX_list = ['data_va_2030.xlsx', 'data_va_2035.xlsx', 'data_va_2050.xlsx']
     scenarioInputs = 'scenarios.xlsx'
-    scenarioNames_list = [['B2035'], ['B2050']]
+    scenarioNames_list = [['B2030'], ['B2035'], ['B2050']]
     ncpus = 1
     solver = ''  # leave blank to let temoa decide which solver to use of those installed
 
