@@ -17,3 +17,4 @@ dependencies:
     - pyutilib=5.7.2
     - glpk=4.65
     - xlrd=1.2.0
+    - openpyxl=2.6.4

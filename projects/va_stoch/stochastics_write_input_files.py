@@ -1,7 +1,6 @@
 import os
 import shutil
 import temoatools as tt
-from pathlib import Path
 
 
 def test_directory(path):
@@ -16,33 +15,56 @@ def test_directory(path):
 # Inputs
 # ===================================
 solver = ''
-
-cutoff = 0.05  # cutoff^n<1e-6, where n is # of model years excluding the first time step
+n_cpus = 4
+solve_time = 6  # maximum number of hours
 
 # Baseline databases to use
-dbs = ["B2030.sqlite", "B2035.sqlite", "B2050.sqlite"]
+dbs = ["A0.sqlite", "A1.sqlite", "A2.sqlite",
+       "B0.sqlite", "B1.sqlite", "B2.sqlite",
+       "C0.sqlite", "C1.sqlite", "C2.sqlite"]
 
 # model years
-years = [2018, 2025, 2030, 2035, 2040, 2045, 2050]
+years = [2020, 2030, 2040, 2050]
 
-# Hurricane scenarios with corresponding probabilities and windspeeds
-scenarios = ["H1", "H2"]
+# Scenarios with corresponding probabilities
+scenarios = ["B1", "B2"]
 probabilities = [0.5, 0.5]
 
 # temoa model technologies and corresponding values for variable
 variable = 'CostInvestIncrease'
-techs = {'EC_SOLPV': [1.0, 0.5], 'EC_WIND': [1.0, 0.5], 'ED_SOLPV': [1.0, 0.5], 'EF_WIND': [1.0, 0.5]}
+techs = {'EC_BATT': [0.9, 0.75],
+         'EC_PUMP': [0.95, 0.95],
+         'EC_BIO': [0.95, 0.95],
+         'EC_COAL': [0.95, 0.95],
+         'EC_OIL_CC': [0.95, 0.95],
+         'EC_NG_CC': [0.95, 0.95],
+         'EC_NG_OC': [0.95, 0.95],
+         'EC_SOLPV': [0.9, 0.75],
+         'EC_WIND': [0.9, 0.75],
+         'ED_BATT': [0.9, 0.75],
+         'ED_SOLPV': [0.9, 0.75],
+         'EF_WIND': [0.9, 0.75],
+         'E_PV_DIST_RES': [0.9, 0.75],
+         'E_SCO2': [0.9, 0.75],
+         'E_OCAES': [0.9, 0.75],
+         'E_BECCS': [0.9, 0.75]}
 
 # ===================================
 # Begin input file preparation
 # ===================================
 
-# Check for appropriate cutoff number
-n_years = len(years) - 1
-if cutoff ** n_years < 1e-6:
-    print("Warning: cutoff^n<1e-6, where n is # of model years excluding the first time step")
-else:
-    print("Verified: Appropriate value for cutoff")
+# --------------------
+# Check for appropriate entries
+# --------------------
+
+n_periods = len(years) - 1
+for key in techs.keys():
+    values = techs[key]
+    min_value = min(values)
+    if min_value ** n_periods < 1e-6:
+        print("Warning: value for " + key + " is too low")
+        print("\tvalue^n_periods>1e-6 in order to be recognized")
+        print("\twhere n is # of model years excluding the first time step\n")
 
 # --------------------
 # directory management
@@ -72,9 +94,6 @@ treedir = os.path.abspath('..//..//temoa_stochastic//tools//options')
 # --------------------
 # begin creation of input files
 # --------------------
-
-# Create all input files
-
 
 # Iterate through each database for each case
 for db in dbs:
@@ -207,8 +226,8 @@ for db in dbs:
     f = open(script_filename, "w")
     f.write("#!/bin/bash\n")
     f.write("#SBATCH -N 1\n")
-    f.write("#SBATCH --cpus-per-task=8\n")
-    f.write("#SBATCH -t 16:00:00\n")
+    f.write("#SBATCH --cpus-per-task=" + str(n_cpus) + "\n")
+    f.write("#SBATCH -t " + str(solve_time) + ":00:00\n")
     f.write("#SBATCH -p standard\n\n")
     f.write("module purge\n")
     f.write("module load anaconda/2019.10-py2.7\n\n")
@@ -223,7 +242,8 @@ for db in dbs:
     f.write("cd " + temoadir + "\n")
     f.write("cd tools\n\n")
     f.write("python generate_scenario_tree_JB.py options/" + tree_filename + " --debug\n")
-    # f.write("python rewrite_tree_nodes.py options/" + tree_filename + " --debug\n\n") # Not needed, only based on build year
+    # Not needed, only based on build year
+    # f.write("python rewrite_tree_nodes.py options/" + tree_filename + " --debug\n\n")
     f.write("cd ..\n\n")
     f.write("python temoa_model/temoa_stochastic.py --config=" + config_filepath + "\n")
     f.close()

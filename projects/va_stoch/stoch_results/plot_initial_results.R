@@ -9,7 +9,7 @@ library('hash')
 library(RColorBrewer)
 
 # inputs
-db = 'B2035.sqlite' # database to analyze, assumed to be in results directory
+db = 'B2030.sqlite' # database to analyze, assumed to be in results directory
 
 # ======================== #
 # begin code
