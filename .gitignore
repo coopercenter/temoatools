@@ -11,6 +11,11 @@
 /examples/sensitivity/data/*.db
 /examples/sensitivity/databases/
 /examples/sensitivity/results/
+/examples/stochastics/configs/
+/examples/stochastics/data/*.db
+/examples/stochastics/databases/
+/examples/stochastics/results/
+/examples/stochastics/sbatch_files/
 /projects/uva/configs/
 /projects/uva/databases/
 /projects/uva/data/*.db
