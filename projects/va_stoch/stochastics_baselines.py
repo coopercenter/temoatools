@@ -6,9 +6,9 @@ import os
 # =======================================================
 # Function to evaluate a single model
 # =======================================================
-def evaluateModel(modelInputs, scenarioInputs, scenarioName, emissionName, temoa_path, project_path, solver):
+def evaluateModel(modelInputs, scenarioInputs, scenarioName, combined_name, temoa_path, project_path, solver):
     # Unique filename
-    model_filename = scenarioName + emissionName
+    model_filename = combined_name + '_' + scenarioName
 
     # Build Model
     tt.build(modelInputs, scenarioInputs, scenarioName, model_filename, path=project_path)
@@ -27,15 +27,16 @@ if __name__ == '__main__':
     ncpus = 1
     solver = ''  # leave blank to let temoa decide which solver to use of those installed
 
-    base_data_file = 'data_va_stoch.xlsx'  # missing emission limits
-
-    scenario_inputs = 'scenarios.xlsx'
-    scenario_names = ['A', 'B', 'C']
+    base_data_files = ['data_va_stochAll.xlsx', 'data_va_stochEmerg.xlsx']  # missing emission limits
+    base_data_names = ['stochAll', 'stochEmerg']
 
     emission_inputs = ['emission_limit_0_none.xlsx',
                        'emission_limit_1_linear.xlsx',
                        'emission_limit_2_delay.xlsx']
-    emission_names = ['0', '1', '2']
+    emission_names = ['none', 'linear', 'delay']
+
+    scenario_inputs = 'scenarios.xlsx'
+    scenario_names = ['BAU', 'BAU_noFossil', 'Emerg', 'Emerg_noFossil']
 
     # =======================================================
     # begin script
@@ -47,37 +48,42 @@ if __name__ == '__main__':
     except:
         ncpus = ncpus  # otherwise default to this number of cores
 
-    # iterate through emission_inputs
-    for emission_input, emission_name in zip(emission_inputs, emission_names):
-        # naming convention
-        combined_name = 'combined_' + emission_name
-        combined_file = combined_name + '.xlsx'
+    # iterate through base_data_files
+    for base_data_file, base_data_name in zip(base_data_files, base_data_names):
 
-        # combine files
-        tt.combine(project_path=project_path, primary=base_data_file,
-                   data_files=[emission_input],
-                   output=combined_file)
+        # iterate through emission_inputs
+        for emission_input, emission_name in zip(emission_inputs, emission_names):
+            # naming convention
+            combined_name = base_data_name + '_' + emission_name
+            combined_file = combined_name + '.xlsx'
 
-        # =======================================================
-        # Move modelInputs_XLSX to database
-        # =======================================================
-        modelInputs = tt.move_data_to_db(combined_file, path=project_path)
+            # combine files
+            tt.combine(project_path=project_path, primary=base_data_file,
+                       data_files=[emission_input],
+                       output=combined_file)
 
-        # ====================================
-        # Perform Simulations
-        option = 2  # 1 - Run first, 2 - Run all
-        # ====================================
+            # =======================================================
+            # Move modelInputs_XLSX to database
+            # =======================================================
+            modelInputs = tt.move_data_to_db(combined_file, path=project_path)
 
-        if option == 1:
-            # Perform single simulation
-            evaluateModel(modelInputs, scenario_inputs, scenario_names[0], emission_name, temoa_path, project_path, solver)
+            # ====================================
+            # Perform Simulations
+            option = 2  # 1 - Run first, 2 - Run all
+            # ====================================
 
-        elif option == 2:
-            # Perform simulations in parallel
+            if option == 1:
+                # Perform single simulation
+                evaluateModel(modelInputs, scenario_inputs, scenario_names[0], combined_name, temoa_path, project_path,
+                              solver)
 
-            with parallel_backend('multiprocessing', n_jobs=ncpus):
-                Parallel(n_jobs=ncpus, verbose=5)(
-                    delayed(evaluateModel)(modelInputs, scenario_inputs, scenario_name, emission_name, temoa_path, project_path,
-                                           solver)
-                    for scenario_name in
-                    scenario_names)
+            elif option == 2:
+                # Perform simulations in parallel
+
+                with parallel_backend('multiprocessing', n_jobs=ncpus):
+                    Parallel(n_jobs=ncpus, verbose=5)(
+                        delayed(evaluateModel)(modelInputs, scenario_inputs, scenario_name, combined_name, temoa_path,
+                                               project_path,
+                                               solver)
+                        for scenario_name in
+                        scenario_names)

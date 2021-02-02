@@ -22,4 +22,5 @@ python stochastics_baselines.py
 python stochastics_write_input_files.py
 
 # change run permission of run_all_simulations.sh - enable to run as executable
-chmod +x ./run_all_simulations.sh
+chmod +x ./run_simulations_pt1.sh
+chmod +x ./run_simulations_pt2.sh
