@@ -24,16 +24,15 @@ if __name__ == '__main__':
     # =======================================================
     temoa_path = os.path.abspath('..//..//temoa_stochastic')
     project_path = os.getcwd()
-    ncpus = 1
+    ncpus = 2
     solver = ''  # leave blank to let temoa decide which solver to use of those installed
 
-    base_data_files = ['data_va_stochAll.xlsx', 'data_va_stochEmerg.xlsx']  # missing emission limits
-    base_data_names = ['stochAll', 'stochEmerg']
+    base_data_files = ['data_va_stoch.xlsx']  # missing emission limits
+    base_data_names = ['A']
 
-    emission_inputs = ['emission_limit_0_none.xlsx',
-                       'emission_limit_1_linear.xlsx',
-                       'emission_limit_2_delay.xlsx']
-    emission_names = ['none', 'linear', 'delay']
+    emission_inputs = ['demand_emission_limit_2030.xlsx', 'demand_emission_limit_2040.xlsx',
+                       'demand_emission_limit_2050.xlsx']
+    emission_names = ['2030', '2040', '2050']
 
     scenario_inputs = 'scenarios.xlsx'
     scenario_names = ['BAU', 'BAU_noFossil', 'Emerg', 'Emerg_noFossil']

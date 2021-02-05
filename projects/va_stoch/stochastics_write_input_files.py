@@ -15,52 +15,45 @@ def test_directory(path):
 # Inputs
 # ===================================
 solver = ''
-n_cpus = 4
-solve_time = 6  # maximum number of hours
-
-# model years
-years = [2020, 2030, 2040, 2050]
 
 # Scenarios with corresponding probabilities
-scenarios = ["B1", "B2"]
-probabilities = [0.5, 0.5]
+scenarios = ["A", "B", "C"]
+probabilities = [0.33, 0.34, 0.33]
 
-for i in range(2):
+# temoa model technologies and corresponding values for variable
+variable = 'EmissionLimitMultiplier'
+emission_commodity = 'CO2'
+values = [1.496, 1.0, 0.5]
 
-    # All technologies have stochastic inputs
+for i in range(3):
+
+    # use different amount of CPUs/run time depending on the complexity of the problem
     if i == 0:
+        # model years
+        years = [2020, 2030]
         # Baseline databases to use
-        dbs = ["stochAll_none_BAU.sqlite", "stochAll_none_BAU_noFossil.sqlite",
-               "stochAll_none_Emerg.sqlite", "stochAll_none_Emerg_noFossil.sqlite",
-               "stochAll_linear_BAU.sqlite", "stochAll_linear_BAU_noFossil.sqlite",
-               "stochAll_linear_Emerg.sqlite", "stochAll_linear_Emerg_noFossil.sqlite",
-               "stochAll_delay_BAU.sqlite", "stochAll_delay_BAU_noFossil.sqlite",
-               "stochAll_delay_Emerg.sqlite", "stochAll_delay_Emerg_noFossil.sqlite", ]
+        dbs = ["A_2030_BAU.sqlite", "A_2030_BAU_noFossil.sqlite",
+               "A_2030_Emerg.sqlite", "A_2030_Emerg_noFossil.sqlite"]
+        n_cpus = 2
+        solve_time = 4  # maximum number of hours
 
-        # temoa model technologies and corresponding values for variable
-        variable = 'CostInvestIncrease'
-        techs = {'EC_BATT': [0.84, 0.75],
-                 'EC_SOLPV': [0.85, 0.73],
-                 'EC_WIND': [0.94, 0.73],
-                 'ED_SOLPV': [0.84, 0.70],
-                 'EF_WIND': [0.91, 0.68],
-                 'E_PV_DIST_RES': [0.75, 0.61],
-                 'E_SCO2': [0.97, 0.61],
-                 'E_OCAES': [0.97, 0.61],
-                 'E_BECCS': [0.97, 0.61]}
-
-    # Only emerging technologies have stochastic inputs
     if i == 1:
+        # model years
+        years = [2020, 2030, 2040]
         # Baseline databases to use
-        dbs = ["stochEmerg_none_Emerg.sqlite", "stochEmerg_none_Emerg_noFossil.sqlite",
-               "stochEmerg_linear_Emerg.sqlite", "stochEmerg_linear_Emerg_noFossil.sqlite",
-               "stochEmerg_delay_Emerg.sqlite", "stochEmerg_delay_Emerg_noFossil.sqlite", ]
+        dbs = ["A_2040_BAU.sqlite", "A_2040_BAU_noFossil.sqlite",
+               "A_2040_Emerg.sqlite", "A_2040_Emerg_noFossil.sqlite"]
+        n_cpus = 4
+        solve_time = 6  # maximum number of hours
 
-        # temoa model technologies and corresponding values for variable
-        variable = 'CostInvestIncrease'
-        techs = {'E_SCO2': [0.97, 0.61],
-                 'E_OCAES': [0.97, 0.61],
-                 'E_BECCS': [0.97, 0.61]}
+    elif i == 2:
+        # model years
+        years = [2020, 2030, 2040, 2050]
+        # Baseline databases to use
+        dbs = ["A_2050_BAU.sqlite", "A_2050_BAU_noFossil.sqlite",
+               "A_2050_Emerg.sqlite", "A_2050_Emerg_noFossil.sqlite"]
+        n_cpus = 8
+        solve_time = 24  # maximum number of hours
 
     # ===================================
     # Begin input file preparation
@@ -71,13 +64,13 @@ for i in range(2):
     # --------------------
 
     n_periods = len(years) - 1
-    for key in techs.keys():
-        values = techs[key]
-        min_value = min(values)
-        if min_value ** n_periods < 1e-6:
-            print("Warning: value for " + key + " is too low")
-            print("\tvalue^n_periods>1e-6 in order to be recognized")
-            print("\twhere n is # of model years excluding the first time step\n")
+    # for key in techs.keys():
+    #     values = techs[key]
+    #     min_value = min(values)
+    #     if min_value ** n_periods < 1e-6:
+    #         print("Warning: value for " + key + " is too low")
+    #         print("\tvalue^n_periods>1e-6 in order to be recognized")
+    #         print("\twhere n is # of model years excluding the first time step\n")
 
     # --------------------
     # directory management
@@ -147,11 +140,18 @@ for i in range(2):
         f.write(")\n")
         f.write("rates = {\n")
         f.write("\t'" + variable + "': dict(\n")
-        for ix, (scenario, prob) in enumerate(zip(scenarios, probabilities)):
+        for ix, (scenario, prob, value) in enumerate(zip(scenarios, probabilities, values)):
             f.write("\t\t" + scenario + "=(\n")
-            for tech in techs.keys():
-                value = techs[tech][ix]
-                f.write("\t\t\t('" + tech + "', " + str(value) + "),\n")
+            # tech = 'dummy1'
+            f.write("\t\t\t('" + emission_commodity + "', " + str(value) + "),\n")
+            #
+            # tech = 'dummy2'
+            # f.write("\t\t\t('" + tech + "', " + str(value) + "),\n")
+            # # for value in values:
+            # #     f.write(str(value))
+            # for tech in techs.keys():
+            #     value = techs[tech][ix]
+            #     f.write("\t\t\t('" + tech + "', " + str(value) + "),\n")
             f.write("\t\t),\n\n")
         f.write("\t),\n")
         f.write("}\n")
@@ -265,7 +265,7 @@ for i in range(2):
     # Script file - batch
     # ====================================
     os.chdir(wrkdir)
-    f = open("run_simulations_pt"+str(i+1)+".sh", "w")
+    f = open("run_simulations_pt" + str(i + 1) + ".sh", "w")
     f.write("#!/bin/bash\n\n")
     f.write('cd sbatch_files\n\n')
     for db in dbs:

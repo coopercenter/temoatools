@@ -316,7 +316,7 @@ to each emission commodity.
    \\
    \forall \{p, e\} \in ELM_{ind}
 """
-    emission_limit = M.EmissionLimit[p, e]
+    emission_limit = M.EmissionLimit[p, e] * value(M.EmissionLimitMultiplier[p, e]) # Virginia
 
     actual_emissions = sum(
         M.V_FlowOut[p, S_s, S_d, S_i, S_t, S_v, S_o]
