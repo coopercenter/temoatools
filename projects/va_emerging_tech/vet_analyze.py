@@ -7,7 +7,22 @@ import temoatools as tt
 
 onlySimple = False
 folder = os.getcwd() + '/databases'
-dbs = ["none.sqlite", "all.sqlite", "BECCS.sqlite", "OCAES.sqlite", "DIST_PV.sqlite", "sCO2.sqlite"]
+dbs = [
+    'woEmerg_woFossil_combined_2030.sqlite', 'woEmerg_woFossil_combined_2035.sqlite',
+    'woEmerg_woFossil_combined_2040.sqlite', 'woEmerg_woFossil_combined_2045.sqlite',
+    'woEmerg_woFossil_combined_2050.sqlite', 'woEmerg_woFossil_combined_na.sqlite',
+
+    'woEmerg_wFossil_combined_2030.sqlite', 'woEmerg_wFossil_combined_2035.sqlite',
+    'woEmerg_wFossil_combined_2040.sqlite', 'woEmerg_wFossil_combined_2045.sqlite',
+    'woEmerg_wFossil_combined_2050.sqlite', 'woEmerg_wFossil_combined_na.sqlite',
+
+    'wEmerg_woFossil_combined_2030.sqlite', 'wEmerg_woFossil_combined_2035.sqlite',
+    'wEmerg_woFossil_combined_2040.sqlite', 'wEmerg_woFossil_combined_2045.sqlite',
+    'wEmerg_woFossil_combined_2050.sqlite', 'wEmerg_woFossil_combined_na.sqlite',
+
+    'wEmerg_wFossil_combined_2030.sqlite', 'wEmerg_wFossil_combined_2035.sqlite',
+    'wEmerg_wFossil_combined_2040.sqlite', 'wEmerg_wFossil_combined_2045.sqlite',
+    'wEmerg_wFossil_combined_2050.sqlite', 'wEmerg_wFossil_combined_na.sqlite']
 
 createPlots = 'Y'  # Create default plots
 saveData = 'Y'  # Save data as a csv or xls
