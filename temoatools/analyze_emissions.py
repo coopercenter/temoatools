@@ -79,6 +79,7 @@ def getEmissions(folders, dbs, conversion=1E-6, save_data='N', create_plots='N',
     if create_plots == 'Y':
         import matplotlib.pyplot as plt
         import seaborn as sns
+        plt.rcParams.update({'figure.max_open_warning': 0})  # ignore warning
 
         # new figure
         plt.figure()

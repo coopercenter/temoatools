@@ -1,4 +1,3 @@
-# TODO - keep this?
 import os
 import sqlite3
 import pandas as pd
@@ -82,6 +81,7 @@ def getActivityTOD(folders, dbs, switch='fuel', sector_name='electric', save_dat
 
         import matplotlib.pyplot as plt
         import seaborn as sns
+        plt.rcParams.update({'figure.max_open_warning': 0})  # ignore warning
 
         for database in df.database.unique():
             # new figure

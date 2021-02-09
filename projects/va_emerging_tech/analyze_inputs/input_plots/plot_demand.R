@@ -9,7 +9,7 @@ library(RColorBrewer)
 library(hash)
 
 # inputs
-db = 'all.sqlite' # database to analyze, assumed to be in results directory
+db = 'wEmerg_wFossil_combined_2050.sqlite' # database to analyze, assumed to be in results directory
 
 
 # This is order that items will be plotted, only items included will be plotted
@@ -52,11 +52,11 @@ colors[['pink']] <- "#CC79A7"
 colors[['brown']] <- "#993300"
 
 season_rename <- c('fall'='Fall',
-  'winter'='Winter - Sunny days',
-  'winter2'='Winter - low renewables',
+  'winter'='Winter - High renewables',
+  'winter2'='Winter - Low renewables',
   'spring'='Spring',
-  'summer'='Summer - Sunny days',
-  'summer2'='Summer - low renewables')
+  'summer'='Summer - High renewables',
+  'summer2'='Summer - Low renewables')
 
 tod_rename <- c('hr01'=1,
                 'hr02'=2,
@@ -162,6 +162,7 @@ ggplot(data=tbl, aes_string(x='time_of_day_name',y='cf_tech',color='Technologies
   facet_wrap('season_name')+
   scale_linetype_manual(values=line_styles,labels=parse_format())+
   scale_color_manual(values=tech_palette,labels=parse_format())+
+  scale_y_continuous(expand = c(0, 0), limits = c(0, NA)) + 
   labs(x='Hour (-)', y='Capacity factor (-)',
        col='Technologies')+
   theme(axis.text.x = element_text(angle = 0,vjust=0., hjust = 0.5),
@@ -187,11 +188,14 @@ tbl1 <- dbReadTable(con, table1)
 
 # process data
 tbl1$demand <- tbl1$demand * conversion
+tbl1$demand <- tbl1$demand * 1.0/1000.0 # GWh to TWh
 
 # plot
-ggplot(data=tbl1, aes_string(x='periods',y='demand'))+
+plot_demand <- ggplot(data=tbl1, aes_string(x='periods',y='demand'))+
   geom_line() +
-  labs(x='Hour (-)', y='Demand (GWh)')+
+  geom_point() +
+  labs(x='Hour (-)', y='Demand (TWh)')+
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 250)) + 
   theme(axis.text.x = element_text(angle = 0,vjust=0., hjust = 0.5),
         panel.background = element_rect(fill = NA, colour ="black"),
         panel.border = element_rect(linetype="solid", fill=NA),
@@ -200,8 +204,80 @@ ggplot(data=tbl1, aes_string(x='periods',y='demand'))+
         strip.background = element_rect(colour = NA, fill = NA),
         panel.spacing = unit(1, "lines"))
 
+plot_demand_gray <- ggplot(data=tbl1, aes_string(x='periods',y='demand'))+
+  geom_line() +
+  geom_point() +
+  labs(x='Year (-)', y='Demand (TWh)')+
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 250)) + 
+  theme(axis.text.x = element_text(angle = 0,vjust=0., hjust = 0.5),
+        panel.border = element_rect(linetype="solid", fill=NA),
+        legend.background=element_rect(fill = alpha("white", 0)),
+        legend.key = element_rect(colour = "transparent"),
+        strip.background = element_rect(colour = NA, fill = NA),
+        panel.spacing = unit(1, "lines"))
+
 # save
-ggsave(savename, device="png", width=7.48, height=5.5, units="in",dpi=300)
+# ggsave(savename, device="png", width=7.48, height=5.5, units="in",dpi=300)
+
+# -------------------------
+# Emission limits
+table1 = 'Demand'
+savename = 'Inputs_Demand_Yearly.png'
+conversion = 277.777778 # PJ to GWh
+# -------------------------
+emi <- read.csv('emission_pathways.csv')
+names(emi) <- c('Pathway', 'year', 'limit', 'units')
+
+emi$limit <- emi$limit * 1.0/1000.0 # convert kton to Mton
+
+# Set color palette
+# predefined palette # http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/
+# The palette with black:
+pathway_Palette <- c("#E69F00", "#56B4E9", "#009E73","#0072B2", "#D55E00", "#000000", "#CC79A7")
+options(ggplot2.discrete.fill = pathway_Palette)
+options(ggplot2.discrete.color = pathway_Palette)
+options(ggplot2.continuous.color = pathway_Palette)
+options(ggplot2.continuous.color = pathway_Palette)
+
+plot_emi <- ggplot(data=emi, aes_string(x='year',y='limit', color='Pathway'))+
+  geom_line() +
+  geom_point() +
+  labs(x='Year (-)', y=expression(paste("Emission limit (Mton CO"[2],")")))+
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 25)) + 
+  theme(axis.text.x = element_text(angle = 0,vjust=0., hjust = 0.5),
+        panel.background = element_rect(fill = NA, colour ="black"),
+        panel.border = element_rect(linetype="solid", fill=NA),
+        legend.background=element_rect(fill = alpha("white", 0)),
+        legend.key = element_rect(colour = "transparent", fill = "white"),
+        strip.background = element_rect(colour = NA, fill = NA),
+        panel.spacing = unit(1, "lines"),
+        legend.position = "bottom")
+
+plot_emi_gray <- ggplot(data=emi, aes_string(x='year',y='limit', color='Pathway'))+
+  geom_line() +
+  geom_point() +
+  labs(x='Year (-)', y=expression(paste("Emission limit (Mton CO"[2],")")))+
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 25)) + 
+  theme(axis.text.x = element_text(angle = 0,vjust=0., hjust = 0.5),
+        panel.border = element_rect(linetype="solid", fill=NA),
+        legend.background=element_rect(fill = alpha("white", 0)),
+        legend.key = element_rect(colour = "transparent"),
+        strip.background = element_rect(colour = NA, fill = NA),
+        panel.spacing = unit(1, "lines"),
+        legend.position = "bottom")
+
+ggarrange(plot_demand, plot_emi, nrow=2, ncol=1, heights = c(1,1.2), align="v", 
+          labels= c("A", "B"), label.x = 0.0, label.y = 1.0)
+
+savename = 'Fig4_demand_emissions.png'
+ggsave(savename, device="png", width=3.54, height=7.0, units="in",dpi=500)
+
+
+ggarrange(plot_demand_gray, plot_emi_gray, nrow=2, ncol=1, heights = c(1,1.2), align="v",  
+          labels= c("A", "B"), label.x = 0.0, label.y = 1.0)
+
+savename = 'Fig4_demand_emissions_gray.png'
+ggsave(savename, device="png", width=3.54, height=7.0, units="in",dpi=500)
 
 # -------------------------
 # Demand
@@ -259,6 +335,7 @@ ggplot(data=tbl3, aes_string(x='time_of_day_name',y='dds',color='year'))+
   labs(x='Hour (-)', y='Demand (GWh)',
        col='Year')+
   facet_wrap('season_name')+
+  scale_y_continuous(expand = c(0, 0), limits = c(0, NA)) + 
   theme(axis.text.x = element_text(angle = 0,vjust=0., hjust = 0.5),
         panel.background = element_rect(fill = NA, colour ="black"),
         panel.border = element_rect(linetype="solid", fill=NA),
@@ -273,7 +350,6 @@ ggsave(savename, device="pdf", width=7.48, height=5.5, units="in",dpi=300)
 
 # -------------------------
 # Combine Demand and Capacity Factor TOD
-savename = 'Inputs_Demand_CapacityFactor.png'
 # -------------------------
 
 custom_palette <- c('#000000', tech_palette)
@@ -317,6 +393,7 @@ ggplot(data=tbl_comb, aes_string(x='time_of_day_name',y='cf_tech',color='Technol
   facet_wrap('season_name')+
   scale_linetype_manual(values=line_styles,labels=parse_format())+
   scale_color_manual(values=newPalette,labels=parse_format())+
+  scale_y_continuous(expand = c(0, 0), limits = c(0, NA)) + 
   labs(x='Hour (-)', y='Normalized demand and resource availability (-)',
        col='Technologies')+
   theme(axis.text.x = element_text(angle = 0,vjust=0., hjust = 0.5),
@@ -325,9 +402,32 @@ ggplot(data=tbl_comb, aes_string(x='time_of_day_name',y='cf_tech',color='Technol
         legend.background=element_rect(fill = alpha("white", 0)),
         legend.key = element_rect(colour = "transparent", fill = "white"),
         strip.background = element_rect(colour = NA, fill = NA),
-        panel.spacing = unit(1, "lines"))
+        panel.spacing = unit(1, "lines"),
+        legend.position = "bottom")
 
 # save
+savename = 'Fig2_Inputs_Demand_CapacityFactor.png'
+ggsave(savename, device="png", width=7.48, height=5.5, units="in",dpi=300)
+
+# plot
+ggplot(data=tbl_comb, aes_string(x='time_of_day_name',y='cf_tech',color='Technologies', linetype='Technologies'))+
+  geom_line()+
+  facet_wrap('season_name')+
+  scale_linetype_manual(values=line_styles,labels=parse_format())+
+  scale_color_manual(values=newPalette,labels=parse_format())+
+  scale_y_continuous(expand = c(0, 0), limits = c(0, NA)) + 
+  labs(x='Hour (-)', y='Normalized demand and resource availability (-)',
+       col='Technologies')+
+  theme(axis.text.x = element_text(angle = 0,vjust=0., hjust = 0.5),
+        panel.background = element_rect(colour ="black"),
+        legend.background=element_rect(fill = alpha("white", 0)),
+        legend.key = element_rect(colour = "transparent"),
+        strip.background = element_rect(colour = NA, fill = NA),
+        panel.spacing = unit(1, "lines"),
+        legend.position = "bottom")
+
+# save
+savename = 'Fig2_Inputs_Demand_CapacityFactor_gray.png'
 ggsave(savename, device="png", width=7.48, height=5.5, units="in",dpi=300)
 
 
@@ -336,5 +436,3 @@ ggsave(savename, device="png", width=7.48, height=5.5, units="in",dpi=300)
 # -------------------------
 # disconnect from database
 dbDisconnect(con)
-# return to original directory
-setwd(dir_work)

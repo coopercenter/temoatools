@@ -70,6 +70,7 @@ def getActivity(folders, dbs, switch='fuel', sector_name='electric', save_data='
     if create_plots == 'Y':
         import matplotlib.pyplot as plt
         import seaborn as sns
+        plt.rcParams.update({'figure.max_open_warning': 0})  # ignore warning
 
         # new figure
         plt.figure()

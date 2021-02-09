@@ -26,7 +26,7 @@ if __name__ == '__main__':
     project_path = os.getcwd()
 
     # solver settings
-    ncpus = 2
+    ncpus = 4
     solver = ''  # 'gurobi'
 
     # model inputs

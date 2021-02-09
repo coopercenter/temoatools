@@ -72,6 +72,7 @@ def getCosts(folders, dbs, elc_dmd='ELC_DMD', conversion=0.359971, save_data='N'
     if create_plots == 'Y':
         import matplotlib.pyplot as plt
         import seaborn as sns
+        plt.rcParams.update({'figure.max_open_warning': 0})  # ignore warning
 
         # new figure
         plt.figure()
