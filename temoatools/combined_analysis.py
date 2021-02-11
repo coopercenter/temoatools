@@ -87,7 +87,7 @@ def analyze_db(folder, db, scenario='default', iteration=0, switch='fuel', tod_a
     # LCOE
     row = get_series(scenario, iteration, db)
     row['quantity'] = 'LCOE'
-    row['value'] = LCOE
+    row['value'] = LCOE['LCOE'].values[0]
     output = output.append(row, ignore_index=True)
 
     # yearly_costs
@@ -109,7 +109,7 @@ def analyze_db(folder, db, scenario='default', iteration=0, switch='fuel', tod_a
     # average_emissions
     row = get_series(scenario, iteration, db)
     row['quantity'] = 'average_emissions'
-    row['value'] = average_emissions
+    row['value'] = average_emissions['avgEmissions'].values[0]
     output = output.append(row, ignore_index=True)
 
     # yearly_emissions

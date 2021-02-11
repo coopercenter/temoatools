@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH -N 1
-#SBATCH --cpus-per-task=4
-#SBATCH -t 2:00:00
+#SBATCH --cpus-per-task=20
+#SBATCH -t 6:00:00
 #SBATCH -p standard
 
 module purge
@@ -19,4 +19,5 @@ export NUM_PROCS=$SLURM_CPUS_PER_TASK
 
 # run
 python vet_run_baselines.py
-python vet_analyze.py
+python vet_run_monte_carlo.py
+python vet_process_and_combine_results.py

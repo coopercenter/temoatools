@@ -34,10 +34,11 @@ import temoatools as tt
 # =======================================================
 # Function to evaluate a single model
 # =======================================================
-def evaluateMonteCarlo(modelInputs, scenarioXLSX, scenarioName, monte_carlo_case, temoa_path, project_path, solver,
+def evaluateMonteCarlo(modelInputs, scenarioXLSX, scenarioName, combined_name, monte_carlo_case, temoa_path,
+                       project_path, solver,
                        cases, caseNum):
     # Unique filename
-    model_filename = 'MC_' + monte_carlo_case + '_' + scenarioName + '_' + str(caseNum)
+    model_filename = combined_name + '_' + monte_carlo_case + '_' + scenarioName + '_' + str(caseNum)
 
     # Prepare monte carlo inputs
     cols = ['type', 'variable', 'tech', caseNum]
@@ -57,6 +58,11 @@ def evaluateMonteCarlo(modelInputs, scenarioXLSX, scenarioName, monte_carlo_case
         db = model_filename + '.sqlite'
         results = tt.analyze_db(folder, db, scenario=scenarioName, iteration=caseNum, switch='tech', tod_analysis=True,
                                 debug=False)
+
+        # store uncertain variables and their values
+        for i in range(len(MCinputs)):
+            mc_var = MCinputs.loc[i, 'tech'] + '-' + MCinputs.loc[i, 'variable']
+            results.loc[:, mc_var] = MCinputs.loc[i, 'value']
     else:
         results = pd.Dataframe()
 
@@ -70,11 +76,18 @@ if __name__ == '__main__':
     # =======================================================
     temoa_path = os.path.abspath('../../temoa-energysystem')
     project_path = os.getcwd()
-    modelInputs_XLSX = 'data_combined.xlsx'
     monte_carlo_inputs = 'monte_carlo_inputs.xlsx'
-    monte_carlo_cases = ['biomass', 'default']  # each case corresponds with a list in scenarioNames
+    monte_carlo_cases = ['default']  # each case corresponds with a list in scenarioNames
     scenarioInputs = 'scenarios_emerging_tech.xlsx'
-    scenarioNames = [['all'], ['all', 'none', 'BECCS', 'OCAES', 'DIST_PV', 'sCO2']]
+    scenarioNames = ['wEmerg_woFossil_woNuclear', 'wEmerg_wFossil_woNuclear',
+                     'wEmerg_woFossil_wNuclear', 'wEmerg_wFossil_wNuclear']
+
+    modelInputs_primary = 'data_va_noEmissionLimit.xlsx'
+    modelInputs_secondary = ['data_emerging_tech.xlsx', 'data_H2_VFB.xlsx']
+
+    emission_inputs = ['emissionLimit_decarb_2050.xlsx']
+    emission_names = ['2050']
+
     ncpus = 1  # default, unless otherwise specified in sbatch script
     solver = ''  # leave blank to let temoa decide which solver to use of those installed
     iterations = 100
@@ -87,49 +100,65 @@ if __name__ == '__main__':
     except:
         ncpus = ncpus  # otherwise default to this number of cores
 
-    # combine data files
-    tt.combine(project_path=project_path, primary='data_va.xlsx',
-               data_files=['data_emerging_tech.xlsx', 'data_H2_VFB.xlsx'],
-               output='data_combined.xlsx')
-
-    # =======================================================
-    # Move modelInputs_XLSX to database
-    # =======================================================
-    modelInputs = tt.move_data_to_db(modelInputs_XLSX, path=project_path)
-
     # =======================================================
     # Create directories - best completed before using multiprocessing
     # =======================================================
     mc_dir = 'monte_carlo'
     tt.create_dir(project_path=project_path, optional_dir=mc_dir)
 
-    # ====================================
-    # Perform Simulations
-    # ====================================
+    # =======================================================
+    # iterate through emission_inputs
+    # =======================================================
+    for emission_input, emission_name in zip(emission_inputs, emission_names):
+        # naming convention
+        combined_name = emission_name
+        combined_file = combined_name + '.xlsx'
 
-    for monte_carlo_case, scenarioNames_list in zip(monte_carlo_cases, scenarioNames):
-        for scenarioName in scenarioNames_list:
-            # Create monte carlo cases
-            os.chdir(os.path.join(project_path, 'data'))
-            cases = tt.createMonteCarloCases_distributions(monte_carlo_inputs, monte_carlo_case, iterations)
-            os.chdir(project_path)
+        # files
+        files = [emission_input]
+        for modelInput in modelInputs_secondary:
+            if len(modelInput) > 0:
+                files.append(modelInput)
 
-            # Save cases
-            os.chdir(os.path.join(project_path, mc_dir))
-            cases.to_csv('MonteCarloInputs_' + monte_carlo_case + '_' + scenarioName + '.csv', index=False)
-            os.chdir(project_path)
+        # combine files
+        tt.combine(project_path=project_path, primary=modelInputs_primary,
+                   data_files=files,
+                   output=combined_file)
 
-            # Perform simulations in parallel
-            with parallel_backend('multiprocessing', n_jobs=ncpus):
-                outputs = Parallel(n_jobs=ncpus, verbose=5)(
-                    delayed(evaluateMonteCarlo)(modelInputs, scenarioInputs, scenarioName, monte_carlo_case, temoa_path,
-                                                project_path,
-                                                solver, cases, caseNum) for caseNum in range(iterations))
+        # =======================================================
+        # Move modelInputs_XLSX to database
+        # =======================================================
+        modelInputs = tt.move_data_to_db(combined_file, path=project_path)
 
-            # Save results to a csv
-            os.chdir(os.path.join(project_path, mc_dir))
-            df = pd.DataFrame()
-            for output in outputs:
-                df = df.append(output, ignore_index=True)
-            df.to_csv('MonteCarloResults_' + monte_carlo_case + '_' + scenarioName + '.csv')
-            os.chdir(project_path)
+        # ====================================
+        # Perform Simulations
+        # ====================================
+
+        for monte_carlo_case in monte_carlo_cases:
+            for scenarioName in scenarioNames:
+                # Create monte carlo cases
+                os.chdir(os.path.join(project_path, 'data'))
+                cases = tt.createMonteCarloCases_distributions(monte_carlo_inputs, monte_carlo_case, iterations)
+                os.chdir(project_path)
+
+                # Save cases
+                os.chdir(os.path.join(project_path, mc_dir))
+                cases.to_csv('MonteCarloInputs_' + monte_carlo_case + '_' + scenarioName + '_' + combined_name + '.csv',
+                             index=False)
+                os.chdir(project_path)
+
+                # Perform simulations in parallel
+                with parallel_backend('multiprocessing', n_jobs=ncpus):
+                    outputs = Parallel(n_jobs=ncpus, verbose=5)(
+                        delayed(evaluateMonteCarlo)(modelInputs, scenarioInputs, scenarioName, combined_name,
+                                                    monte_carlo_case, temoa_path,
+                                                    project_path,
+                                                    solver, cases, caseNum) for caseNum in range(iterations))
+
+                # Save results to a csv
+                os.chdir(os.path.join(project_path, mc_dir))
+                df = pd.DataFrame()
+                for output in outputs:
+                    df = df.append(output, ignore_index=True)
+                df.to_csv('MonteCarloResults_' + monte_carlo_case + '_' + scenarioName + '_' + combined_name + '.csv')
+                os.chdir(project_path)
