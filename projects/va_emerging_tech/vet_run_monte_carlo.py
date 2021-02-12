@@ -77,10 +77,20 @@ if __name__ == '__main__':
     temoa_path = os.path.abspath('../../temoa-energysystem')
     project_path = os.getcwd()
     monte_carlo_inputs = 'monte_carlo_inputs.xlsx'
-    monte_carlo_cases = ['default']  # each case corresponds with a list in scenarioNames
+    monte_carlo_cases = ['lowBio', 'highBio']  # each case corresponds with a list in scenarioNames
     scenarioInputs = 'scenarios_emerging_tech.xlsx'
-    scenarioNames = ['wEmerg_woFossil_woNuclear', 'wEmerg_wFossil_woNuclear',
+    # scenarioNames = ['wEmerg_woFossil_woNuclear', 'wEmerg_wFossil_woNuclear',
+    #                  'wEmerg_woFossil_wNuclear', 'wEmerg_wFossil_wNuclear']
+
+    scenarioNames = ['woEmerg_woFossil_woNuclear', 'woEmerg_wFossil_woNuclear',
+                     'woEmerg_woFossil_wNuclear', 'woEmerg_wFossil_wNuclear',
+                     'wEmerg_woFossil_woNuclear', 'wEmerg_wFossil_woNuclear',
                      'wEmerg_woFossil_wNuclear', 'wEmerg_wFossil_wNuclear']
+
+    n_baseline = 1
+    n_uncertainty = 100
+    n_iterations = [n_baseline, n_baseline, n_baseline, n_baseline,
+                    n_uncertainty, n_uncertainty, n_uncertainty, n_uncertainty]
 
     modelInputs_primary = 'data_va_noEmissionLimit.xlsx'
     modelInputs_secondary = ['data_emerging_tech.xlsx', 'data_H2_VFB.xlsx']
@@ -90,7 +100,6 @@ if __name__ == '__main__':
 
     ncpus = 1  # default, unless otherwise specified in sbatch script
     solver = ''  # leave blank to let temoa decide which solver to use of those installed
-    iterations = 100
 
     # =======================================================
     # begin script
@@ -135,7 +144,7 @@ if __name__ == '__main__':
         # ====================================
 
         for monte_carlo_case in monte_carlo_cases:
-            for scenarioName in scenarioNames:
+            for scenarioName, iterations in zip(scenarioNames, n_iterations):
                 # Create monte carlo cases
                 os.chdir(os.path.join(project_path, 'data'))
                 cases = tt.createMonteCarloCases_distributions(monte_carlo_inputs, monte_carlo_case, iterations)

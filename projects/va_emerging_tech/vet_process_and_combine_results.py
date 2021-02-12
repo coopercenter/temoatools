@@ -8,32 +8,34 @@ woFossil = 'woFossil'
 wFossil = 'wFossil'
 woNuclear = 'woNuclear'
 wNuclear = 'wNuclear'
+lowBio = "Low Bio"
+highBio = "High Bio"
 decarb2050 = 2050
 
-# baseline results files
-baselines = {
-    "BaselineResults_wEmerg_wFossil_wNuclear_2050.csv": [wEmerg, wFossil, wNuclear, decarb2050],
-    "BaselineResults_wEmerg_wFossil_woNuclear_2050.csv": [wEmerg, wFossil, woNuclear, decarb2050],
-    "BaselineResults_wEmerg_woFossil_wNuclear_2050.csv": [wEmerg, woFossil, wNuclear, decarb2050],
-    "BaselineResults_wEmerg_woFossil_woNuclear_2050.csv": [wEmerg, woFossil, woNuclear, decarb2050],
-    "BaselineResults_woEmerg_wFossil_wNuclear_2050.csv": [woEmerg, wFossil, wNuclear, decarb2050],
-    "BaselineResults_woEmerg_wFossil_woNuclear_2050.csv": [woEmerg, wFossil, woNuclear, decarb2050],
-    "BaselineResults_woEmerg_woFossil_wNuclear_2050.csv": [woEmerg, woFossil, wNuclear, decarb2050],
-    "BaselineResults_woEmerg_woFossil_woNuclear_2050.csv": [woEmerg, woFossil, woNuclear, decarb2050]}
-
-# default values for monte carlo variables
-default_values = {
-    'EC_BECCS-CostInvest': 6874,
-    'EC_DAC-CostInvest': 2500,
-    'EC_H2-CostInvest': 5821.55,
-    'E_OCAES-CostInvest': 1457.0,
-    'EC_VFB-CostInvest': 4317.0}
-
 # monte carlo results files
-mc = {'MonteCarloResults_default_wEmerg_wFossil_wNuclear_2050.csv': [wEmerg, wFossil, wNuclear, decarb2050],
-      'MonteCarloResults_default_wEmerg_wFossil_woNuclear_2050.csv': [wEmerg, wFossil, woNuclear, decarb2050],
-      'MonteCarloResults_default_wEmerg_woFossil_wNuclear_2050.csv': [wEmerg, woFossil, wNuclear, decarb2050],
-      'MonteCarloResults_default_wEmerg_woFossil_woNuclear_2050.csv': [wEmerg, woFossil, woNuclear, decarb2050]}
+mc = {"MonteCarloResults_highBio_wEmerg_wFossil_wNuclear_2050.csv": [wEmerg, wFossil, wNuclear, decarb2050, highBio],
+      "MonteCarloResults_highBio_wEmerg_wFossil_woNuclear_2050.csv": [wEmerg, wFossil, woNuclear, decarb2050, highBio],
+      "MonteCarloResults_highBio_wEmerg_woFossil_woNuclear_2050.csv": [wEmerg, woFossil, wNuclear, decarb2050, highBio],
+      "MonteCarloResults_highBio_wEmerg_woFossil_wNuclear_2050.csv": [wEmerg, woFossil, woNuclear, decarb2050, highBio],
+
+      "MonteCarloResults_highBio_woEmerg_wFossil_wNuclear_2050.csv": [woEmerg, wFossil, wNuclear, decarb2050, highBio],
+      "MonteCarloResults_highBio_woEmerg_wFossil_woNuclear_2050.csv": [woEmerg, wFossil, woNuclear, decarb2050,
+                                                                       highBio],
+      "MonteCarloResults_highBio_woEmerg_woFossil_wNuclear_2050.csv": [woEmerg, woFossil, wNuclear, decarb2050,
+                                                                       highBio],
+      "MonteCarloResults_highBio_woEmerg_woFossil_woNuclear_2050.csv": [woEmerg, woFossil, woNuclear, decarb2050,
+                                                                        highBio],
+
+      "MonteCarloResults_lowBio_wEmerg_wFossil_wNuclear_2050.csv": [wEmerg, wFossil, wNuclear, decarb2050, lowBio],
+      "MonteCarloResults_lowBio_wEmerg_wFossil_woNuclear_2050.csv": [wEmerg, wFossil, woNuclear, decarb2050, lowBio],
+      "MonteCarloResults_lowBio_wEmerg_woFossil_wNuclear_2050.csv": [wEmerg, woFossil, wNuclear, decarb2050, lowBio],
+      "MonteCarloResults_lowBio_wEmerg_woFossil_woNuclear_2050.csv": [wEmerg, woFossil, woNuclear, decarb2050, lowBio],
+
+      "MonteCarloResults_lowBio_woEmerg_wFossil_wNuclear_2050.csv": [woEmerg, wFossil, wNuclear, decarb2050, lowBio],
+      "MonteCarloResults_lowBio_woEmerg_wFossil_woNuclear_2050.csv": [woEmerg, wFossil, woNuclear, decarb2050, lowBio],
+      "MonteCarloResults_lowBio_woEmerg_woFossil_wNuclear_2050.csv": [woEmerg, woFossil, wNuclear, decarb2050, lowBio],
+      "MonteCarloResults_lowBio_woEmerg_woFossil_woNuclear_2050.csv": [woEmerg, woFossil, woNuclear, decarb2050,
+                                                                       lowBio]}
 
 # ==============================
 # process results
@@ -42,38 +44,19 @@ mc = {'MonteCarloResults_default_wEmerg_wFossil_wNuclear_2050.csv': [wEmerg, wFo
 df = pd.DataFrame()
 
 # ------------------------------------
-# baseline results
-# ------------------------------------
-os.chdir('results')
-for file, d in zip(baselines.keys(), baselines.values()):
-    dfi = pd.read_csv(file)
-
-    # store details about scenario
-    dfi.loc[:,'new_emerg'] = d[0]
-    dfi.loc[:,'new_fossil'] = d[1]
-    dfi.loc[:,'new_nuclear'] = d[2]
-    dfi.loc[:,'decarb'] = d[3]
-
-    # store default values of monte carlo variables
-    for key, value in zip(default_values.keys(), default_values.values()):
-        dfi.loc[:, key] = value
-
-    # append modified data
-    df = df.append(dfi, ignore_index=True)
-
-# ------------------------------------
 # monte carlo results
 # ------------------------------------
-os.chdir('..')
+# os.chdir('..')
 os.chdir('monte_carlo')
 for file, d in zip(mc.keys(), mc.values()):
     dfi = pd.read_csv(file)
 
     # store details about scenario
-    dfi.loc[:,'new_emerg'] = d[0]
-    dfi.loc[:,'new_fossil'] = d[1]
-    dfi.loc[:,'new_nuclear'] = d[2]
-    dfi.loc[:,'decarb'] = d[3]
+    dfi.loc[:, 'new_emerg'] = d[0]
+    dfi.loc[:, 'new_fossil'] = d[1]
+    dfi.loc[:, 'new_nuclear'] = d[2]
+    dfi.loc[:, 'decarb'] = d[3]
+    dfi.loc[:, 'bio'] = d[4]
 
     # append modified data
     df = df.append(dfi, ignore_index=True)
