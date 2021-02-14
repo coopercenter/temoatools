@@ -1,0 +1,14 @@
+reduced seasons from 6 to 4 (reduce computational demand)
+	spring -> spring_fall
+	winter
+	summer
+	winter2 -> low_renew
+	removed: fall and summer2
+
+demand
+	reduced number of periods (reduce computational demand)
+	mid-point demand
+	2020-2030 uses demand projected for 2025
+	2030-2040 uses demand projected for 2035
+	2040-2050 uses demand projected for 2045
+	2050-2060 uses demand projected for 2055
