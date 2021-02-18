@@ -77,7 +77,7 @@ The example commands are shown in a Windows environment.
     1)  Launch PyCharm
         - Windows: Start -> JetBrains -> PyCharm Community Edition
     2) New project:
-        - Select "Get from Version Control" option
+        - Select "Get from VCS" Version Control option
         - Settings
             - URL (Must match below):
             
