@@ -13,29 +13,18 @@ highBio = "High Bio"
 decarb2050 = 2050
 
 # monte carlo results files
-mc = {"MonteCarloResults_highBio_wEmerg_wFossil_wNuclear_2050.csv": [wEmerg, wFossil, wNuclear, decarb2050, highBio],
-      "MonteCarloResults_highBio_wEmerg_wFossil_woNuclear_2050.csv": [wEmerg, wFossil, woNuclear, decarb2050, highBio],
-      "MonteCarloResults_highBio_wEmerg_woFossil_wNuclear_2050.csv": [wEmerg, woFossil, wNuclear, decarb2050, highBio],
-      "MonteCarloResults_highBio_wEmerg_woFossil_woNuclear_2050.csv": [wEmerg, woFossil, woNuclear, decarb2050, highBio],
+mc = {
+    "MonteCarloResults_highBio_wEmerg_wFossil_woNuclear_2050.csv": [wEmerg, wFossil, woNuclear, decarb2050, highBio],
+    "MonteCarloResults_highBio_wEmerg_woFossil_woNuclear_2050.csv": [wEmerg, woFossil, woNuclear, decarb2050, highBio],
+    "MonteCarloResults_highBio_woEmerg_wFossil_woNuclear_2050.csv": [woEmerg, wFossil, woNuclear, decarb2050,
+                                                                     highBio],
+    "MonteCarloResults_highBio_woEmerg_woFossil_woNuclear_2050.csv": [woEmerg, woFossil, woNuclear, decarb2050,
+                                                                      highBio],
 
-      "MonteCarloResults_highBio_woEmerg_wFossil_wNuclear_2050.csv": [woEmerg, wFossil, wNuclear, decarb2050, highBio],
-      "MonteCarloResults_highBio_woEmerg_wFossil_woNuclear_2050.csv": [woEmerg, wFossil, woNuclear, decarb2050,
-                                                                       highBio],
-      "MonteCarloResults_highBio_woEmerg_woFossil_wNuclear_2050.csv": [woEmerg, woFossil, wNuclear, decarb2050,
-                                                                       highBio],
-      "MonteCarloResults_highBio_woEmerg_woFossil_woNuclear_2050.csv": [woEmerg, woFossil, woNuclear, decarb2050,
-                                                                        highBio],
-
-      "MonteCarloResults_lowBio_wEmerg_wFossil_wNuclear_2050.csv": [wEmerg, wFossil, wNuclear, decarb2050, lowBio],
-      "MonteCarloResults_lowBio_wEmerg_wFossil_woNuclear_2050.csv": [wEmerg, wFossil, woNuclear, decarb2050, lowBio],
-      "MonteCarloResults_lowBio_wEmerg_woFossil_wNuclear_2050.csv": [wEmerg, woFossil, wNuclear, decarb2050, lowBio],
-      "MonteCarloResults_lowBio_wEmerg_woFossil_woNuclear_2050.csv": [wEmerg, woFossil, woNuclear, decarb2050, lowBio],
-
-      "MonteCarloResults_lowBio_woEmerg_wFossil_wNuclear_2050.csv": [woEmerg, wFossil, wNuclear, decarb2050, lowBio],
-      "MonteCarloResults_lowBio_woEmerg_wFossil_woNuclear_2050.csv": [woEmerg, wFossil, woNuclear, decarb2050, lowBio],
-      "MonteCarloResults_lowBio_woEmerg_woFossil_wNuclear_2050.csv": [woEmerg, woFossil, wNuclear, decarb2050, lowBio],
-      "MonteCarloResults_lowBio_woEmerg_woFossil_woNuclear_2050.csv": [woEmerg, woFossil, woNuclear, decarb2050,
-                                                                       lowBio]}
+    "MonteCarloResults_lowBio_wEmerg_wFossil_woNuclear_2050.csv": [wEmerg, wFossil, woNuclear, decarb2050, lowBio],
+    "MonteCarloResults_lowBio_wEmerg_woFossil_woNuclear_2050.csv": [wEmerg, woFossil, woNuclear, decarb2050, lowBio],
+    "MonteCarloResults_lowBio_woEmerg_wFossil_woNuclear_2050.csv": [woEmerg, wFossil, woNuclear, decarb2050, lowBio],
+    "MonteCarloResults_lowBio_woEmerg_woFossil_woNuclear_2050.csv": [woEmerg, woFossil, woNuclear, decarb2050, lowBio]}
 
 # ==============================
 # process results
