@@ -390,6 +390,7 @@ def processPowerPlants(inputs, local, outputs):
         # General
         tech['name'] = techType
         tech['fuel'] = inputs['PowerPlants'].loc[techType, 'fuel']
+        tech['fuel2'] = inputs['PowerPlants'].loc[techType, 'fuel2']
         tech['output'] = inputs['PowerPlants'].loc[techType, 'output']
 
         tech['baseload'] = str(inputs['PowerPlants'].loc[techType, 'baseload'])
@@ -410,6 +411,7 @@ def processPowerPlants(inputs, local, outputs):
             tech['efficiency'] = inputs['PowerPlantsPerformance'].loc[techType, 'Efficiency'] / 100.0
         else:
             tech['efficiency'] = 3412.0 / float(inputs['PowerPlantsPerformance'].loc[techType, 'HeatRate'])
+        tech['efficiency2'] = inputs['PowerPlantsPerformance'].loc[techType, 'Efficiency2'] / 100.0
         tech['lifetime'] = inputs['PowerPlantsPerformance'].loc[techType, 'ExpectedLifetime']
         tech['emission_activity'] = None
         tech['capacity_factor'] = inputs['PowerPlantsPerformance'].loc[techType, 'CapacityFactor'] / 100.0
@@ -449,6 +451,10 @@ def processPowerPlants(inputs, local, outputs):
             outputs['commodities'].append((tech['fuel'], "p", tech['fuel']))
             local['commodities'].append(tech['fuel'])
 
+        if not tech['fuel2'] in local['commodities']:
+            outputs['commodities'].append((tech['fuel2'], "p", tech['fuel2']))
+            local['commodities'].append(tech['fuel2'])
+
         if not tech['output'] in local['commodities']:
             outputs['commodities'].append((tech['output'], "p", tech['output']))
             local['commodities'].append(tech['output'])
@@ -474,6 +480,7 @@ def processFuels(inputs, local, outputs):
         # General
         tech['name'] = 'IMP' + techType
         tech['fuel'] = 'ethos'
+        tech['fuel2'] = None
         tech['output'] = techType
 
         tech['baseload'] = 'N'
@@ -490,6 +497,7 @@ def processFuels(inputs, local, outputs):
 
         # Performance
         tech['efficiency'] = 1.0
+        tech['efficiency2'] = None
         tech['lifetime'] = inputs['Fuels'].loc[techType, 'Lifetime']
         tech['emission_activity'] = inputs['Fuels'].loc[techType, 'EmissionActivity']
         tech['capacity_factor'] = None
@@ -546,6 +554,7 @@ def processConnections(inputs, local, outputs):
         # General
         tech['name'] = techType
         tech['fuel'] = inputs['Connections'].loc[techType, 'input']
+        tech['fuel2'] = None
         tech['output'] = inputs['Connections'].loc[techType, 'output']
 
         tech['baseload'] = 'N'
@@ -562,6 +571,7 @@ def processConnections(inputs, local, outputs):
 
         # Performance
         tech['efficiency'] = 1.0 - inputs['Connections'].loc[techType, 'Loss'] / 100.0
+        tech['efficiency2'] = None
         tech['lifetime'] = inputs['Connections'].loc[techType, 'Lifetime']
         tech['emission_activity'] = inputs['Connections'].loc[techType, 'EmissionActivity']
         tech['capacity_factor'] = None
@@ -784,6 +794,11 @@ def processTech(inputs, local, outputs, tech):
         for vintage in buildYears:
             outputs['Efficiency'].append(
                 (tech['fuel'], tech['name'], str(vintage), tech['output'], tech['efficiency'], " "))
+    # Efficiency2
+    if goodValue(tech['efficiency2']):
+        for vintage in buildYears:
+            outputs['Efficiency'].append(
+                (tech['fuel2'], tech['name'], str(vintage), tech['output'], tech['efficiency2'], " "))
 
     # EmissionActivity
     if goodValue(tech['emission_activity']):
