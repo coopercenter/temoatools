@@ -411,7 +411,10 @@ def processPowerPlants(inputs, local, outputs):
             tech['efficiency'] = inputs['PowerPlantsPerformance'].loc[techType, 'Efficiency'] / 100.0
         else:
             tech['efficiency'] = 3412.0 / float(inputs['PowerPlantsPerformance'].loc[techType, 'HeatRate'])
-        tech['efficiency2'] = inputs['PowerPlantsPerformance'].loc[techType, 'Efficiency2'] / 100.0
+        if goodValue(inputs['PowerPlantsPerformance'].loc[techType, 'Efficiency2']):
+            tech['efficiency2'] = inputs['PowerPlantsPerformance'].loc[techType, 'Efficiency2'] / 100.0
+        else:
+            tech['efficiency2'] = None
         tech['lifetime'] = inputs['PowerPlantsPerformance'].loc[techType, 'ExpectedLifetime']
         tech['emission_activity'] = None
         tech['capacity_factor'] = inputs['PowerPlantsPerformance'].loc[techType, 'CapacityFactor'] / 100.0
@@ -451,7 +454,9 @@ def processPowerPlants(inputs, local, outputs):
             outputs['commodities'].append((tech['fuel'], "p", tech['fuel']))
             local['commodities'].append(tech['fuel'])
 
-        if not tech['fuel2'] in local['commodities']:
+        if tech['fuel2'] in local['commodities'] or tech['fuel2'] is None:
+            pass
+        else:
             outputs['commodities'].append((tech['fuel2'], "p", tech['fuel2']))
             local['commodities'].append(tech['fuel2'])
 
