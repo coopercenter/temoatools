@@ -18,6 +18,13 @@ module load gurobi
 export NUM_PROCS=$SLURM_CPUS_PER_TASK
 
 # run
-# python vet_run_baselines.py
+python vet_run_baselines.py
 python vet_run_monte_carlo.py
 python vet_process_and_combine_results.py
+python vet_run_sensitivity.py
+
+# create plots in Python
+#cd figures
+#python plot_Fig4_yearly_demand_emission_constraint.py
+#python plot_Fig7_2050_capacity_emerging_storage.py
+#python plot_Fig8_2050_capacity_emerging_NET.py

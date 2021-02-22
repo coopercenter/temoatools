@@ -76,12 +76,13 @@ if __name__ == '__main__':
     # =======================================================
     temoa_path = os.path.abspath('../../temoa-energysystem')
     project_path = os.getcwd()
-    modelInputs_XLSX = 'data_combined.xlsx'
+    data_files = ['data_va_noEmissionLimit.xlsx', 'data_emerging_tech.xlsx',
+                  'data_H2_VFB.xlsx', 'emissionLimit_decarb_2050.xlsx']
     scenarioInputs = 'scenarios_emerging_tech.xlsx'
-    scenarioNames = ['all']
+    scenarioNames = ['wEmerg_wFossil']
     sensitivityInputs = 'sensitivityVariables_emerging_tech.xlsx'
     sensitivityMultiplier = 10.0  # percent perturbation
-    ncpus = 1   # default, unless otherwise specified in sbatch script
+    ncpus = 1  # default, unless otherwise specified in sbatch script
     solver = ''  # leave blank to let temoa decide which solver to use of those installed
 
     # =======================================================
@@ -93,9 +94,10 @@ if __name__ == '__main__':
         ncpus = ncpus  # otherwise default to this number of cores
 
     # combine data files
-    tt.combine(project_path=project_path, primary='data_va.xlsx',
-               data_files=['data_emerging_tech.xlsx', 'data_H2_VFB.xlsx'],
-               output='data_combined.xlsx')
+    tt.combine(project_path=project_path, primary=data_files[0],
+               data_files=data_files[1:],
+               output='data_combined_sensitivity.xlsx')
+    modelInputs_XLSX = 'data_combined_sensitivity.xlsx'
 
     # =======================================================
     # Move modelInputs_XLSX to database

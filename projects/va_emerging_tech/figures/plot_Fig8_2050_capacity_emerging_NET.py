@@ -12,24 +12,23 @@ import numpy as np
 # =====================================
 # data input
 results_filename = "capacity_by_year.csv"
-savename = "Fig7_capacity_emerging_tech_storage"
+savename = "Fig8_2050_capacity_emerging_NET"
 
 # figure resolution
 DPI = 300  # Set resolution for saving figures
 
-x_vars = ['EC_VFB-CostInvest', 'EC_H2-CostInvest', 'E_OCAES-CostInvest']
-x_labels = ['12 hour VFB [$/kW]', '24 hour Hydrogen [$/kW]', '24 hour OCAES [$/kW]']
-x_converts = [1.0, 1.0, 1.0]
-x_limits = [[], [], []]
-x_scales = ['linear', 'linear', 'linear']
+x_vars = ['EC_BECCS-CostInvest', 'EC_DAC-CostInvest']
+x_labels = ['BECCS [$/kW]', 'DAC [$/(tonne/yr)]']
+x_converts = [1.0, 1.0 / 3.22]  # DAC $/tonne
+x_limits = [[], [], [], [], []]
+x_scales = ['linear', 'linear']
 
 y_var = "value"
-y_converts = [1.0, 1.0, 1.0, 1.0, 1.0]
-y_techs = ['EC_BATT_2hr', 'EC_BATT', 'EC_VFB', 'EC_H2', 'E_OCAES']
-y_labels = ['2 hour\nBattery\n[GW]', '4 hour\nBattery\n[GW]', '12 hour\nVFB\n[GW]',
-            '24 hour\nHydrogen\n[GW]', '24 hour\nOCAES\n[GW]']
-y_limits = [[], [], [], [], [], [], [], [], ]
-y_scales = ['linear', 'linear', 'linear', 'linear', 'linear']
+y_converts = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 3.22, 1.0]  # DAC tonnes
+y_techs = ['EC_BIO', 'EC_BECCS', 'EC_DAC']
+y_labels = ['Biomass [GW]', 'BECCS [GW]', 'DAC [tonne/yr]']
+y_limits = [[], [], [], [], [], [], [], [], []]
+y_scales = ['linear', 'linear', 'linear']
 
 markersize = 5
 # =====================================
@@ -37,9 +36,10 @@ markersize = 5
 # =====================================
 
 # Import results
-os.chdir('monte_carlo')
+wrk_dir = os.getcwd()
+os.chdir('../monte_carlo')
 df = pd.read_csv(results_filename)
-os.chdir('..')
+os.chdir(wrk_dir)
 
 # drop unused columns
 df = df.drop(['Unnamed: 0', 'Unnamed: 0.1', 'season', 'tod', ], axis=1)
@@ -47,18 +47,15 @@ df = df.drop(['Unnamed: 0', 'Unnamed: 0.1', 'season', 'tod', ], axis=1)
 # only look at 2050 capacity
 df = df[df.loc[:, 'year'] == 2050]
 
-# drop new nuclear cases
-df = df[df.loc[:, 'new_nuclear'] == 'woNuclear']
-
 # drop cases w/o emerging tech
 df = df[df.loc[:, 'new_emerg'] == 'wEmerg']
 
 # version 1 - separate colors and markers
-bio_rename = {'High Bio': 'High Bio', 'Low Bio': 'Low Bio'}
+bio_rename = {'High Bio': 'High', 'Low Bio': 'Low'}
 bio_cases = df.loc[:, 'bio'].unique()
 colors1 = sns.color_palette("colorblind")
 
-fossil_rename = {'wFossil': 'With Fossil', 'woFossil': 'Without Fossil'}
+fossil_rename = {'wFossil': 'With', 'woFossil': 'Without'}
 fossil_cases = df.loc[:, 'new_fossil'].unique()
 markers = ['^', 's']
 
@@ -75,7 +72,7 @@ cases = ['Low Bio With Fossil', 'Low Bio Without Fossil',
 colors2 = sns.color_palette('Paired')
 
 # =====================================
-# create plot version 1 - colors + markers
+# create plots
 # =====================================
 
 # Column width guidelines https://www.elsevier.com/authors/author-schemas/artwork-and-media-instructions/artwork-sizing
@@ -116,66 +113,66 @@ for j, (y_tech, y_label, y_limit, y_scale, y_convert) in enumerate(
             # get data
             df3 = df2[(df2.loc[:, 'new_fossil'] == fossil_case)]
 
-        for bio_case, color in zip(bio_cases, colors1):
-            # get data
-            df4 = df3[(df3.loc[:, 'bio'] == bio_case)]
+            for bio_case, color in zip(bio_cases, colors1):
+                # get data
+                df4 = df3[(df3.loc[:, 'bio'] == bio_case)]
 
-            # convert data
-            x = x_convert * df4.loc[:, x_var]
-            y = y_convert * df4.loc[:, y_var]
+                # convert data
+                x = x_convert * df4.loc[:, x_var]
+                y = y_convert * df4.loc[:, y_var]
 
-            # plot
-            ax.plot(x, y,
-                    linestyle='',
-                    marker=marker,
-                    markersize=markersize,
-                    markeredgecolor=color,
-                    markerfacecolor='None')
+                # plot
+                ax.plot(x, y,
+                        linestyle='',
+                        marker=marker,
+                        markersize=markersize,
+                        markeredgecolor=color,
+                        markerfacecolor='None')
 
-        # axes labels
-        # x-axis labels (only bottom)
-        if j == len(y_techs) - 1:
-            ax.set_xlabel(x_label)
-        else:
-            ax.get_xaxis().set_visible(False)
+            # axes labels
+            # x-axis labels (only bottom)
+            if j == len(y_techs) - 1:
+                ax.set_xlabel(x_label)
+            else:
+                ax.get_xaxis().set_visible(False)
 
-        # y-axis labels (only left side)
-        if i == 0:
-            ax.set_ylabel(y_label)
-        else:
-            ax.get_yaxis().set_visible(False)
+            # y-axis labels (only left side)
+            if i == 0:
+                ax.set_ylabel(y_label)
+            else:
+                ax.get_yaxis().set_visible(False)
 
-        # axes scales
-        ax.set_xscale(x_scale)
-        ax.set_yscale(y_scale)
+            # axes scales
+            ax.set_xscale(x_scale)
+            ax.set_yscale(y_scale)
 
-        # Axes limits
-        if len(y_limit) == 2:
-            ax.set_ylim(bottom=y_limit[0], top=y_limit[1])
-        if len(x_limit) == 2:
-            ax.set_xlim(left=x_limit[0], right=x_limit[1])
+            # Axes limits
+            if len(y_limit) == 2:
+                ax.set_ylim(bottom=y_limit[0], top=y_limit[1])
+            if len(x_limit) == 2:
+                ax.set_xlim(left=x_limit[0], right=x_limit[1])
 
-        # Despine and remove ticks
-        # sns.despine(ax=ax, )
-        ax.tick_params(top=False, right=False)
+            # Despine and remove ticks
+            # sns.despine(ax=ax, )
+            ax.tick_params(top=False, right=False)
 
 # Legend - Colors
 ax = a[len(a) - 1, 0]
 patches = []
 for bio_case, color in zip(bio_cases, colors1):
     patches.append(mpatches.Patch(color=color, label=bio_rename[bio_case]))
-leg1 = ax.legend(handles=patches, bbox_to_anchor=(0.67, -0.2), loc="upper center", title='Biomass Availability',
+leg1 = ax.legend(handles=patches, bbox_to_anchor=(0.5, -0.3), loc="upper center", title='Biomass Availability',
                  ncol=2)
 ax.add_artist(leg1)
 
 # Legend - Markers
-ax = a[len(a) - 1, 2]
+ax = a[len(a) - 1, 1]
 symbols = []
 for fossil_case, marker in zip(fossil_cases, markers):
     symbols.append(mlines.Line2D([], [], color='black', linestyle='', marker=marker, markersize=9,
                                  markerfacecolor='None', markeredgewidth=1.5,
                                  label=fossil_rename[fossil_case]))
-leg2 = ax.legend(handles=symbols, bbox_to_anchor=(0.33, -0.2), loc="upper center", title='New Fossil Generation',
+leg2 = ax.legend(handles=symbols, bbox_to_anchor=(0.5, -0.3), loc="upper center", title='New Fossil Generation',
                  ncol=2)
 ax.add_artist(leg2)
 
@@ -188,6 +185,7 @@ plt.subplots_adjust(top=0.95,
                     wspace=0.09)
 # Save Figure
 plt.savefig(savename + "_v1.png", dpi=DPI, bbox_extra_artists=(leg1, leg2))
+
 
 # =====================================
 # create plot version 2 - only colors
@@ -275,7 +273,7 @@ ax = a[len(a) - 1, 1]
 patches = []
 for case, color in zip(cases, colors2):
     patches.append(mpatches.Patch(color=color, label=case))
-leg1 = ax.legend(handles=patches, bbox_to_anchor=(0.5, -0.65), loc="upper center", ncol=4)
+leg1 = ax.legend(handles=patches, bbox_to_anchor=(0.0, -0.4), loc="upper center", ncol=4)
 ax.add_artist(leg1)
 
 # Adjust spacing

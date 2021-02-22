@@ -6,25 +6,21 @@ woEmerg = 'woEmerg'
 wEmerg = 'wEmerg'
 woFossil = 'woFossil'
 wFossil = 'wFossil'
-woNuclear = 'woNuclear'
-wNuclear = 'wNuclear'
 lowBio = "Low Bio"
 highBio = "High Bio"
 decarb2050 = 2050
 
 # monte carlo results files
 mc = {
-    "MonteCarloResults_highBio_wEmerg_wFossil_woNuclear_2050.csv": [wEmerg, wFossil, woNuclear, decarb2050, highBio],
-    "MonteCarloResults_highBio_wEmerg_woFossil_woNuclear_2050.csv": [wEmerg, woFossil, woNuclear, decarb2050, highBio],
-    "MonteCarloResults_highBio_woEmerg_wFossil_woNuclear_2050.csv": [woEmerg, wFossil, woNuclear, decarb2050,
-                                                                     highBio],
-    "MonteCarloResults_highBio_woEmerg_woFossil_woNuclear_2050.csv": [woEmerg, woFossil, woNuclear, decarb2050,
-                                                                      highBio],
+    "MonteCarloResults_highBio_wEmerg_wFossil_2050.csv": [wEmerg, wFossil, decarb2050, highBio],
+    "MonteCarloResults_highBio_wEmerg_woFossil_2050.csv": [wEmerg, woFossil, decarb2050, highBio],
+    "MonteCarloResults_highBio_woEmerg_wFossil_2050.csv": [woEmerg, wFossil, decarb2050, highBio],
+    "MonteCarloResults_highBio_woEmerg_woFossil_2050.csv": [woEmerg, woFossil, decarb2050, highBio],
 
-    "MonteCarloResults_lowBio_wEmerg_wFossil_woNuclear_2050.csv": [wEmerg, wFossil, woNuclear, decarb2050, lowBio],
-    "MonteCarloResults_lowBio_wEmerg_woFossil_woNuclear_2050.csv": [wEmerg, woFossil, woNuclear, decarb2050, lowBio],
-    "MonteCarloResults_lowBio_woEmerg_wFossil_woNuclear_2050.csv": [woEmerg, wFossil, woNuclear, decarb2050, lowBio],
-    "MonteCarloResults_lowBio_woEmerg_woFossil_woNuclear_2050.csv": [woEmerg, woFossil, woNuclear, decarb2050, lowBio]}
+    "MonteCarloResults_lowBio_wEmerg_wFossil_2050.csv": [wEmerg, wFossil, decarb2050, lowBio],
+    "MonteCarloResults_lowBio_wEmerg_woFossil_2050.csv": [wEmerg, woFossil, decarb2050, lowBio],
+    "MonteCarloResults_lowBio_woEmerg_wFossil_2050.csv": [woEmerg, wFossil, decarb2050, lowBio],
+    "MonteCarloResults_lowBio_woEmerg_woFossil_2050.csv": [woEmerg, woFossil, decarb2050, lowBio]}
 
 # ==============================
 # process results
@@ -44,9 +40,8 @@ for file, d in zip(mc.keys(), mc.values()):
     # store details about scenario
     dfi.loc[:, 'new_emerg'] = d[0]
     dfi.loc[:, 'new_fossil'] = d[1]
-    dfi.loc[:, 'new_nuclear'] = d[2]
-    dfi.loc[:, 'decarb'] = d[3]
-    dfi.loc[:, 'bio'] = d[4]
+    dfi.loc[:, 'decarb'] = d[2]
+    dfi.loc[:, 'bio'] = d[3]
 
     # append modified data
     df = df.append(dfi, ignore_index=True)

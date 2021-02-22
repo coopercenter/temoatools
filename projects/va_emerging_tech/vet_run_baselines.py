@@ -46,11 +46,8 @@ if __name__ == '__main__':
 
     # model inputs
     scenarioInputs = 'scenarios_emerging_tech.xlsx'
-    scenarioNames = [
-        'woEmerg_woFossil_woNuclear', 'woEmerg_wFossil_woNuclear',
-        'wEmerg_woFossil_woNuclear', 'wEmerg_wFossil_woNuclear',
-        'woEmerg_woFossil_wNuclear', 'woEmerg_wFossil_wNuclear',
-        'wEmerg_woFossil_wNuclear', 'wEmerg_wFossil_wNuclear']
+    scenarioNames = ['wEmerg_wFossil', 'wEmerg_woFossil',
+                     'woEmerg_wFossil', 'woEmerg_woFossil']
 
     modelInputs_primary = 'data_va_noEmissionLimit.xlsx'
     modelInputs_secondary = ['data_emerging_tech.xlsx', 'data_H2_VFB.xlsx']
