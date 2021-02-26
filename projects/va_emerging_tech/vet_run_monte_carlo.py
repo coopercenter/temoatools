@@ -79,8 +79,8 @@ if __name__ == '__main__':
     monte_carlo_inputs = 'monte_carlo_inputs.xlsx'
     monte_carlo_cases = ['lowBio', 'highBio']  # each case corresponds with a list in scenarioNames
     scenarioInputs = 'scenarios_emerging_tech.xlsx'
-    scenarioNames = ['wEmerg_wFossil', 'wEmerg_woFossil',
-                     'woEmerg_wFossil', 'woEmerg_woFossil']
+    scenarioNames = ['woEmerg_wFossil', 'woEmerg_woFossil',
+                     'wEmerg_wFossil', 'wEmerg_woFossil']
 
     n_baseline = 1
     n_uncertainty = 100
