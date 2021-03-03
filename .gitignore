@@ -25,21 +25,17 @@
 /projects/virginia/databases/
 /projects/virginia/results/
 /projects/virginia/results_single/
-/projects/va_emerging_tech/configs/
-/projects/va_emerging_tech/data/*.db
-/projects/va_emerging_tech/databases/
-/projects/va_emerging_tech/results/
-/projects/va_emerging_tech/monte_carlo/
-/projects/va_emerging_tech/sensitivity/
-/projects/test_emerging_tech/configs/
-/projects/test_emerging_tech/data/*.db
-/projects/test_emerging_tech/databases/
-/projects/test_emerging_tech/results/
-/projects/test_emerging_tech/monte_carlo/
-/projects/test_emerging_tech/sensitivity/
+/projects/va_emerging_tech/jbennett_dissertation/configs/
+/projects/va_emerging_tech/jbennett_dissertation/data/*.db
+/projects/va_emerging_tech/jbennett_dissertation/databases/
+/projects/va_emerging_tech/jbennett_dissertation/results/
+/projects/va_emerging_tech/jbennett_dissertation/monte_carlo/
+/projects/va_emerging_tech/jbennett_dissertation/sensitivity/
+/projects/va_emerging_tech/jbennett_dissertation/figures/*.png
 *.DS_Store
 *.pcy
 *.Rhistory
+*.RData
 /.idea/
 
 

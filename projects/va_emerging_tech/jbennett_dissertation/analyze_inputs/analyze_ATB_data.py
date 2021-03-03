@@ -25,17 +25,17 @@ data = pd.read_excel('2020_ATB_CostProjections.xlsx', sheet_name=None)
 # prepare DataFrame to store results
 entries = [
     'Technology',
-    'CAPEX_2018',
+    'CAPEX_2019',
     'CAPEX_2025',
     'CAPEX_Advanced_rate',
     'CAPEX_Moderate_rate',
     'CAPEX_Conservative_rate',
-    'FixedOM_2018',
+    'FixedOM_2019',
     'FixedOM_2025',
     'FixedOM_Advanced_rate',
     'FixedOM_Moderate_rate',
     'FixedOM_Conservative_rate',
-    'VariableOM_2018',
+    'VariableOM_2019',
     'VariableOM_2025',
     'VariableOM_Advanced_rate',
     'VariableOM_Moderate_rate',
@@ -59,7 +59,7 @@ for key in data.keys():
     # ------------------------------
     # CAPEX
     # ------------------------------
-    s['CAPEX_2018'] = df.loc['CAPEX_Moderate', 2018]
+    s['CAPEX_2019'] = df.loc['CAPEX_Moderate', 2019]
     s['CAPEX_2025'] = df.loc['CAPEX_Moderate', 2025]
 
     input_vars = ['CAPEX_Advanced', 'CAPEX_Moderate', 'CAPEX_Conservative']
@@ -77,7 +77,7 @@ for key in data.keys():
     # ------------------------------
     # Fixed O&M
     # ------------------------------
-    s['FixedOM_2018'] = df.loc['FixedOM_Moderate', 2018]
+    s['FixedOM_2019'] = df.loc['FixedOM_Moderate', 2019]
     s['FixedOM_2025'] = df.loc['FixedOM_Moderate', 2025]
 
     input_vars = ['FixedOM_Advanced', 'FixedOM_Moderate', 'FixedOM_Conservative']
@@ -95,7 +95,7 @@ for key in data.keys():
     # ------------------------------
     # Variable O&M
     # ------------------------------
-    s['VariableOM_2018'] = df.loc['VariableOM_Moderate', 2018] * 0.000001 * 277777.7778  # convert $/MWh to M$/PJ
+    s['VariableOM_2019'] = df.loc['VariableOM_Moderate', 2019] * 0.000001 * 277777.7778  # convert $/MWh to M$/PJ
     s['VariableOM_2025'] = df.loc['VariableOM_Moderate', 2025] * 0.000001 * 277777.7778  # convert $/MWh to M$/PJ
 
     input_vars = ['VariableOM_Advanced', 'VariableOM_Moderate', 'VariableOM_Conservative']
@@ -115,7 +115,6 @@ for key in data.keys():
 
     # Plot one validation case for each technology
     plt.figure()
-    # years = np.arange(2018,2050)
     years = df.columns.values
     plt.plot(years, df.loc['CAPEX_Advanced', :].values, 'k.')
     plt.plot(years, df.loc['CAPEX_Moderate', :].values, 'k.')

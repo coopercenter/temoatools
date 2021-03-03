@@ -74,7 +74,7 @@ if __name__ == '__main__':
     # =======================================================
     # Model Inputs
     # =======================================================
-    temoa_path = os.path.abspath('../../temoa-energysystem')
+    temoa_path = os.path.abspath('../../../temoa-energysystem')
     project_path = os.getcwd()
     data_files = ['data_va_noEmissionLimit.xlsx', 'data_emerging_tech.xlsx',
                   'data_H2_VFB.xlsx', 'emissionLimit_decarb_2050.xlsx']

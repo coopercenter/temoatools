@@ -693,7 +693,7 @@ def processTech(inputs, local, outputs, tech):
             start_year = tech['FirstBuild']
         else:
             start_year = local['active_future_periods'][0]
-        for year in futureBuildYears:
+        for year in local['active_future_periods']:
             if goodValue(tech['CapacityCreditIncr']):
                 N = float(year - start_year)
                 capacity_credit = tech['CapacityCredit'] * np.exp(N * tech['CapacityCreditIncr'] / 100.0)

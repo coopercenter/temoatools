@@ -74,7 +74,7 @@ if __name__ == '__main__':
     # =======================================================
     # Model Inputs
     # =======================================================
-    temoa_path = os.path.abspath('../../temoa-energysystem')
+    temoa_path = os.path.abspath('../../../temoa-energysystem')
     project_path = os.getcwd()
     monte_carlo_inputs = 'monte_carlo_inputs.xlsx'
     monte_carlo_cases = ['lowBio', 'highBio']  # each case corresponds with a list in scenarioNames
