@@ -10,6 +10,7 @@ library(RColorBrewer)
 library(tidyr)
 library(lubridate)
 library(reshape2)
+library(ggh4x)
 
 # ======================== #
 # begin code
@@ -76,40 +77,39 @@ wind <- "Wind"
 NET <- "Negative Emission Tech"
 NG <- "Natural Gas"
 LDS <- "Long duration storage"
-hydro <- "Hydro"
 
-rename <- c("E_OCAES"=NET,
-            "EC_BATT"=batt,
-            "EC_BATT_2hr"=batt,
-            "EC_BECCS"=NET,
-            "EC_BIO"=bio,
-            "EC_COAL"=coal_petrol,
-            "EC_COAL_CCS"=coal_petrol,
-            "EC_COAL_IGCC"=coal_petrol,
-            "EC_DAC"=NET,
-            "EC_H2"=LDS,
-            "EC_NATGAS_CCS"=NG,
-            "EC_NG_CC"=NG,
-            "EC_NG_OC"=NG,
-            "EC_NUCLEAR"=nuc_hyd,
-            "EC_OIL_CC"=coal_petrol,
-            "EC_PUMP"=LDS,
-            "ED_PV_DIST_RES"=solar,
-            "EC_SOLPV"=solar,
-            "EC_VFB"=LDS,
-            'EC_WIND'=wind,
-            "ED_SOLPV"=solar,
-            "EF_WIND"=wind,
-            "EX_BIO"=bio,
+rename <- c("EX_BIO"=bio,
             "EX_COAL"=coal_petrol,
             "EX_HYDRO"=nuc_hyd,
-            "EX_NG_CC"=NG,
-            "EX_NG_CT"=NG,
+            "EX_NG_CC1"=NG,
+            "EX_NG_CC2"=NG,
+            "EX_NG_CT1"=NG,
+            "EX_NG_CT2"=NG,
             "EX_NUCLEAR"=nuc_hyd,
             "EX_OIL"=coal_petrol,
             "EX_PUMP"=LDS,
             'EX_SOLPV'=solar,
-            'EX_WIND'=wind)
+            "EC_BATT_2hr"=batt,
+            "EC_BATT_4hr"=batt,
+            "EC_BIO"=bio,
+            "EC_COAL"=coal_petrol,
+            "EC_COAL_CCS"=coal_petrol,
+            "EC_COAL_IGCC"=coal_petrol,
+            "EC_NG_CC"=NG,
+            "EC_NG_CT"=NG,
+            "EC_NG_CCS"=NG,
+            "EC_NUCLEAR"=nuc_hyd,
+            "EC_OIL_CC"=coal_petrol,
+            "EC_PUMP"=LDS,
+            "EC_SOLPV_Util"=solar,          
+            "EC_WIND_Fix"=wind,
+            'EC_WIND_Float'=wind,
+            "ED_SOLPV_Com"=solar,
+            "ED_SOLPV_Res"=solar,
+            "EC_BECCS"=NET,
+            "EC_DAC"=NET,
+            "EC_OCAES"=LDS,
+            "EC_VFB"=LDS)
 
 # rename technologies
 df$original_name <-df$tech_or_fuel
@@ -149,7 +149,7 @@ ggplot(data=cap_lowbio, aes_string(x='year',y='mean', ymin='min', ymax='max', co
   geom_line(position=position_dodge(width=dodge))+
   geom_ribbon(alpha=0.2, position=position_dodge(width=dodge))+
   geom_point(position=position_dodge(width=dodge))+
-  facet_wrap(~tech_or_fuel)+
+  facet_nested(~tech_or_fuel)+
   labs(x='Year', y=expression(paste("Capacity (GW)")))+
   theme(panel.background = element_rect(colour ="black"),
         panel.border = element_rect(linetype="solid", fill=NA),
@@ -172,7 +172,7 @@ ggplot(data=cap_highbio, aes_string(x='year',y='mean', ymin='min', ymax='max', c
   geom_line(position=position_dodge(width=dodge))+
   geom_ribbon(alpha=0.2, position=position_dodge(width=dodge))+
   geom_point(position=position_dodge(width=dodge))+
-  facet_wrap(~tech_or_fuel)+
+  facet_nested(~tech_or_fuel)+
   labs(x='Year', y=expression(paste("Capacity (GW)")))+
   theme(panel.background = element_rect(colour ="black"),
         panel.border = element_rect(linetype="solid", fill=NA),
@@ -213,7 +213,7 @@ options(ggplot2.continuous.color = palette)
 
 ggplot(data=cap, aes_string(x='year',y='mean',fill='tech_or_fuel'))+
   geom_bar(position="stack", stat="identity")+
-  facet_grid(bio + new_fossil~new_emerg)+
+  facet_nested(bio + new_fossil~new_emerg)+
   labs(x='Year', y=expression(paste("Capacity (GW)")))+
   theme(panel.background = element_rect(colour ="black"),
         panel.border = element_rect(linetype="solid", fill=NA),

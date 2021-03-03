@@ -17,16 +17,16 @@ tech_rename <- c(
   'EC_COAL_IGCC'="'Coal IGCC'",
   'EC_COAL'="'Coal'",
   'EC_BIO'="'Biomass'",
-  'EF_WIND'="'Offshore Wind - Floating'",
-  'EC_WIND'="'Offshore Wind - Fixed bottom'",
-  'EC_NATGAS_CCS'="'Natural Gas with CCS'",
+  'EC_WIND_Float'="'Offshore Wind - Floating'",
+  'EC_WIND_Fix'="'Offshore Wind - Fixed bottom'",
+  'EC_NG_CCS'="'Natural Gas with CCS'",
   'EC_PUMP'="'Pumped Hydro Storage (12 hour)'",
   'EC_NG_CC'="'Natural Gas and Oil Combined Cycle'",
-  'ED_PV_DIST_RES'="'Solar PV - Residential'",
-  'EC_NG_OC'="'Natural Gas Turbine'",
-  'ED_SOLPV'="'Solar PV - Commercial'",
-  'EC_SOLPV'="'Solar PV - Utility'",
-  'EC_BATT'="'Battery (4 hour)'",
+  'ED_SOLPV_Res'="'Solar PV - Residential'",
+  'EC_NG_CT'="'Natural Gas Combustion Turbine'",
+  'ED_SOLPV_Com'="'Solar PV - Commercial'",
+  'EC_SOLPV_Util'="'Solar PV - Utility'",
+  'EC_BATT_4hr'="'Battery (4 hour)'",
   'EC_BATT_2hr'="'Battery (2 hour)'")
 
 h <- hash()
@@ -35,16 +35,16 @@ h[['EC_COAL_CCS']] <- c('black', 'solid')
 h[['EC_COAL_IGCC']] <- c('black', 'dashed')
 h[['EC_COAL']] <- c('black', 'dotted')
 h[['EC_BIO']] <- c('green', 'solid')
-h[['EF_WIND']] <- c('darkblue', 'solid')
-h[['EC_WIND']] <- c('darkblue', 'dashed')
-h[['EC_NATGAS_CCS']] <- c('red', 'dotted')
+h[['EC_WIND_Float']] <- c('darkblue', 'solid')
+h[['EC_WIND_Fix']] <- c('darkblue', 'dashed')
+h[['EC_NG_CCS']] <- c('red', 'dotted')
 h[['EC_PUMP']] <- c('pink', 'solid')
 h[['EC_NG_CC']] <- c('red', 'solid')
-h[['ED_PV_DIST_RES']] <- c('orange', 'dotted')
-h[['EC_NG_OC']] <- c('red', 'dashed')
-h[['ED_SOLPV']] <- c('orange', 'solid')
-h[['EC_SOLPV']] <- c('orange', 'dashed')
-h[['EC_BATT']] <- c('gray', 'solid')
+h[['ED_SOLPV_Res']] <- c('orange', 'dotted')
+h[['EC_NG_CT']] <- c('red', 'dashed')
+h[['ED_SOLPV_Com']] <- c('orange', 'solid')
+h[['EC_SOLPV_Util']] <- c('orange', 'dashed')
+h[['EC_BATT_4hr']] <- c('gray', 'solid')
 h[['EC_BATT_2hr']] <- c('gray', 'dashed')
 
 # http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/
@@ -139,7 +139,7 @@ plot_CAPEX <- ggplot(data=tbl, aes_string(x='vintage',y='cost_invest',color='Tec
   scale_linetype_manual(values=line_styles,labels=parse_format())+
   scale_color_manual(values=tech_palette,labels=parse_format())+
   scale_y_continuous(expand = c(0, 0), limits = c(0, 7000)) + 
-  scale_x_continuous(limits = c(2018, 2050)) + 
+  scale_x_continuous(limits = c(2019, 2050)) + 
   labs(x='Year (-)', y=expression(paste("CAPEX (US$ KW"^-1,")")))+
   theme(panel.background = element_rect(colour ="black"),
         panel.border = element_rect(linetype="solid", fill=NA),
@@ -170,8 +170,8 @@ tbl$tech <- factor(tbl$tech,levels = fuel_levels)
 plot_Fuels <- ggplot(data=tbl, aes_string(x='periods',y='cost_variable',color='tech'))+
   geom_line()+
   scale_linetype_manual(values=fuel_line_styles,labels=parse_format())+
-  scale_y_continuous(expand = c(0, 0), limits = c(0, 40)) + 
-  scale_x_continuous(limits = c(2018, 2050)) + 
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 30)) + 
+  scale_x_continuous(limits = c(2019, 2050)) + 
   labs(x='Year (-)', y=expression(paste("Cost (US$ MJ"^-1,")   ")),
        col='Fuels')+
   theme(panel.background = element_rect(colour ="black"),

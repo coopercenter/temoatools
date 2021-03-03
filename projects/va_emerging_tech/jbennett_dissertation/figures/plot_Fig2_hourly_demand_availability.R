@@ -13,29 +13,13 @@ db = 'wEmerg_wFossil_2050.sqlite' # database to analyze, assumed to be in result
 
 
 # This is order that items will be plotted, only items included will be plotted
-tech_rename <- c('EC_SOLPV'="'Solar PV - Utility'",
-                 'ED_SOLPV'="'Solar PV - Commercial'",
-                 'E_PV_DIST_RES'="'Solar PV - Residential'",
-                 'EF_WIND'="'Offshore Wind - Floating'",
-                 'EC_WIND'="'Offshore Wind - Fixed bottom'")
-
-tech_rename <- c('EC_SOLPV'="'Solar PV'",
-                 'EC_WIND'="'Offshore Wind'")
+tech_rename <- c('EC_SOLPV_Util'="'Solar PV'",
+                 'EC_WIND_Fix'="'Offshore Wind'")
 
 h <- hash()
-h[['EC_PUMP']] <- c('pink', 'solid')
-h[['EC_COAL']] <- c('black', 'solid')
-h[['E_BIO']] <- c('green', 'dashed')
-h[['E_SCO2']] <- c('red', 'dotted')
-h[['EF_WIND']] <- c('darkblue', 'solid')
-h[['EC_WIND']] <- c('darkblue', 'solid')
-h[['E_OCAES']] <- c('lightblue', 'solid')
-h[['EC_NG_CC']] <- c('red', 'solid')
-h[['EC_NG_OC']] <- c('red', 'dashed')
-h[['E_PV_DIST_RES']] <- c('orange', 'dotted')
-h[['ED_SOLPV']] <- c('orange', 'solid')
-h[['EC_SOLPV']] <- c('orange', 'solid')
-h[['EC_BATT']] <- c('gray', 'solid')
+h[['EC_WIND_Fix']] <- c('darkblue', 'solid')
+h[['EC_SOLPV_Util']] <- c('orange', 'solid')
+
 
 # http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/
 colors <- hash()

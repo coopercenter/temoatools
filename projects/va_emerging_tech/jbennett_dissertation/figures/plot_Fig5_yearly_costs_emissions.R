@@ -10,6 +10,7 @@ library(RColorBrewer)
 library(tidyr)
 library(lubridate)
 library(reshape2)
+library(ggh4x)
 
 # ======================== #
 # begin code
@@ -90,7 +91,7 @@ plot_costs <- ggplot(data=costs_smry, aes_string(x='year',y='mean', ymin='min', 
   geom_ribbon(alpha=0.2, position=position_dodge(width=dodge))+
   geom_point(position=position_dodge(width=dodge))+
   labs(x='Year', y=expression(paste("Costs (US$ KWh"^-1,")")))+
-  facet_grid(~bio + new_fossil)+
+  facet_nested(~bio + new_fossil)+
   theme(panel.background = element_rect(colour ="black"),
         panel.border = element_rect(linetype="solid", fill=NA),
         legend.background=element_rect(fill = alpha("white", 0)),
@@ -103,7 +104,7 @@ plot_costs <- ggplot(data=costs_smry, aes_string(x='year',y='mean', ymin='min', 
 # select emissions
 emi <- df[ which(df$quantity%in% c('emissions_by_year')),]
 
-# Convert kton to Mton
+# Convert kt to Mt
 emi$value <- emi$value / 1000.0
 
 # summarize to create line plots
@@ -119,8 +120,8 @@ plot_emi <- ggplot(data=emi_smry, aes_string(x='year',y='mean', ymin='min', ymax
   geom_line(position=position_dodge(width=dodge))+
   geom_ribbon(alpha=0.2, position=position_dodge(width=dodge))+
   geom_point(position=position_dodge(width=dodge))+
-  labs(x='Year', y=expression(paste("Emissions (Mton CO"[2],")")))+
-  facet_grid(~bio + new_fossil)+
+  labs(x='Year', y=expression(paste("Emissions (Mt CO"[2],")")))+
+  facet_nested(~bio + new_fossil)+
   theme(panel.background = element_rect(colour ="black"),
         panel.border = element_rect(linetype="solid", fill=NA),
         legend.background=element_rect(fill = alpha("white", 0)),
