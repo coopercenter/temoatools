@@ -12,26 +12,24 @@ import numpy as np
 # =====================================
 # data input
 results_filename = "capacity_by_year.csv"
-savename = "Fig8_2050_capacity_emerging_NET"
+savename = "Fig7_2050_capacity_OCAES"
 
 # figure resolution
 DPI = 300  # Set resolution for saving figures
 
-
-# https://matplotlib.org/stable/tutorials/text/mathtext.html
-
-x_vars = ['EC_BECCS-CostInvest', 'EC_DAC-CostInvest']
-x_labels = [r"BECCS [\$/(t CO$_2$/yr)]", r'DAC [\$/(t CO$_2$/yr)]']
-x_converts = [1.0/8.37, 1.0 / 3.22]  # $/kW to $/tonne
-x_limits = [[], []]
-x_scales = ['linear', 'linear']
+x_vars = ['EC_OCAES-CostInvest']
+x_labels = ['24-hour OCAES [$/kW]']
+x_converts = [1.0]
+x_limits = [[]]
+x_scales = ['linear']
 
 y_var = "value"
-y_converts = [8.37, 3.22]  # $/kW to $/tonne
-y_techs = ['EC_BECCS', 'EC_DAC']
-y_labels = [r'BECCS [Mt CO$_2$/yr]', r'DAC [Mt CO$_2$/yr]']
-y_limits = [[0,15], [0,15]]
-y_scales = ['linear', 'linear']
+y_converts = [1.0, 1.0, 1.0, 1.0]
+y_techs = ['EC_BATT_2hr', 'EC_BATT_4hr', 'EC_OCAES']
+y_labels = ['2-hour\nBattery\n[GW]', '4-hour\nBattery\n[GW]',
+            '24-hour\nOCAES\n[GW]']
+y_limits = [[], [], [],]
+y_scales = ['linear', 'linear', 'linear']
 
 markersize = 5
 # =====================================
@@ -54,11 +52,11 @@ df = df[df.loc[:, 'year'] == 2050]
 df = df[df.loc[:, 'new_emerg'] == 'wEmerg']
 
 # version 1 - separate colors and markers
-bio_rename = {'High Bio': 'High', 'Low Bio': 'Low'}
+bio_rename = {'High Bio': 'High Bio', 'Low Bio': 'Low Bio'}
 bio_cases = df.loc[:, 'bio'].unique()
 colors1 = sns.color_palette("colorblind")
 
-fossil_rename = {'wFossil': 'With', 'woFossil': 'Without'}
+fossil_rename = {'wFossil': 'With Fossil', 'woFossil': 'Without Fossil'}
 fossil_cases = df.loc[:, 'new_fossil'].unique()
 markers = ['^', 's']
 
@@ -82,7 +80,7 @@ colors2 = sns.color_palette('Paired')
 # Single column: 90mm = 3.54 in
 # 1.5 column: 140 mm = 5.51 in
 # 2 column: 190 mm = 7.48 i
-width = 10.0  # inches
+width = 7.48  # inches
 height = 5.5  # inches
 
 # Create plot
@@ -146,6 +144,7 @@ for j, (y_tech, y_label, y_limit, y_scale, y_convert) in enumerate(
         ax.set_yscale(y_scale)
 
         # Axes limits
+        ax.set_ylim(bottom=0)
         if len(y_limit) == 2:
             ax.set_ylim(bottom=y_limit[0], top=y_limit[1])
         if len(x_limit) == 2:
@@ -156,19 +155,19 @@ for j, (y_tech, y_label, y_limit, y_scale, y_convert) in enumerate(
         ax.tick_params(top=False, right=False)
 
 # Legend - Colors
-ax = a[len(a) - 1, 1]
+ax = a[len(a) - 1,0]
 patches = []
 for case, color in zip(cases, colors2):
     patches.append(mpatches.Patch(color=color, label=case))
-leg1 = ax.legend(handles=patches, bbox_to_anchor=(0.0, -0.25), loc="upper center", ncol=4)
+leg1 = ax.legend(handles=patches, bbox_to_anchor=(0.5, -0.35), loc="upper center", ncol=4)
 ax.add_artist(leg1)
 
 # Adjust spacing
 plt.subplots_adjust(top=0.95,
-                    bottom=0.15,
-                    left=0.05,
-                    right=0.96,
-                    hspace=0.15,
-                    wspace=0.07)
+                    bottom=0.175,
+                    left=0.1,
+                    right=0.95,
+                    hspace=0.2,
+                    wspace=0.09)
 # Save Figure
-plt.savefig(savename + ".png", dpi=DPI, bbox_extra_artists=leg1)
+plt.savefig(savename + "_v2.png", dpi=DPI, bbox_extra_artists=leg1)

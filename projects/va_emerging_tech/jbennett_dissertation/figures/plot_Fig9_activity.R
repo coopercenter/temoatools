@@ -151,17 +151,18 @@ ggplot(data=act_lowbio, aes_string(x='year',y='mean', ymin='min', ymax='max', co
   geom_line(position=position_dodge(width=dodge))+
   geom_ribbon(alpha=0.2, position=position_dodge(width=dodge))+
   geom_point(position=position_dodge(width=dodge))+
-  facet_nested(~tech_or_fuel)+
+  scale_y_continuous(limits = c(0, 120))+
+  facet_wrap(~tech_or_fuel)+
   labs(x='Year', y=expression(paste("Activity (TWh)")))+
   theme(panel.background = element_rect(colour ="black"),
         panel.border = element_rect(linetype="solid", fill=NA),
         legend.background=element_rect(fill = alpha("white", 0)),
         legend.key = element_rect(colour = "transparent"), legend.title=element_blank(),
         axis.text.x = element_text(angle = 90,vjust=0.5),
-        legend.position = "bottom")
+        legend.position = "bottom")+ guides(col = guide_legend(nrow = 2, byrow = TRUE))
 
 savename = 'Fig9_2050_activity_overview_lowBio_v1.png'
-ggsave(savename, device="png", width=7.48, height=10.0, units="in",dpi=300)
+ggsave(savename, device="png", width=7.48, height=6.0, units="in",dpi=300)
 
 # -------------------------
 # Activity - High bio
@@ -174,14 +175,15 @@ ggplot(data=act_highbio, aes_string(x='year',y='mean', ymin='min', ymax='max', c
   geom_line(position=position_dodge(width=dodge))+
   geom_ribbon(alpha=0.2, position=position_dodge(width=dodge))+
   geom_point(position=position_dodge(width=dodge))+
-  facet_nested(~tech_or_fuel)+
+  scale_y_continuous(limits = c(0, 120))+
+  facet_wrap(~tech_or_fuel)+
   labs(x='Year', y=expression(paste("Activity (TWh)")))+
   theme(panel.background = element_rect(colour ="black"),
         panel.border = element_rect(linetype="solid", fill=NA),
         legend.background=element_rect(fill = alpha("white", 0)),
         legend.key = element_rect(colour = "transparent"), legend.title=element_blank(),
         axis.text.x = element_text(angle = 90,vjust=0.5),
-        legend.position = "bottom")
+        legend.position = "bottom")+ guides(col = guide_legend(nrow = 2, byrow = TRUE))
 
 savename = 'Fig9_2050_Activity_overview_highBio_v1.png'
 ggsave(savename, device="png", width=7.48, height=6.0, units="in",dpi=300)

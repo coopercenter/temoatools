@@ -17,19 +17,19 @@ savename = "Fig7_2050_capacity_emerging_storage"
 # figure resolution
 DPI = 300  # Set resolution for saving figures
 
-x_vars = ['EC_VFB-CostInvest', 'EC_H2-CostInvest', 'E_OCAES-CostInvest']
-x_labels = ['12 hour VFB [$/kW]', '24 hour Hydrogen [$/kW]', '24 hour OCAES [$/kW]']
-x_converts = [1.0, 1.0, 1.0]
+x_vars = ['EC_VFB-CostInvest', 'EC_OCAES-CostInvest']
+x_labels = ['10-hour VFB [$/kW]', '24-hour OCAES [$/kW]']
+x_converts = [1.0, 1.0]
 x_limits = [[], [], []]
-x_scales = ['linear', 'linear', 'linear']
+x_scales = ['linear', 'linear']
 
 y_var = "value"
 y_converts = [1.0, 1.0, 1.0, 1.0, 1.0]
-y_techs = ['EC_BATT_2hr', 'EC_BATT', 'EC_VFB', 'EC_H2', 'E_OCAES']
-y_labels = ['2 hour\nBattery\n[GW]', '4 hour\nBattery\n[GW]', '12 hour\nVFB\n[GW]',
-            '24 hour\nHydrogen\n[GW]', '24 hour\nOCAES\n[GW]']
+y_techs = ['EC_BATT_2hr', 'EC_BATT_4hr', 'EC_PUMP', 'EC_VFB',  'EC_OCAES']
+y_labels = ['2-hour\nBattery\n[GW]', '4-hour\nBattery\n[GW]', '12-hour\nPumped Hydro','10-hour\nVFB\n[GW]',
+            '24-hour\nOCAES\n[GW]']
 y_limits = [[], [], [], [], [], [], [], [], ]
-y_scales = ['linear', 'linear', 'linear', 'linear', 'linear']
+y_scales = ['linear', 'linear', 'linear', 'linear','linear']
 
 markersize = 5
 # =====================================
@@ -167,7 +167,7 @@ leg1 = ax.legend(handles=patches, bbox_to_anchor=(0.67, -0.2), loc="upper center
 ax.add_artist(leg1)
 
 # Legend - Markers
-ax = a[len(a) - 1, 2]
+ax = a[len(a) - 1, 1]
 symbols = []
 for fossil_case, marker in zip(fossil_cases, markers):
     symbols.append(mlines.Line2D([], [], color='black', linestyle='', marker=marker, markersize=9,
