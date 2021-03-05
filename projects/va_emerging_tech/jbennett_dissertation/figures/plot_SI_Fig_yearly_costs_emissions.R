@@ -132,25 +132,25 @@ plot_emi <- ggplot(data=emi_smry, aes_string(x='year',y='mean', ymin='min', ymax
 
 ggarrange(plot_costs, plot_emi, nrow=2, ncol=1, heights = c(1,1), align="v", 
           labels= c("A", "B"), label.x = 0.0, label.y = 1.0, common.legend = TRUE, legend="bottom")
-savename = 'Fig5_yearly_costs_emissions.png'
+savename = 'SI_Fig_yearly_costs_emissions.png'
 ggsave(savename, device="png", width=7.48, height=5.5, units="in",dpi=300)
 
 
-# -------------------------
-# Plot and save - costs alone
-# -------------------------
-ggplot(data=costs_smry, aes_string(x='year',y='mean', ymin='min', ymax='max', color='new_emerg', fill='new_emerg'))+
-  geom_line(position=position_dodge(width=dodge))+
-  geom_ribbon(alpha=0.2, position=position_dodge(width=dodge))+
-  geom_point(position=position_dodge(width=dodge))+
-  labs(x='Year', y=expression(paste("Costs (US$ KWh"^-1,")")))+
-  scale_y_continuous(limits = c(0, 0.12))+
-  facet_nested(~bio + new_fossil)+
-  theme(panel.background = element_rect(colour ="black"),
-        panel.border = element_rect(linetype="solid", fill=NA),
-        legend.background=element_rect(fill = alpha("white", 0)),
-        legend.key = element_rect(colour = "transparent"), legend.title=element_blank(), 
-        legend.position = "bottom",
-        axis.text.x = element_text(angle = 90,vjust=0.5))
-savename = 'Fig5_yearly_costs.png'
-ggsave(savename, device="png", width=7.48, height=4.5, units="in",dpi=300)
+# # -------------------------
+# # Plot and save - costs alone
+# # -------------------------
+# ggplot(data=costs_smry, aes_string(x='year',y='mean', ymin='min', ymax='max', color='new_emerg', fill='new_emerg'))+
+#   geom_line(position=position_dodge(width=dodge))+
+#   geom_ribbon(alpha=0.2, position=position_dodge(width=dodge))+
+#   geom_point(position=position_dodge(width=dodge))+
+#   labs(x='Year', y=expression(paste("Costs (US$ KWh"^-1,")")))+
+#   scale_y_continuous(limits = c(0, 0.12))+
+#   facet_nested(~bio + new_fossil)+
+#   theme(panel.background = element_rect(colour ="black"),
+#         panel.border = element_rect(linetype="solid", fill=NA),
+#         legend.background=element_rect(fill = alpha("white", 0)),
+#         legend.key = element_rect(colour = "transparent"), legend.title=element_blank(), 
+#         legend.position = "bottom",
+#         axis.text.x = element_text(angle = 90,vjust=0.5))
+# savename = 'Backup_Fig_yearly_costs.png'
+# ggsave(savename, device="png", width=7.48, height=4.5, units="in",dpi=300)

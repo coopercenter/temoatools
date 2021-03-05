@@ -20,8 +20,12 @@ setwd(dir_work)
 setwd('../monte_carlo')
 
 # load results
-df <- read.csv("capacity_by_year.csv", check.names=FALSE)
+df <- read.csv("activity_by_year.csv", check.names=FALSE)
 setwd(dir_work)
+
+# Convert to TWh
+conversion = 1/1000.0 # GWh to TWh
+df$value <- df$value * conversion
 
 #---------
 # new_emerg - rename and factor
@@ -78,42 +82,46 @@ NET <- "Negative Emission Tech"
 NG <- "Natural Gas"
 LDS <- "Long duration storage"
 
-rename <- c("EX_BIO"=bio,
-            "EX_COAL"=coal_petrol,
-            "EX_HYDRO"=nuc_hyd,
-            "EX_NG_CC1"=NG,
-            "EX_NG_CC2"=NG,
-            "EX_NG_CT1"=NG,
-            "EX_NG_CT2"=NG,
-            "EX_NUCLEAR"=nuc_hyd,
-            "EX_OIL"=coal_petrol,
-            "EX_PUMP"=LDS,
-            'EX_SOLPV'=solar,
-            "EC_BATT_2hr"=batt,
-            "EC_BATT_4hr"=batt,
-            "EC_BIO"=bio,
-            "EC_COAL"=coal_petrol,
-            "EC_COAL_CCS"=coal_petrol,
-            "EC_COAL_IGCC"=coal_petrol,
-            "EC_NG_CC"=NG,
-            "EC_NG_CT"=NG,
-            "EC_NG_CCS"=NG,
-            "EC_NUCLEAR"=nuc_hyd,
-            "EC_OIL_CC"=coal_petrol,
-            "EC_PUMP"=LDS,
-            "EC_SOLPV_Util"=solar,          
-            "EC_WIND_Fix"=wind,
-            'EC_WIND_Float'=wind,
-            "ED_SOLPV_Com"=solar,
-            "ED_SOLPV_Res"=solar,
-            "EC_BECCS"=NET,
-            "EC_DAC"=NET,
-            "EC_OCAES"=LDS,
-            "EC_VFB"=LDS)
+rename <- c("EX_BIO"="Biomass",
+            "EX_COAL"="Coal & Petrol",
+            "EX_HYDRO"="Nuclear + Hydro",
+            "EX_NG_CC1"="Natural Gas",
+            "EX_NG_CC2"="Natural Gas",
+            "EX_NG_CT1"="Natural Gas",
+            "EX_NG_CT2"="Natural Gas",
+            "EX_NUCLEAR"="Nuclear + Hydro",
+            "EX_OIL"="Coal & Petrol",
+            "EX_PUMP"="Pumped Hydro",
+            'EX_SOLPV'="Solar - Utility",
+            "EC_BATT_2hr"="2-hr Battery",
+            "EC_BATT_4hr"="4-hr Battery",
+            "EC_BIO"="Biomass",
+            "EC_COAL"="Coal & Petrol",
+            "EC_COAL_CCS"="Coal & Petrol - CCS",
+            "EC_COAL_IGCC"="Coal & Petrol",
+            "EC_NG_CC"="Natural Gas",
+            "EC_NG_CT"="Natural Gas",
+            "EC_NG_CCS"="Natural Gas - CCS",
+            "EC_NUCLEAR"="Nuclear + Hydro",
+            "EC_OIL_CC"="Coal & Petrol",
+            "EC_PUMP"="Pumped Hydro",
+            "EC_SOLPV_Util"="Solar - Utility",
+            "EC_WIND_Fix"="Offshore Wind - Fixed",
+            'EC_WIND_Float'="Offshore Wind - Floating",
+            "ED_SOLPV_Com"="drop",
+            "ED_SOLPV_Res"="Solar - Residential",
+            "EC_BECCS"="BECCS",
+            "EC_DAC"="DAC",
+            "EC_OCAES"="OCAES",
+            "EC_VFB"="drop")
+
+
 
 # rename technologies
-df$original_name <-df$tech_or_fuel
 df_renamed <- transform(df, tech_or_fuel = rename[as.character(tech_or_fuel)])
+
+# 'drop' technologies that we don't want to plot
+df_renamed <- df_renamed[ which(df_renamed$tech_or_fuel !='drop'),]
 
 # summarize to sum capacity of the same category within each simulation
 df_renamed2 <- df_renamed %>% # the names of the new data frame and the data frame to be summarised
@@ -121,16 +129,15 @@ df_renamed2 <- df_renamed %>% # the names of the new data frame and the data fra
   summarise(value = sum(value))
 
 # summarize
-cap <- df_renamed2 %>% # the names of the new data frame and the data frame to be summarised
+act <- df_renamed2 %>% # the names of the new data frame and the data frame to be summarised
   group_by(.dots=c("year","tech_or_fuel","new_emerg", "new_fossil", "bio")) %>%   # the grouping variable
   summarise(mean = mean(value),  # calculates the mean
             min = min(value), # calculates the minimum
             max = max(value),# calculates the maximum
             sd=sd(value)) # calculates the standard deviation
 
-
 palette <-c('#6baed6', '#3182bd',
-              '#31a354',  '#006d2c')
+            '#31a354',  '#006d2c')
 
 options(ggplot2.discrete.fill = palette)
 options(ggplot2.discrete.color = palette)
@@ -139,44 +146,19 @@ options(ggplot2.continuous.color = palette)
 
 
 # -------------------------
-# Capacity build-out - low bio
+# Activity - low bio
 # -------------------------
 
-cap_lowbio<-cap[(cap$bio=="Low Bio"),]
-cap_lowbio$Scenario <- paste(cap_lowbio$new_emerg,' - ', cap_lowbio$new_fossil)
+act_lowbio<-act[(act$bio=="Low Bio"),]
+act_lowbio$Scenario <- paste(act_lowbio$new_emerg,' - ',act_lowbio$new_fossil)
 
-ggplot(data=cap_lowbio, aes_string(x='year',y='mean', ymin='min', ymax='max', color='Scenario', fill='Scenario'))+
+ggplot(data=act_lowbio, aes_string(x='year',y='mean', ymin='min', ymax='max', color='Scenario', fill='Scenario'))+
   geom_line(position=position_dodge(width=dodge))+
   geom_ribbon(alpha=0.2, position=position_dodge(width=dodge))+
   geom_point(position=position_dodge(width=dodge))+
   scale_y_continuous(limits = c(0, 100))+
   facet_wrap(~tech_or_fuel)+
-  labs(x='Year', y=expression(paste("Capacity (GW)")))+
-  theme(panel.background = element_rect(colour ="black"),
-        panel.border = element_rect(linetype="solid", fill=NA),
-        legend.background=element_rect(fill = alpha("white", 0)),
-        legend.key = element_rect(colour = "transparent"), legend.title=element_blank(),
-        axis.text.x = element_text(angle = 90,vjust=0.5),
-        legend.position = "bottom")+ guides(col = guide_legend(nrow = 2, byrow = TRUE))
-  
-
-savename = 'Fig6_2050_capacity_overview_lowBio_v1.png'
-ggsave(savename, device="png", width=7.48, height=6.0, units="in",dpi=300)
-
-# -------------------------
-# Capacity build-out - High bio
-# -------------------------
-
-cap_highbio<-cap[(cap$bio=="High Bio"),]
-cap_highbio$Scenario <- paste(cap_highbio$new_emerg,' - ', cap_highbio$new_fossil)
-
-ggplot(data=cap_highbio, aes_string(x='year',y='mean', ymin='min', ymax='max', color='Scenario', fill='Scenario'))+
-  geom_line(position=position_dodge(width=dodge))+
-  geom_ribbon(alpha=0.2, position=position_dodge(width=dodge))+
-  geom_point(position=position_dodge(width=dodge))+
-  scale_y_continuous(limits = c(0, 100))+
-  facet_wrap(~tech_or_fuel)+
-  labs(x='Year', y=expression(paste("Capacity (GW)")))+
+  labs(x='Year', y=expression(paste("Activity (TWh)")))+
   theme(panel.background = element_rect(colour ="black"),
         panel.border = element_rect(linetype="solid", fill=NA),
         legend.background=element_rect(fill = alpha("white", 0)),
@@ -184,45 +166,29 @@ ggplot(data=cap_highbio, aes_string(x='year',y='mean', ymin='min', ymax='max', c
         axis.text.x = element_text(angle = 90,vjust=0.5),
         legend.position = "bottom")+ guides(col = guide_legend(nrow = 2, byrow = TRUE))
 
-savename = 'Fig6_2050_capacity_overview_highBio_v1.png'
+savename = 'Fig6_2050_activity_select_lowBio.png'
 ggsave(savename, device="png", width=7.48, height=6.0, units="in",dpi=300)
 
 # -------------------------
-# Capacity build-out, average
+# Activity - High bio
 # -------------------------
 
-# http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/
-colors <- hash()
-colors[['black']] <- "#000000"
-colors[['gray']] <- "#999999"
-colors[['orange']] <- "#E69F00"
-colors[['lightblue']] <- "#56B4E9"
-colors[['green']] <- "#009E73"
-colors[['yellow']] <- "#F0E442"
-colors[['darkblue']] <- "#0072B2"
-colors[['red']] <- "#D55E00"
-colors[['pink']] <- "#CC79A7"
-colors[['brown']] <- "#993300"
+act_highbio<-act[(act$bio=="High Bio"),]
+act_highbio$Scenario <- paste(act_highbio$new_emerg,' - ', act_highbio$new_fossil)
 
-palette <- c(colors[['gray']], colors[['green']], colors[['black']], 
-             colors[['pink']], colors[['brown']], colors[['red']],
-             colors[['lightblue']], colors[['orange']], colors[['darkblue']])
-
-# pathway_Palette <- c("#E69F00", "#56B4E9", "#009E73","#0072B2", "#D55E00", "#000000", "#CC79A7")
-options(ggplot2.discrete.fill = palette)
-options(ggplot2.discrete.color = palette)
-options(ggplot2.continuous.fill = palette)
-options(ggplot2.continuous.color = palette)
-
-ggplot(data=cap, aes_string(x='year',y='mean',fill='tech_or_fuel'))+
-  geom_bar(position="stack", stat="identity")+
-  facet_nested(bio + new_fossil~new_emerg)+
-  labs(x='Year', y=expression(paste("Capacity (GW)")))+
+ggplot(data=act_highbio, aes_string(x='year',y='mean', ymin='min', ymax='max', color='Scenario', fill='Scenario'))+
+  geom_line(position=position_dodge(width=dodge))+
+  geom_ribbon(alpha=0.2, position=position_dodge(width=dodge))+
+  geom_point(position=position_dodge(width=dodge))+
+  scale_y_continuous(limits = c(0, 100))+
+  facet_wrap(~tech_or_fuel)+
+  labs(x='Year', y=expression(paste("Activity (TWh)")))+
   theme(panel.background = element_rect(colour ="black"),
         panel.border = element_rect(linetype="solid", fill=NA),
         legend.background=element_rect(fill = alpha("white", 0)),
         legend.key = element_rect(colour = "transparent"), legend.title=element_blank(),
-        axis.text.x = element_text(angle = 0,vjust=0.5))+scale_fill_manual(values=palette)
+        axis.text.x = element_text(angle = 90,vjust=0.5),
+        legend.position = "bottom")+ guides(col = guide_legend(nrow = 2, byrow = TRUE))
 
-savename = 'Fig6_2050_capacity_overview_v2.png'
-ggsave(savename, device="png", width=7.48, height=5.5, units="in",dpi=300)
+savename = 'SI_Fig_2050_Activity_select_highBio.png'
+ggsave(savename, device="png", width=7.48, height=6.0, units="in",dpi=300)

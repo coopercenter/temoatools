@@ -12,7 +12,7 @@ import numpy as np
 # =====================================
 # data input
 results_filename = "capacity_by_year.csv"
-savename = "Fig8_2050_capacity_emerging_NET"
+savename = "Fig8_2050_capacity_NET"
 
 # figure resolution
 DPI = 300  # Set resolution for saving figures

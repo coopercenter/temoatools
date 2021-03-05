@@ -20,12 +20,8 @@ setwd(dir_work)
 setwd('../monte_carlo')
 
 # load results
-df <- read.csv("activity_by_year.csv", check.names=FALSE)
+df <- read.csv("capacity_by_year.csv", check.names=FALSE)
 setwd(dir_work)
-
-# Convert to TWh
-conversion = 1/1000.0 # GWh to TWh
-df$value <- df$value * conversion
 
 #---------
 # new_emerg - rename and factor
@@ -116,6 +112,7 @@ rename <- c("EX_BIO"="Biomass",
             "EC_VFB"="VFB")
 
 # rename technologies
+df$original_name <-df$tech_or_fuel
 df_renamed <- transform(df, tech_or_fuel = rename[as.character(tech_or_fuel)])
 
 # summarize to sum capacity of the same category within each simulation
@@ -124,15 +121,16 @@ df_renamed2 <- df_renamed %>% # the names of the new data frame and the data fra
   summarise(value = sum(value))
 
 # summarize
-act <- df_renamed2 %>% # the names of the new data frame and the data frame to be summarised
+cap <- df_renamed2 %>% # the names of the new data frame and the data frame to be summarised
   group_by(.dots=c("year","tech_or_fuel","new_emerg", "new_fossil", "bio")) %>%   # the grouping variable
   summarise(mean = mean(value),  # calculates the mean
             min = min(value), # calculates the minimum
             max = max(value),# calculates the maximum
             sd=sd(value)) # calculates the standard deviation
 
+
 palette <-c('#6baed6', '#3182bd',
-            '#31a354',  '#006d2c')
+              '#31a354',  '#006d2c')
 
 options(ggplot2.discrete.fill = palette)
 options(ggplot2.discrete.color = palette)
@@ -141,43 +139,44 @@ options(ggplot2.continuous.color = palette)
 
 
 # -------------------------
-# Activity - low bio
+# Capacity build-out - low bio
 # -------------------------
 
-act_lowbio<-act[(act$bio=="Low Bio"),]
-act_lowbio$Scenario <- paste(act_lowbio$new_emerg,' - ',act_lowbio$new_fossil)
+cap_lowbio<-cap[(cap$bio=="Low Bio"),]
+cap_lowbio$Scenario <- paste(cap_lowbio$new_emerg,' - ', cap_lowbio$new_fossil)
 
-ggplot(data=act_lowbio, aes_string(x='year',y='mean', ymin='min', ymax='max', color='Scenario', fill='Scenario'))+
+ggplot(data=cap_lowbio, aes_string(x='year',y='mean', ymin='min', ymax='max', color='Scenario', fill='Scenario'))+
   geom_line(position=position_dodge(width=dodge))+
   geom_ribbon(alpha=0.2, position=position_dodge(width=dodge))+
   geom_point(position=position_dodge(width=dodge))+
-  scale_y_continuous(limits = c(0, 120))+
+  scale_y_continuous(limits = c(0, 100))+
   facet_wrap(~tech_or_fuel)+
-  labs(x='Year', y=expression(paste("Activity (TWh)")))+
+  labs(x='Year', y=expression(paste("Capacity (GW)")))+
   theme(panel.background = element_rect(colour ="black"),
         panel.border = element_rect(linetype="solid", fill=NA),
         legend.background=element_rect(fill = alpha("white", 0)),
         legend.key = element_rect(colour = "transparent"), legend.title=element_blank(),
         axis.text.x = element_text(angle = 90,vjust=0.5),
         legend.position = "bottom")+ guides(col = guide_legend(nrow = 2, byrow = TRUE))
+  
 
-savename = 'Fig9_2050_activity_overview_lowBio_all.png'
+savename = 'SI_Fig_2050_capacity_all_lowBio.png'
 ggsave(savename, device="png", width=7.48, height=6.0, units="in",dpi=300)
 
 # -------------------------
-# Activity - High bio
+# Capacity build-out - High bio
 # -------------------------
 
-act_highbio<-act[(act$bio=="High Bio"),]
-act_highbio$Scenario <- paste(act_highbio$new_emerg,' - ', act_highbio$new_fossil)
+cap_highbio<-cap[(cap$bio=="High Bio"),]
+cap_highbio$Scenario <- paste(cap_highbio$new_emerg,' - ', cap_highbio$new_fossil)
 
-ggplot(data=act_highbio, aes_string(x='year',y='mean', ymin='min', ymax='max', color='Scenario', fill='Scenario'))+
+ggplot(data=cap_highbio, aes_string(x='year',y='mean', ymin='min', ymax='max', color='Scenario', fill='Scenario'))+
   geom_line(position=position_dodge(width=dodge))+
   geom_ribbon(alpha=0.2, position=position_dodge(width=dodge))+
   geom_point(position=position_dodge(width=dodge))+
-  scale_y_continuous(limits = c(0, 120))+
+  scale_y_continuous(limits = c(0, 100))+
   facet_wrap(~tech_or_fuel)+
-  labs(x='Year', y=expression(paste("Activity (TWh)")))+
+  labs(x='Year', y=expression(paste("Capacity (GW)")))+
   theme(panel.background = element_rect(colour ="black"),
         panel.border = element_rect(linetype="solid", fill=NA),
         legend.background=element_rect(fill = alpha("white", 0)),
@@ -185,5 +184,5 @@ ggplot(data=act_highbio, aes_string(x='year',y='mean', ymin='min', ymax='max', c
         axis.text.x = element_text(angle = 90,vjust=0.5),
         legend.position = "bottom")+ guides(col = guide_legend(nrow = 2, byrow = TRUE))
 
-savename = 'Fig9_2050_Activity_overview_highBio_all.png'
+savename = 'SI_Fig_2050_capacity_all_highBio.png'
 ggsave(savename, device="png", width=7.48, height=6.0, units="in",dpi=300)

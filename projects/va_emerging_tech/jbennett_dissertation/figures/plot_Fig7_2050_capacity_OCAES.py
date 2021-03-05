@@ -170,4 +170,4 @@ plt.subplots_adjust(top=0.95,
                     hspace=0.2,
                     wspace=0.09)
 # Save Figure
-plt.savefig(savename + "_v2.png", dpi=DPI, bbox_extra_artists=leg1)
+plt.savefig(savename + ".png", dpi=DPI, bbox_extra_artists=leg1)

@@ -12,7 +12,7 @@ import numpy as np
 # =====================================
 # data input
 results_filename = "capacity_by_year.csv"
-savename = "Fig7_2050_capacity_emerging_storage"
+savename = "SI_Fig_2050_capacity_storage"
 
 # figure resolution
 DPI = 300  # Set resolution for saving figures
@@ -72,120 +72,120 @@ cases = ['Low Bio With Fossil', 'Low Bio Without Fossil',
          'High Bio With Fossil', 'High Bio Without Fossil']
 colors2 = sns.color_palette('Paired')
 
-# =====================================
-# create plot version 1 - colors + markers
-# =====================================
-
-# Column width guidelines https://www.elsevier.com/authors/author-schemas/artwork-and-media-instructions/artwork-sizing
-# Single column: 90mm = 3.54 in
-# 1.5 column: 140 mm = 5.51 in
-# 2 column: 190 mm = 7.48 i
-width = 10.0  # inches
-height = 5.5  # inches
-
-# Create plot
-f, a = plt.subplots(len(y_techs), len(x_vars), sharex='col', sharey='row', squeeze=False,
-                    constrained_layout=True)
-
-# Set size
-f.set_size_inches(width, height)
-
-# Set style and context
-sns.set_style("white", {"font.family": "serif", "font.serif": ["Times", "Palatino", "serif"]})
-sns.set_context("paper")
-sns.set_style("ticks", {"xtick.major.size": 8, "ytick.major.size": 8})
-
-count = 0
-# iterate through y-variables
-for j, (y_tech, y_label, y_limit, y_scale, y_convert) in enumerate(
-        zip(y_techs, y_labels, y_limits, y_scales, y_converts)):
-
-    # get data
-    df2 = df[(df.loc[:, 'tech_or_fuel'] == y_tech)]
-
-    # iterate through x-variables
-    for i, (x_var, x_label, x_convert, x_limit, x_scale) in enumerate(
-            zip(x_vars, x_labels, x_converts, x_limits, x_scales)):
-
-        # access subplot
-        ax = a[j, i]
-
-        for fossil_case, marker in zip(fossil_cases, markers):
-            # get data
-            df3 = df2[(df2.loc[:, 'new_fossil'] == fossil_case)]
-
-        for bio_case, color in zip(bio_cases, colors1):
-            # get data
-            df4 = df3[(df3.loc[:, 'bio'] == bio_case)]
-
-            # convert data
-            x = x_convert * df4.loc[:, x_var]
-            y = y_convert * df4.loc[:, y_var]
-
-            # plot
-            ax.plot(x, y,
-                    linestyle='',
-                    marker=marker,
-                    markersize=markersize,
-                    markeredgecolor=color,
-                    markerfacecolor='None')
-
-        # axes labels
-        # x-axis labels (only bottom)
-        if j == len(y_techs) - 1:
-            ax.set_xlabel(x_label)
-        else:
-            ax.get_xaxis().set_visible(False)
-
-        # y-axis labels (only left side)
-        if i == 0:
-            ax.set_ylabel(y_label)
-        else:
-            ax.get_yaxis().set_visible(False)
-
-        # axes scales
-        ax.set_xscale(x_scale)
-        ax.set_yscale(y_scale)
-
-        # Axes limits
-        if len(y_limit) == 2:
-            ax.set_ylim(bottom=y_limit[0], top=y_limit[1])
-        if len(x_limit) == 2:
-            ax.set_xlim(left=x_limit[0], right=x_limit[1])
-
-        # Despine and remove ticks
-        # sns.despine(ax=ax, )
-        ax.tick_params(top=False, right=False)
-
-# Legend - Colors
-ax = a[len(a) - 1, 0]
-patches = []
-for bio_case, color in zip(bio_cases, colors1):
-    patches.append(mpatches.Patch(color=color, label=bio_rename[bio_case]))
-leg1 = ax.legend(handles=patches, bbox_to_anchor=(0.67, -0.2), loc="upper center", title='Biomass Availability',
-                 ncol=2)
-ax.add_artist(leg1)
-
-# Legend - Markers
-ax = a[len(a) - 1, 1]
-symbols = []
-for fossil_case, marker in zip(fossil_cases, markers):
-    symbols.append(mlines.Line2D([], [], color='black', linestyle='', marker=marker, markersize=9,
-                                 markerfacecolor='None', markeredgewidth=1.5,
-                                 label=fossil_rename[fossil_case]))
-leg2 = ax.legend(handles=symbols, bbox_to_anchor=(0.33, -0.2), loc="upper center", title='New Fossil Generation',
-                 ncol=2)
-ax.add_artist(leg2)
-
-# Adjust spacing
-plt.subplots_adjust(top=0.95,
-                    bottom=0.175,
-                    left=0.1,
-                    right=0.95,
-                    hspace=0.2,
-                    wspace=0.09)
-# Save Figure
-plt.savefig(savename + "_v1.png", dpi=DPI, bbox_extra_artists=(leg1, leg2))
+# # =====================================
+# # create plot version 1 - colors + markers
+# # =====================================
+#
+# # Column width guidelines https://www.elsevier.com/authors/author-schemas/artwork-and-media-instructions/artwork-sizing
+# # Single column: 90mm = 3.54 in
+# # 1.5 column: 140 mm = 5.51 in
+# # 2 column: 190 mm = 7.48 i
+# width = 10.0  # inches
+# height = 5.5  # inches
+#
+# # Create plot
+# f, a = plt.subplots(len(y_techs), len(x_vars), sharex='col', sharey='row', squeeze=False,
+#                     constrained_layout=True)
+#
+# # Set size
+# f.set_size_inches(width, height)
+#
+# # Set style and context
+# sns.set_style("white", {"font.family": "serif", "font.serif": ["Times", "Palatino", "serif"]})
+# sns.set_context("paper")
+# sns.set_style("ticks", {"xtick.major.size": 8, "ytick.major.size": 8})
+#
+# count = 0
+# # iterate through y-variables
+# for j, (y_tech, y_label, y_limit, y_scale, y_convert) in enumerate(
+#         zip(y_techs, y_labels, y_limits, y_scales, y_converts)):
+#
+#     # get data
+#     df2 = df[(df.loc[:, 'tech_or_fuel'] == y_tech)]
+#
+#     # iterate through x-variables
+#     for i, (x_var, x_label, x_convert, x_limit, x_scale) in enumerate(
+#             zip(x_vars, x_labels, x_converts, x_limits, x_scales)):
+#
+#         # access subplot
+#         ax = a[j, i]
+#
+#         for fossil_case, marker in zip(fossil_cases, markers):
+#             # get data
+#             df3 = df2[(df2.loc[:, 'new_fossil'] == fossil_case)]
+#
+#         for bio_case, color in zip(bio_cases, colors1):
+#             # get data
+#             df4 = df3[(df3.loc[:, 'bio'] == bio_case)]
+#
+#             # convert data
+#             x = x_convert * df4.loc[:, x_var]
+#             y = y_convert * df4.loc[:, y_var]
+#
+#             # plot
+#             ax.plot(x, y,
+#                     linestyle='',
+#                     marker=marker,
+#                     markersize=markersize,
+#                     markeredgecolor=color,
+#                     markerfacecolor='None')
+#
+#         # axes labels
+#         # x-axis labels (only bottom)
+#         if j == len(y_techs) - 1:
+#             ax.set_xlabel(x_label)
+#         else:
+#             ax.get_xaxis().set_visible(False)
+#
+#         # y-axis labels (only left side)
+#         if i == 0:
+#             ax.set_ylabel(y_label)
+#         else:
+#             ax.get_yaxis().set_visible(False)
+#
+#         # axes scales
+#         ax.set_xscale(x_scale)
+#         ax.set_yscale(y_scale)
+#
+#         # Axes limits
+#         if len(y_limit) == 2:
+#             ax.set_ylim(bottom=y_limit[0], top=y_limit[1])
+#         if len(x_limit) == 2:
+#             ax.set_xlim(left=x_limit[0], right=x_limit[1])
+#
+#         # Despine and remove ticks
+#         # sns.despine(ax=ax, )
+#         ax.tick_params(top=False, right=False)
+#
+# # Legend - Colors
+# ax = a[len(a) - 1, 0]
+# patches = []
+# for bio_case, color in zip(bio_cases, colors1):
+#     patches.append(mpatches.Patch(color=color, label=bio_rename[bio_case]))
+# leg1 = ax.legend(handles=patches, bbox_to_anchor=(0.67, -0.2), loc="upper center", title='Biomass Availability',
+#                  ncol=2)
+# ax.add_artist(leg1)
+#
+# # Legend - Markers
+# ax = a[len(a) - 1, 1]
+# symbols = []
+# for fossil_case, marker in zip(fossil_cases, markers):
+#     symbols.append(mlines.Line2D([], [], color='black', linestyle='', marker=marker, markersize=9,
+#                                  markerfacecolor='None', markeredgewidth=1.5,
+#                                  label=fossil_rename[fossil_case]))
+# leg2 = ax.legend(handles=symbols, bbox_to_anchor=(0.33, -0.2), loc="upper center", title='New Fossil Generation',
+#                  ncol=2)
+# ax.add_artist(leg2)
+#
+# # Adjust spacing
+# plt.subplots_adjust(top=0.95,
+#                     bottom=0.175,
+#                     left=0.1,
+#                     right=0.95,
+#                     hspace=0.2,
+#                     wspace=0.09)
+# # Save Figure
+# plt.savefig(savename + "_v1.png", dpi=DPI, bbox_extra_artists=(leg1, leg2))
 
 # =====================================
 # create plot version 2 - only colors
@@ -284,4 +284,4 @@ plt.subplots_adjust(top=0.95,
                     hspace=0.2,
                     wspace=0.09)
 # Save Figure
-plt.savefig(savename + "_v2.png", dpi=DPI, bbox_extra_artists=leg1)
+plt.savefig(savename + ".png", dpi=DPI, bbox_extra_artists=leg1)

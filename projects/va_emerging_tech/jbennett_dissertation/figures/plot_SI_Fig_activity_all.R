@@ -91,7 +91,7 @@ rename <- c("EX_BIO"="Biomass",
             "EX_NG_CT2"="Natural Gas",
             "EX_NUCLEAR"="Nuclear + Hydro",
             "EX_OIL"="Coal & Petrol",
-            "EX_PUMP"="Pumped Hydro",
+            "EX_PUMP"="Pump",
             'EX_SOLPV'="Solar - Utility",
             "EC_BATT_2hr"="2-hr Battery",
             "EC_BATT_4hr"="4-hr Battery",
@@ -104,24 +104,19 @@ rename <- c("EX_BIO"="Biomass",
             "EC_NG_CCS"="Natural Gas - CCS",
             "EC_NUCLEAR"="Nuclear + Hydro",
             "EC_OIL_CC"="Coal & Petrol",
-            "EC_PUMP"="Pumped Hydro",
+            "EC_PUMP"="Pump",
             "EC_SOLPV_Util"="Solar - Utility",
             "EC_WIND_Fix"="Offshore Wind - Fixed",
             'EC_WIND_Float'="Offshore Wind - Floating",
-            "ED_SOLPV_Com"="drop",
+            "ED_SOLPV_Com"="Solar - Commercial",
             "ED_SOLPV_Res"="Solar - Residential",
             "EC_BECCS"="BECCS",
             "EC_DAC"="DAC",
             "EC_OCAES"="OCAES",
-            "EC_VFB"="drop")
-
-
+            "EC_VFB"="VFB")
 
 # rename technologies
 df_renamed <- transform(df, tech_or_fuel = rename[as.character(tech_or_fuel)])
-
-# 'drop' technologies that we don't want to plot
-df_renamed <- df_renamed[ which(df_renamed$tech_or_fuel !='drop'),]
 
 # summarize to sum capacity of the same category within each simulation
 df_renamed2 <- df_renamed %>% # the names of the new data frame and the data frame to be summarised
@@ -156,7 +151,7 @@ ggplot(data=act_lowbio, aes_string(x='year',y='mean', ymin='min', ymax='max', co
   geom_line(position=position_dodge(width=dodge))+
   geom_ribbon(alpha=0.2, position=position_dodge(width=dodge))+
   geom_point(position=position_dodge(width=dodge))+
-  scale_y_continuous(limits = c(0, 100))+
+  scale_y_continuous(limits = c(0, 120))+
   facet_wrap(~tech_or_fuel)+
   labs(x='Year', y=expression(paste("Activity (TWh)")))+
   theme(panel.background = element_rect(colour ="black"),
@@ -166,7 +161,7 @@ ggplot(data=act_lowbio, aes_string(x='year',y='mean', ymin='min', ymax='max', co
         axis.text.x = element_text(angle = 90,vjust=0.5),
         legend.position = "bottom")+ guides(col = guide_legend(nrow = 2, byrow = TRUE))
 
-savename = 'Fig9_2050_activity_overview_lowBio_select.png'
+savename = 'SI_Fig_2050_activity_all_lowBio.png'
 ggsave(savename, device="png", width=7.48, height=6.0, units="in",dpi=300)
 
 # -------------------------
@@ -180,7 +175,7 @@ ggplot(data=act_highbio, aes_string(x='year',y='mean', ymin='min', ymax='max', c
   geom_line(position=position_dodge(width=dodge))+
   geom_ribbon(alpha=0.2, position=position_dodge(width=dodge))+
   geom_point(position=position_dodge(width=dodge))+
-  scale_y_continuous(limits = c(0, 100))+
+  scale_y_continuous(limits = c(0, 120))+
   facet_wrap(~tech_or_fuel)+
   labs(x='Year', y=expression(paste("Activity (TWh)")))+
   theme(panel.background = element_rect(colour ="black"),
@@ -190,5 +185,5 @@ ggplot(data=act_highbio, aes_string(x='year',y='mean', ymin='min', ymax='max', c
         axis.text.x = element_text(angle = 90,vjust=0.5),
         legend.position = "bottom")+ guides(col = guide_legend(nrow = 2, byrow = TRUE))
 
-savename = 'Fig9_2050_Activity_overview_highBio_select.png'
+savename = 'SI_Fig_2050_Activity_all_highBio.png'
 ggsave(savename, device="png", width=7.48, height=6.0, units="in",dpi=300)
