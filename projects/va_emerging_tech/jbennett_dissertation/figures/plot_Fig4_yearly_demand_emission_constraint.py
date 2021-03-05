@@ -25,11 +25,11 @@ emi_year = [2025,
             2040,
             2045,
             2050]
-emi_limit_Mt = [23.800,
-                19.040,
-                14.280,
-                9.520,
-                4.760,
+emi_limit_Mt = [25.020,
+                20.016,
+                15.012,
+                10.008,
+                5.004,
                 0]
 
 # ====================
@@ -63,7 +63,7 @@ ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
 color = colors[1]
 # color = "#56B4E9"
 ax2.set_ylabel('Emission limit [Mt]', color=color)  # we already handled the x-label with ax1
-ax2.set_ylim(bottom=0, top=25)
+ax2.set_ylim(bottom=0, top=30)
 ax2.plot(emi_year, emi_limit_Mt, color=color, marker='o')
 ax2.tick_params(axis='y', labelcolor=color)
 

@@ -82,7 +82,7 @@ colors2 = sns.color_palette('Paired')
 # Single column: 90mm = 3.54 in
 # 1.5 column: 140 mm = 5.51 in
 # 2 column: 190 mm = 7.48 i
-width = 10.0  # inches
+width = 7.48  # inches
 height = 5.5  # inches
 
 # Create plot
@@ -160,14 +160,14 @@ ax = a[len(a) - 1, 1]
 patches = []
 for case, color in zip(cases, colors2):
     patches.append(mpatches.Patch(color=color, label=case))
-leg1 = ax.legend(handles=patches, bbox_to_anchor=(0.0, -0.25), loc="upper center", ncol=4)
+leg1 = ax.legend(handles=patches, bbox_to_anchor=(-0.1, -0.25), loc="upper center", ncol=4)
 ax.add_artist(leg1)
 
 # Adjust spacing
 plt.subplots_adjust(top=0.95,
-                    bottom=0.15,
-                    left=0.05,
-                    right=0.96,
+                    bottom=0.155,
+                    left=0.08,
+                    right=0.95,
                     hspace=0.15,
                     wspace=0.07)
 # Save Figure
