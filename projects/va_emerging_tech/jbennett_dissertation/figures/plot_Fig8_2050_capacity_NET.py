@@ -63,15 +63,15 @@ fossil_cases = df.loc[:, 'new_fossil'].unique()
 markers = ['^', 's']
 
 # version 2 - create new column to distinguish remaining cases
-fossil_rename = {'wFossil': 'With Fossil', 'woFossil': 'Without Fossil'}
+fossil_rename = {'wFossil': 'With New Fossil', 'woFossil': 'Without New Fossil'}
 bio_rename = {'Low Bio': 'Low Bio', 'High Bio': 'High Bio'}
 for f_key in fossil_rename.keys():
     for b_key in bio_rename.keys():
         ind = (df.loc[:, 'new_fossil'] == f_key) & (df.loc[:, 'bio'] == b_key)
         df.loc[ind, 'case'] = bio_rename[b_key] + ' ' + fossil_rename[f_key]
 # cases = df.loc[:, 'case'].unique()
-cases = ['Low Bio With Fossil', 'Low Bio Without Fossil',
-         'High Bio With Fossil', 'High Bio Without Fossil']
+cases = ['Low Bio With New Fossil', 'Low Bio Without New Fossil',
+         'High Bio With New Fossil', 'High Bio Without New Fossil']
 colors2 = sns.color_palette('Paired')
 
 # =====================================
@@ -160,13 +160,13 @@ ax = a[len(a) - 1, 1]
 patches = []
 for case, color in zip(cases, colors2):
     patches.append(mpatches.Patch(color=color, label=case))
-leg1 = ax.legend(handles=patches, bbox_to_anchor=(-0.1, -0.25), loc="upper center", ncol=4)
+leg1 = ax.legend(handles=patches, bbox_to_anchor=(-0.1, -0.25), loc="upper center", ncol=2)
 ax.add_artist(leg1)
 
 # Adjust spacing
 plt.subplots_adjust(top=0.95,
-                    bottom=0.155,
-                    left=0.08,
+                    bottom=0.185,
+                    left=0.09,
                     right=0.95,
                     hspace=0.15,
                     wspace=0.07)

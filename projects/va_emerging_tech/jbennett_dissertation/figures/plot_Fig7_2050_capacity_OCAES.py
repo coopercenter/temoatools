@@ -25,10 +25,9 @@ x_scales = ['linear']
 
 y_var = "value"
 y_converts = [1.0, 1.0, 1.0, 1.0]
-y_techs = ['EC_BATT_2hr', 'EC_BATT_4hr', 'EC_OCAES']
-y_labels = ['2-hour\nBattery\n[GW]', '4-hour\nBattery\n[GW]',
-            '24-hour\nOCAES\n[GW]']
-y_limits = [[], [], [],]
+y_techs = ['EC_OCAES', 'EC_BATT_2hr', 'EC_BATT_4hr']
+y_labels = ['24-hour\nOCAES\n[GW]', '2-hour\nBattery\n[GW]', '4-hour\nBattery\n[GW]']
+y_limits = [[0,8], [0,25], [0,50],]
 y_scales = ['linear', 'linear', 'linear']
 
 markersize = 5
@@ -56,20 +55,20 @@ bio_rename = {'High Bio': 'High Bio', 'Low Bio': 'Low Bio'}
 bio_cases = df.loc[:, 'bio'].unique()
 colors1 = sns.color_palette("colorblind")
 
-fossil_rename = {'wFossil': 'With Fossil', 'woFossil': 'Without Fossil'}
+fossil_rename = {'wFossil': 'With New Fossil', 'woFossil': 'Without New Fossil'}
 fossil_cases = df.loc[:, 'new_fossil'].unique()
 markers = ['^', 's']
 
 # version 2 - create new column to distinguish remaining cases
-fossil_rename = {'wFossil': 'With Fossil', 'woFossil': 'Without Fossil'}
+fossil_rename = {'wFossil': 'With New Fossil', 'woFossil': 'Without New Fossil'}
 bio_rename = {'Low Bio': 'Low Bio', 'High Bio': 'High Bio'}
 for f_key in fossil_rename.keys():
     for b_key in bio_rename.keys():
         ind = (df.loc[:, 'new_fossil'] == f_key) & (df.loc[:, 'bio'] == b_key)
         df.loc[ind, 'case'] = bio_rename[b_key] + ' ' + fossil_rename[f_key]
 # cases = df.loc[:, 'case'].unique()
-cases = ['Low Bio With Fossil', 'Low Bio Without Fossil',
-         'High Bio With Fossil', 'High Bio Without Fossil']
+cases = ['Low Bio With New Fossil', 'Low Bio Without New Fossil',
+         'High Bio With New Fossil', 'High Bio Without New Fossil']
 colors2 = sns.color_palette('Paired')
 
 # =====================================
@@ -150,6 +149,11 @@ for j, (y_tech, y_label, y_limit, y_scale, y_convert) in enumerate(
         if len(x_limit) == 2:
             ax.set_xlim(left=x_limit[0], right=x_limit[1])
 
+        # Plot dashed line to show important value
+        if len(y_limit) == 2:
+            ax.plot([3200,3200], y_limit, 'k--')
+            # ax.set_ylim(bottom=y_limit[0], top=y_limit[1])
+
         # Despine and remove ticks
         # sns.despine(ax=ax, )
         ax.tick_params(top=False, right=False)
@@ -159,7 +163,7 @@ ax = a[len(a) - 1,0]
 patches = []
 for case, color in zip(cases, colors2):
     patches.append(mpatches.Patch(color=color, label=case))
-leg1 = ax.legend(handles=patches, bbox_to_anchor=(0.5, -0.35), loc="upper center", ncol=4)
+leg1 = ax.legend(handles=patches, bbox_to_anchor=(0.5, -0.35), loc="upper center", ncol=2)
 ax.add_artist(leg1)
 
 # Adjust spacing
