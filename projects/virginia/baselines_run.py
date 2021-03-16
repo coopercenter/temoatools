@@ -26,7 +26,7 @@ if __name__ == '__main__':
     # =======================================================
     # Model Inputs
     # =======================================================
-    temoa_path = Path('../../temoa-energysystem')  # Path('/home/jab6ft/temoa/temoa')
+    temoa_path = os.path.abspath('../../temoa-energysystem')  # Path('/home/jab6ft/temoa/temoa')
     project_path = os.getcwd()  # Path('/home/jab6ft/temoa/project/baselines')
     modelInputs_XLSX_list = ['data_virginia.xlsx']
     scenarioInputs = 'scenarios_multiple.xlsx'

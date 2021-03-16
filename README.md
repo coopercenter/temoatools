@@ -143,7 +143,14 @@ Notes:
         python baselines_run.py
         
 ## Running on Rivanna, UVA's high performance computing system*:
-    For best results
+1) Get set-up on Rivanna
+   1) Get access to an allocation - Work with the Professor leading your research to get an allocation on Rivanna. More information can be found here: https://www.rc.virginia.edu/userinfo/rivanna/allocations/
+   2) Get access to Gurobi - Submit a 'Support Request' and ask to be added to the list of Gurobi users. https://www.rc.virginia.edu/form/support-request/
+2) Running from Rivanna - There are multiple ways to run code on Rivanna, these instructions are for using FastX.
+    1) Login to FastX https://rivanna-desktop.hpc.virginia.edu/
+    2) Start a 'MATE' session
+    3) Open a terminal
+    
    ### To install:
           
         module load anaconda/2019.10-py3.7
