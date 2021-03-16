@@ -162,10 +162,23 @@ Notes:
         cd temoatools
         pip install .
     
-   ### To test:
-        cd examples/baselines
+   ### To run manually (in a new terminal):
+   
+        module load anaconda/2019.10-py3.7
+        source activate temoa-py3
+        export PYTHONUTF8=1
+        module load gurobi
+        cd temoatools/examples/baselines
+        python baselines_run.py
+        python baselines_analyze.py
+
+   ### To run with a bash script (in a new terminal):
+
+        cd temoatools/examples/baselines
         sbatch run_baselines.sh
         sacct
+
+    Note: Installing temoatools only works in your home directory, not the scratch directory.
 
 ## Stochastic Instructions
 For step-by-step instructions to run the Puerto Rico Stochastic project, see the README.md file in projects/puerto_rico_stoch. 
