@@ -143,11 +143,12 @@ Notes:
         python baselines_run.py
         
 ## Running on Rivanna, UVA's high performance computing system*:
+    For best results
    ### To install:
           
         module load anaconda/2019.10-py3.7
         git clone https:www.github.com/coopercenter/temoatools
-        cd temoa
+        cd temoatools
         conda env create
         source activate temoa-py3
         cd ..
