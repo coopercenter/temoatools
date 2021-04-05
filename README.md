@@ -143,21 +143,42 @@ Notes:
         python baselines_run.py
         
 ## Running on Rivanna, UVA's high performance computing system*:
+1) Get set-up on Rivanna
+   1) Get access to an allocation - Work with the Professor leading your research to get an allocation on Rivanna. More information can be found here: https://www.rc.virginia.edu/userinfo/rivanna/allocations/
+   2) Get access to Gurobi - Submit a 'Support Request' and ask to be added to the list of Gurobi users. https://www.rc.virginia.edu/form/support-request/
+2) Running from Rivanna - There are multiple ways to run code on Rivanna, these instructions are for using FastX.
+    1) Login to FastX https://rivanna-desktop.hpc.virginia.edu/
+    2) Start a 'MATE' session
+    3) Open a terminal
+    
    ### To install:
           
         module load anaconda/2019.10-py3.7
         git clone https:www.github.com/coopercenter/temoatools
-        cd temoa
+        cd temoatools
         conda env create
         source activate temoa-py3
         cd ..
         cd temoatools
         pip install .
     
-   ### To test:
-        cd examples/baselines
+   ### To run manually (in a new terminal):
+   
+        module load anaconda/2019.10-py3.7
+        source activate temoa-py3
+        export PYTHONUTF8=1
+        module load gurobi
+        cd temoatools/examples/baselines
+        python baselines_run.py
+        python baselines_analyze.py
+
+   ### To run with a bash script (in a new terminal):
+
+        cd temoatools/examples/baselines
         sbatch run_baselines.sh
         sacct
+
+    Note: Installing temoatools only works in your home directory, not the scratch directory.
 
 ## Stochastic Instructions
 For step-by-step instructions to run the Puerto Rico Stochastic project, see the README.md file in projects/puerto_rico_stoch. 

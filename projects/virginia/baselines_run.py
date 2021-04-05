@@ -2,8 +2,9 @@ import temoatools as tt
 from joblib import Parallel, delayed, parallel_backend
 from pathlib import Path
 import shutil
-import calendar;
-import time;
+import calendar
+import time
+import os
 
 
 # =======================================================
@@ -25,8 +26,8 @@ if __name__ == '__main__':
     # =======================================================
     # Model Inputs
     # =======================================================
-    temoa_path = Path('/Users/rogerzhu/Documents/temoa/temoa-energysystem')  # Path('/home/jab6ft/temoa/temoa')
-    project_path = Path('/Users/rogerzhu/Documents/temoa/temoa-va/virginia')  # Path('/home/jab6ft/temoa/project/baselines')
+    temoa_path = os.path.abspath('../../temoa-energysystem')  # Path('/home/jab6ft/temoa/temoa')
+    project_path = os.getcwd()  # Path('/home/jab6ft/temoa/project/baselines')
     modelInputs_XLSX_list = ['data_virginia.xlsx']
     scenarioInputs = 'scenarios_multiple.xlsx'
     scenarioNames_list = [['A' , 'B' , 'C' , 'D']]
