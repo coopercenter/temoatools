@@ -26,15 +26,17 @@ setwd(dir_work)
 #---------
 # new_emerg - rename and factor
 #---------
-rename <- c("wEmerg"='With Emerging Tech',
-            "woEmerg"='Without Emerging Tech')
-df <- transform(df, new_emerg = rename[as.character(new_emerg)])
+rename <- c("Baseline"='Baseline',
+            "wNETSwLDS"='With NETS With LDS',
+            "wLDS"='With LDS',
+            "wNETS" = 'With NETS')
+df <- transform(df, scenario = rename[as.character(scenario)])
 
 # treat baselines differently
-df[ which(df$new_emerg=='With Emerging Tech' & df$iteration=='baseline'),'new_emerg'] <- 'With Emerging Tech (Baseline)'
+#df[ which(df$new_emerg=='With Emerging Tech' & df$iteration=='baseline'),'new_emerg'] <- 'With Emerging Tech (Baseline)'
 
-levels <- c('Without Emerging Tech', 'With Emerging Tech (Baseline)', 'With Emerging Tech')
-df$new_emerg <- factor(df$new_emerg, levels = levels) 
+#levels <- c('Without Emerging Tech', 'With Emerging Tech (Baseline)', 'With Emerging Tech')
+#df$new_emerg <- factor(df$new_emerg, levels = levels) 
 
 #---------
 # new_fossil - rename and factor

@@ -18,10 +18,9 @@ module load gurobi
 export NUM_PROCS=$SLURM_CPUS_PER_TASK
 
 # run
-python vet_run_baselines.py
-python vet_run_monte_carlo.py
-python vet_process_and_combine_results.py
-python vet_run_sensitivity.py
+python vet_run_baselines_NETS.py
+python vet_run_monte_carlo_NETS.py
+python vet_process_and_combine_results_NETS.py
 
 # create plots in Python
 #cd figures

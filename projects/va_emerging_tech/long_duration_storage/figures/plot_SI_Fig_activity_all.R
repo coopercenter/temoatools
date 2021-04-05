@@ -52,10 +52,10 @@ df$new_fossil <- factor(df$new_fossil, levels = levels)
 #---------
 # bio - rename and factor
 #---------
-rename <- c("Low Bio"='Low Bio',
-            "High Bio"='High Bio')
+rename <- c("Low bio"='Low bio',
+            "High bio"='High bio')
 df <- transform(df, bio = rename[as.character(bio)])
-levels <- c('Low Bio', 'High Bio')
+levels <- c('Low bio', 'High bio')
 df$bio <- factor(df$bio, levels = levels)
 
 dodge <- 0.2
@@ -168,7 +168,7 @@ ggsave(savename, device="png", width=7.48, height=6.0, units="in",dpi=300)
 # Activity - High bio
 # -------------------------
 
-act_highbio<-act[(act$bio=="High Bio"),]
+act_highbio<-act[(act$bio=="High DAC"),]
 act_highbio$Scenario <- paste(act_highbio$new_emerg,' - ', act_highbio$new_fossil)
 
 ggplot(data=act_highbio, aes_string(x='year',y='mean', ymin='min', ymax='max', color='Scenario', fill='Scenario'))+
