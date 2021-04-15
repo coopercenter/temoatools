@@ -51,7 +51,7 @@ df = df.drop(['Unnamed: 0', 'Unnamed: 0.1', 'season', 'tod', ], axis=1)
 df = df[df.loc[:, 'year'] == 2050]
 
 # drop cases w/o emerging tech
-df = df[df.loc[:, 'new_emerg'] == 'wEmerg']
+#df = df[df.loc[:, 'new_emerg'] == 'wEmerg']
 
 # version 1 - separate colors and markers
 bio_rename = {'High Bio': 'High', 'Low Bio': 'Low'}
@@ -62,16 +62,26 @@ fossil_rename = {'wFossil': 'With', 'woFossil': 'Without'}
 fossil_cases = df.loc[:, 'new_fossil'].unique()
 markers = ['^', 's']
 
+DAC_rename = {'lowDAC': 'lowDAC', 'highDAC': 'highDAC'}
+DAC_cases = df.loc[:, 'DAC'].unique()
+
+
 # version 2 - create new column to distinguish remaining cases
 fossil_rename = {'wFossil': 'With New Fossil', 'woFossil': 'Without New Fossil'}
-bio_rename = {'Low Bio': 'Low Bio', 'High Bio': 'High Bio'}
+bio_rename = {'lowBio': 'Low Bio', 'highBio': 'High Bio'}
+DAC_rename = {'lowDAC': 'Low DAC', 'highDAC': 'High DAC'}
+
+
 for f_key in fossil_rename.keys():
-    for b_key in bio_rename.keys():
-        ind = (df.loc[:, 'new_fossil'] == f_key) & (df.loc[:, 'bio'] == b_key)
-        df.loc[ind, 'case'] = bio_rename[b_key] + ' ' + fossil_rename[f_key]
+    for d_key in DAC_rename.keys():
+        for b_key in bio_rename.keys():
+            ind = (df.loc[:, 'new_fossil'] == f_key) & (df.loc[:, 'DAC'] == d_key) & (df.loc[:, 'bio'] == b_key)
+            df.loc[ind, 'case'] = bio_rename[b_key] + ' ' + DAC_rename[d_key] + ' ' + fossil_rename[f_key]
 # cases = df.loc[:, 'case'].unique()
-cases = ['Low Bio With New Fossil', 'Low Bio Without New Fossil',
-         'High Bio With New Fossil', 'High Bio Without New Fossil']
+cases = ['Low Bio Low DAC With New Fossil', 'Low Bio Low DAC Without New Fossil',
+         'High Bio  Low DAC With New Fossil', 'High Bio Low DAC Without New Fossil',
+         'Low Bio High DAC With New Fossil', 'Low Bio High DAC Without New Fossil',
+         'High Bio High DAC With New Fossil', 'High Bio High DAC Without New Fossil']
 colors2 = sns.color_palette('Paired')
 
 # =====================================

@@ -2,25 +2,25 @@ import os
 import pandas as pd
 
 # naming convention
-woEmerg = 'woEmerg'
-wEmerg = 'wEmerg'
-woFossil = 'woFossil'
-wFossil = 'wFossil'
+wNETS = "With NETS"
+wLDS = "With LDS"
+wNETSwLDS = "With NETS with LDS"
+Baseline = "Baseline"
 lowBio = "Low Bio"
 highBio = "High Bio"
 decarb2050 = 2050
 
 # monte carlo results files
 mc = {
-    "MonteCarloResults_highBio_wEmerg_wFossil_2050.csv": [wEmerg, wFossil, decarb2050, highBio],
-    "MonteCarloResults_highBio_wEmerg_woFossil_2050.csv": [wEmerg, woFossil, decarb2050, highBio],
-    "MonteCarloResults_highBio_woEmerg_wFossil_2050.csv": [woEmerg, wFossil, decarb2050, highBio],
-    "MonteCarloResults_highBio_woEmerg_woFossil_2050.csv": [woEmerg, woFossil, decarb2050, highBio],
+    "MonteCarloResults_highBio_Baseline_2050.csv": [Baseline, decarb2050, highBio],
+    "MonteCarloResults_highBio_wNETSwLDS_2050.csv": [wLDS, decarb2050, highBio],
+    "MonteCarloResults_highBio_wLDS_2050.csv": [wLDS, decarb2050, highBio],
+    "MonteCarloResults_highBio_wNETS_2050.csv": [wNETS, decarb2050, highBio],
 
-    "MonteCarloResults_lowBio_wEmerg_wFossil_2050.csv": [wEmerg, wFossil, decarb2050, lowBio],
-    "MonteCarloResults_lowBio_wEmerg_woFossil_2050.csv": [wEmerg, woFossil, decarb2050, lowBio],
-    "MonteCarloResults_lowBio_woEmerg_wFossil_2050.csv": [woEmerg, wFossil, decarb2050, lowBio],
-    "MonteCarloResults_lowBio_woEmerg_woFossil_2050.csv": [woEmerg, woFossil, decarb2050, lowBio]}
+    "MonteCarloResults_lowBio_Baseline_2050.csv": [Baseline, decarb2050, lowBio],
+    "MonteCarloResults_lowBio_wNETSwLDS_2050.csv": [wLDS, decarb2050, lowBio],
+    "MonteCarloResults_lowBio_wLDS_2050.csv": [wLDS, decarb2050, lowBio],
+    "MonteCarloResults_lowBio_wNETS_2050.csv": [wNETS, decarb2050, lowBio],}
 
 # ==============================
 # process results
@@ -38,10 +38,9 @@ for file, d in zip(mc.keys(), mc.values()):
     dfi = pd.read_csv(file)
 
     # store details about scenario
-    dfi.loc[:, 'new_emerg'] = d[0]
-    dfi.loc[:, 'new_fossil'] = d[1]
-    dfi.loc[:, 'decarb'] = d[2]
-    dfi.loc[:, 'bio'] = d[3]
+    dfi.loc[:, 'Scenario'] = d[0]
+    dfi.loc[:, 'decarb'] = d[1]
+    dfi.loc[:, 'bio'] = d[2]
 
     # append modified data
     df = df.append(dfi, ignore_index=True)

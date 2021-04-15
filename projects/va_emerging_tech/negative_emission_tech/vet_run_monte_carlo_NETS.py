@@ -77,15 +77,13 @@ if __name__ == '__main__':
     temoa_path = os.path.abspath('../../../temoa-energysystem')
     project_path = os.getcwd()
     monte_carlo_inputs = 'monte_carlo_inputs.xlsx'
-    monte_carlo_cases = ['lowBio', 'highBio']  # each case corresponds with a list in scenarioNames
+    monte_carlo_cases = ['lowDAClowBio', 'lowDAChighBio', 'highDAClowBio', 'highDAChighBio']  # each case corresponds with a list in scenarioNames
     scenarioInputs = 'scenarios_emerging_tech.xlsx'
-    scenarioNames = ['woEmerg_wFossil', 'woEmerg_woFossil',
-                     'wEmerg_wFossil', 'wEmerg_woFossil']
+    scenarioNames = ['woFossil', 'wFossil']
 
     n_baseline = 1
     n_uncertainty = 100
-    n_iterations = [n_baseline, n_baseline,
-                    n_uncertainty, n_uncertainty]
+    n_iterations = [n_uncertainty, n_baseline]
 
     modelInputs_primary = 'data_va_noEmissionLimit.xlsx'
     modelInputs_secondary = ['data_emerging_tech.xlsx', 'data_H2_VFB.xlsx']

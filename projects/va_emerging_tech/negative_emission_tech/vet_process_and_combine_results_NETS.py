@@ -2,25 +2,28 @@ import os
 import pandas as pd
 
 # naming convention
-woEmerg = 'woEmerg'
-wEmerg = 'wEmerg'
 woFossil = 'woFossil'
 wFossil = 'wFossil'
-lowBio = "Low Bio"
-highBio = "High Bio"
+lowBio = 'lowBio'
+highBio = 'highBio'
+lowDAC = 'lowDAC'
+highDAC = 'highDAC'
 decarb2050 = 2050
 
 # monte carlo results files
 mc = {
-    "MonteCarloResults_highBio_wEmerg_wFossil_2050.csv": [wEmerg, wFossil, decarb2050, highBio],
-    "MonteCarloResults_highBio_wEmerg_woFossil_2050.csv": [wEmerg, woFossil, decarb2050, highBio],
-    "MonteCarloResults_highBio_woEmerg_wFossil_2050.csv": [woEmerg, wFossil, decarb2050, highBio],
-    "MonteCarloResults_highBio_woEmerg_woFossil_2050.csv": [woEmerg, woFossil, decarb2050, highBio],
+    "MonteCarloResults_lowDAClowBio_woFossil_2050.csv": [woFossil, decarb2050, lowDAC, lowBio],
+    "MonteCarloResults_lowDAChighBio_woFossil_2050.csv": [woFossil, decarb2050, lowDAC, highBio],
+    "MonteCarloResults_highDAClowBio_woFossil_2050.csv": [woFossil, decarb2050, highDAC, lowBio],
+    "MonteCarloResults_highDAChighBio_woFossil_2050.csv": [woFossil, decarb2050, highDAC, highBio],
 
-    "MonteCarloResults_lowBio_wEmerg_wFossil_2050.csv": [wEmerg, wFossil, decarb2050, lowBio],
-    "MonteCarloResults_lowBio_wEmerg_woFossil_2050.csv": [wEmerg, woFossil, decarb2050, lowBio],
-    "MonteCarloResults_lowBio_woEmerg_wFossil_2050.csv": [woEmerg, wFossil, decarb2050, lowBio],
-    "MonteCarloResults_lowBio_woEmerg_woFossil_2050.csv": [woEmerg, woFossil, decarb2050, lowBio]}
+    "MonteCarloResults_lowDAClowBio_wFossil_2050.csv": [wFossil, decarb2050, lowDAC, lowBio],
+    "MonteCarloResults_lowDAChighBio_wFossil_2050.csv": [wFossil, decarb2050, lowDAC, highBio],
+    "MonteCarloResults_highDAClowBio_wFossil_2050.csv": [wFossil, decarb2050, highDAC, lowBio],
+    "MonteCarloResults_highDAChighBio_wFossil_2050.csv": [wFossil, decarb2050, highDAC, highBio]}
+
+
+
 
 # ==============================
 # process results
@@ -38,9 +41,9 @@ for file, d in zip(mc.keys(), mc.values()):
     dfi = pd.read_csv(file)
 
     # store details about scenario
-    dfi.loc[:, 'new_emerg'] = d[0]
-    dfi.loc[:, 'new_fossil'] = d[1]
-    dfi.loc[:, 'decarb'] = d[2]
+    dfi.loc[:, 'new_fossil'] = d[0]
+    dfi.loc[:, 'decarb'] = d[1]
+    dfi.loc[:, 'DAC'] = d[2]
     dfi.loc[:, 'bio'] = d[3]
 
     # append modified data

@@ -1,4 +1,6 @@
 import os
+from typing import Dict
+
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -54,7 +56,7 @@ df = df[df.loc[:, 'year'] == 2050]
 df = df[df.loc[:, 'new_emerg'] == 'wEmerg']
 
 # version 1 - separate colors and markers
-bio_rename = {'High Bio': 'High', 'Low Bio': 'Low'}
+bio_rename: Dict[str, str] = {'High Bio': 'High', 'Low Bio': 'Low'}
 bio_cases = df.loc[:, 'bio'].unique()
 colors1 = sns.color_palette("colorblind")
 
@@ -64,14 +66,14 @@ markers = ['^', 's']
 
 # version 2 - create new column to distinguish remaining cases
 fossil_rename = {'wFossil': 'With New Fossil', 'woFossil': 'Without New Fossil'}
-bio_rename = {'Low Bio': 'Low Bio', 'High Bio': 'High Bio'}
+bio_rename = {'Low DAC': 'Low DAC', 'High DAC': 'High DAC'}
 for f_key in fossil_rename.keys():
     for b_key in bio_rename.keys():
         ind = (df.loc[:, 'new_fossil'] == f_key) & (df.loc[:, 'bio'] == b_key)
         df.loc[ind, 'case'] = bio_rename[b_key] + ' ' + fossil_rename[f_key]
 # cases = df.loc[:, 'case'].unique()
-cases = ['Low Bio With New Fossil', 'Low Bio Without New Fossil',
-         'High Bio With New Fossil', 'High Bio Without New Fossil']
+cases = ['Low DAC With New Fossil', 'Low DAC Without New Fossil',
+         'High DAC With New Fossil', 'High DAC Without New Fossil']
 colors2 = sns.color_palette('Paired')
 
 # =====================================

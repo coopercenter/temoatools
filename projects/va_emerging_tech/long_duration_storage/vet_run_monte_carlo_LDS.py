@@ -79,12 +79,12 @@ if __name__ == '__main__':
     monte_carlo_inputs = 'monte_carlo_inputs.xlsx'
     monte_carlo_cases = ['lowBio', 'highBio']  # each case corresponds with a list in scenarioNames
     scenarioInputs = 'scenarios_emerging_tech.xlsx'
-    scenarioNames = ['woEmerg_wFossil', 'woEmerg_woFossil',
-                     'wEmerg_wFossil', 'wEmerg_woFossil']
+    scenarioNames = ['Baseline', 'wNETSwLDS',
+                     'wLDS', 'wNETS']
 
     n_baseline = 1
     n_uncertainty = 100
-    n_iterations = [n_baseline, n_baseline,
+    n_iterations = [n_uncertainty, n_uncertainty,
                     n_uncertainty, n_uncertainty]
 
     modelInputs_primary = 'data_va_noEmissionLimit.xlsx'
