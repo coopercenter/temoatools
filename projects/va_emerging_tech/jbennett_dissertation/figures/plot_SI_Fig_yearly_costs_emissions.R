@@ -26,14 +26,14 @@ setwd(dir_work)
 #---------
 # new_emerg - rename and factor
 #---------
-rename <- c("wEmerg"='With Emerging Tech',
-            "woEmerg"='Without Emerging Tech')
+rename <- c("wEmerg"='With LDS/NET',
+            "woEmerg"='Without LDS/NET')
 df <- transform(df, new_emerg = rename[as.character(new_emerg)])
 
 # treat baselines differently
-df[ which(df$new_emerg=='With Emerging Tech' & df$iteration=='baseline'),'new_emerg'] <- 'With Emerging Tech (Baseline)'
+df[ which(df$new_emerg=='With LDS/NET' & df$iteration=='baseline'),'new_emerg'] <- 'With LDS/NET (Baseline)'
 
-levels <- c('Without Emerging Tech', 'With Emerging Tech (Baseline)', 'With Emerging Tech')
+levels <- c('Without LDS/NET', 'With LDS/NET (Baseline)', 'With LDS/NET')
 df$new_emerg <- factor(df$new_emerg, levels = levels) 
 
 #---------
@@ -60,7 +60,7 @@ dodge <- 0.2
 # Set color palette
 # predefined palette # http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/
 # The palette with black:
-pathway_Palette <- c("#E69F00", "#0072B2", "#000000", "#CC79A7")
+pathway_Palette <- c("#009E73", "#E69F00", "#0072B2", "#000000")
 options(ggplot2.discrete.fill = pathway_Palette)
 options(ggplot2.discrete.color = pathway_Palette)
 options(ggplot2.continuous.color = pathway_Palette)
@@ -95,7 +95,8 @@ plot_costs <- ggplot(data=costs_smry, aes_string(x='year',y='mean', ymin='min', 
   theme(panel.background = element_rect(colour ="black"),
         panel.border = element_rect(linetype="solid", fill=NA),
         legend.background=element_rect(fill = alpha("white", 0)),
-        legend.key = element_rect(colour = "transparent"), legend.title=element_blank())
+        legend.key = element_rect(colour = "transparent"), legend.title=element_blank(),
+        axis.text.x = element_text(angle = 90,vjust=0.5))
 
 # -------------------------
 # Emissions
@@ -125,7 +126,8 @@ plot_emi <- ggplot(data=emi_smry, aes_string(x='year',y='mean', ymin='min', ymax
   theme(panel.background = element_rect(colour ="black"),
         panel.border = element_rect(linetype="solid", fill=NA),
         legend.background=element_rect(fill = alpha("white", 0)),
-        legend.key = element_rect(colour = "transparent"), legend.title=element_blank())
+        legend.key = element_rect(colour = "transparent"), legend.title=element_blank(),
+        axis.text.x = element_text(angle = 90,vjust=0.5))
 # -------------------------
 # Plot and save
 # -------------------------

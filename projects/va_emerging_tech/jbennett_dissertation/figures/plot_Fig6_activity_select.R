@@ -30,14 +30,14 @@ df$value <- df$value * conversion
 #---------
 # new_emerg - rename and factor
 #---------
-rename <- c("wEmerg"='With Emerging Tech',
-            "woEmerg"='Without Emerging Tech')
+rename <- c("wEmerg"='With LDS/NET',
+            "woEmerg"='Without LDS/NET')
 df <- transform(df, new_emerg = rename[as.character(new_emerg)])
 
 # treat baselines differently
-df[ which(df$new_emerg=='With Emerging Tech' & df$iteration=='baseline'),'new_emerg'] <- 'With Emerging Tech (Baseline)'
+df[ which(df$new_emerg=='With LDS/NET' & df$iteration=='baseline'),'new_emerg'] <- 'With LDS/NET (Baseline)'
 
-levels <- c('Without Emerging Tech', 'With Emerging Tech (Baseline)', 'With Emerging Tech')
+levels <- c('Without LDS/NET', 'With LDS/NET (Baseline)', 'With LDS/NET')
 df$new_emerg <- factor(df$new_emerg, levels = levels) 
 
 #---------
@@ -63,7 +63,7 @@ dodge <- 0.2
 # Set color palette
 # predefined palette # http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/
 # The palette with black:
-pathway_Palette <- c("#E69F00", "#56B4E9", "#009E73","#0072B2", "#D55E00", "#000000", "#CC79A7")
+pathway_Palette <- c("#009E73", "#E69F00", "#0072B2", "#000000")
 options(ggplot2.discrete.fill = pathway_Palette)
 options(ggplot2.discrete.color = pathway_Palette)
 options(ggplot2.continuous.color = pathway_Palette)
@@ -136,8 +136,7 @@ act <- df_renamed2 %>% # the names of the new data frame and the data frame to b
             max = max(value),# calculates the maximum
             sd=sd(value)) # calculates the standard deviation
 
-palette <-c('#6baed6', '#3182bd',
-            '#31a354',  '#006d2c')
+palette <-c("#009E73", "#E69F00", "#0072B2", "#000000")
 
 options(ggplot2.discrete.fill = palette)
 options(ggplot2.discrete.color = palette)

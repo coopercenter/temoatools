@@ -27,7 +27,7 @@ y_var = "value"
 y_converts = [1.0, 1.0, 1.0, 1.0]
 y_techs = ['EC_OCAES', 'EC_BATT_2hr', 'EC_BATT_4hr']
 y_labels = ['24-hour\nOCAES\n[GW]', '2-hour\nBattery\n[GW]', '4-hour\nBattery\n[GW]']
-y_limits = [[0,8], [0,25], [0,50],]
+y_limits = [[0, 8], [0, 25], [0, 50], ]
 y_scales = ['linear', 'linear', 'linear']
 
 markersize = 5
@@ -70,6 +70,14 @@ for f_key in fossil_rename.keys():
 cases = ['Low Bio With New Fossil', 'Low Bio Without New Fossil',
          'High Bio With New Fossil', 'High Bio Without New Fossil']
 colors2 = sns.color_palette('Paired')
+
+# http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/
+# palette <-c("#009E73", "#E69F00", "#0072B2", "#000000")
+# https://www.rapidtables.com/convert/color/hex-to-rgb.html
+colors2 = [(0 / 255, 158 / 255, 115 / 255),
+           (230 / 255, 159 / 255, 0 / 255),
+           (0 / 255, 114 / 255, 178 / 255),
+           (0 / 255, 0 / 255, 0 / 255)]
 
 # =====================================
 # create plot version 2 - only colors
@@ -151,7 +159,7 @@ for j, (y_tech, y_label, y_limit, y_scale, y_convert) in enumerate(
 
         # Plot dashed line to show important value
         if len(y_limit) == 2:
-            ax.plot([3200,3200], y_limit, 'k--')
+            ax.plot([3200, 3200], y_limit, 'k--')
             # ax.set_ylim(bottom=y_limit[0], top=y_limit[1])
 
         # Despine and remove ticks
@@ -159,7 +167,7 @@ for j, (y_tech, y_label, y_limit, y_scale, y_convert) in enumerate(
         ax.tick_params(top=False, right=False)
 
 # Legend - Colors
-ax = a[len(a) - 1,0]
+ax = a[len(a) - 1, 0]
 patches = []
 for case, color in zip(cases, colors2):
     patches.append(mpatches.Patch(color=color, label=case))

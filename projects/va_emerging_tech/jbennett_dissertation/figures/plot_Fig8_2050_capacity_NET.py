@@ -74,6 +74,14 @@ cases = ['Low Bio With New Fossil', 'Low Bio Without New Fossil',
          'High Bio With New Fossil', 'High Bio Without New Fossil']
 colors2 = sns.color_palette('Paired')
 
+# http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/
+# palette <-c("#009E73", "#E69F00", "#0072B2", "#000000")
+# https://www.rapidtables.com/convert/color/hex-to-rgb.html
+colors2 = [(0 / 255, 158 / 255, 115 / 255),
+           (230 / 255, 159 / 255, 0 / 255),
+           (0 / 255, 114 / 255, 178 / 255),
+           (0 / 255, 0 / 255, 0 / 255)]
+
 # =====================================
 # create plot version 2 - only colors
 # =====================================
